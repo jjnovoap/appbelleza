@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "474702024569",
+    "firebase_url": "https://myrestaurant-53158.firebaseio.com",
+    "project_id": "myrestaurant-53158",
+    "storage_bucket": "myrestaurant-53158.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474702024569:android:f25c684d0676bae63ee9a8",
+        "android_client_info": {
+          "package_name": "com.comleoneo.myrestaurant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474702024569-gkj1lmm4a898qlja8t1m1q8sh2v9iepp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.comleoneo.myrestaurant",
+            "certificate_hash": "ec6ef47a22e36a58de73bc889d7f9af288ab93de"
+          }
+        },
+        {
+          "client_id": "474702024569-k5cee1oatpvagegvode4rg5r231lhq9r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIjG6KqiHVjXoChpr7Ml9L42jtTXsRnm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474702024569-k5cee1oatpvagegvode4rg5r231lhq9r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
