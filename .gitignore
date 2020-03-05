@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .idea
+/app/google-services.json
+/app/build/intermediates/
+/app/build/outputs/
