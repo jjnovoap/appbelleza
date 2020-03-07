@@ -15,19 +15,19 @@
       },
       "oauth_client": [
         {
+          "client_id": "730746225217-1bs0h2hd7m395c66ktts7sdt3kqrn4pp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.appbella",
+            "certificate_hash": "c1598da283d87b240d1daafec0dd8e054c2291a5"
+          }
+        },
+        {
           "client_id": "730746225217-j81u1vm7u6ms9m49nj2emk421aqku56r.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.appbella",
             "certificate_hash": "e4bf5701a35476c33b7d667683875ddc7037902a"
-          }
-        },
-        {
-          "client_id": "730746225217-aa9gilmkeurkmhffardg1ddtiieeo9rm.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.appbella",
-            "certificate_hash": "c1598da283d87b240d1daafec0dd8e054c2291a5"
           }
         },
         {
