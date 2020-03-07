@@ -63,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
             // Successfully signed in
             if (resultCode == RESULT_OK) {
                 DocumentReference currentUser = userRef.document(auth.getCurrentUser().getUid());
-                currentUser.get()
-                        .addOnCompleteListener(task -> {
+                currentUser.get().addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot userSnapShot = task.getResult();
                                 assert userSnapShot != null;

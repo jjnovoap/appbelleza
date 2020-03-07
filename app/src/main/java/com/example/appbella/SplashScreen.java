@@ -43,8 +43,8 @@ public class SplashScreen extends AppCompatActivity {
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
-                        FirebaseAuth auth = FirebaseAuth.getInstance();
 
+                        FirebaseAuth auth = FirebaseAuth.getInstance();
                         if (auth.getCurrentUser() != null) {
                             // already signed in
                             DocumentReference currentUser = userRef.document(auth.getCurrentUser().getUid());

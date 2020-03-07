@@ -47,11 +47,10 @@ public class MyCategoryAdapter extends RecyclerView.Adapter<MyCategoryAdapter.My
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Picasso.get().load(mCategoryList.get(position).getImage()).into(holder.img_restaurant);
+        Picasso.get().load(mCategoryList.get(position).getImage()).into(holder.img_category);
         holder.txt_category.setText(mCategoryList.get(position).getName());
 
         holder.setIOnRecyclerViewClickListener((view, i) -> {
-
             // Send sticky post event to FoodListActivity
             EventBus.getDefault().postSticky(new FoodListEvent(true, mCategoryList.get(i)));
             mContext.startActivity(new Intent(mContext, ProductAndServiceList.class));
@@ -67,7 +66,7 @@ public class MyCategoryAdapter extends RecyclerView.Adapter<MyCategoryAdapter.My
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.img_category)
-        ImageView img_restaurant;
+        ImageView img_category;
         @BindView(R.id.txt_category)
         TextView txt_category;
 

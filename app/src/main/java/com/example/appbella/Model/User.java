@@ -7,6 +7,7 @@ public class User {
     public User() {
     }
 
+
     public User(String fbid, String name, String lastname, String address, String userPhone, String numberid) {
         this.fbid = fbid;
         this.name = name;

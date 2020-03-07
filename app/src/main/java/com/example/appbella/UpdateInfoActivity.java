@@ -42,6 +42,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
     EditText edt_user_doc;
     @BindView(R.id.btn_update)
     Button btn_update;
+
     CollectionReference userRef;
 
     private static final Pattern DOC_PATTERN = Pattern.compile("^" +

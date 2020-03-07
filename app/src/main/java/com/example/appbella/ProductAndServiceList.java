@@ -50,7 +50,6 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
     private static final String TAG = ProductAndServiceList.class.getSimpleName();
 
-    private IMyRestaurantAPI mIMyRestaurantAPI;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private android.app.AlertDialog mDialog;
 
@@ -190,8 +189,6 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
     private void init() {
         Log.d(TAG, "init: called!!");
         mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
-        mIMyRestaurantAPI = RetrofitClient.getInstance(Common.API_RESTAURANT_ENDPOINT)
-                .create(IMyRestaurantAPI.class);
     }
 
     /**
