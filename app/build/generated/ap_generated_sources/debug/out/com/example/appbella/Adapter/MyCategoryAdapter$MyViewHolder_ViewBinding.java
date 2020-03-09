@@ -20,7 +20,7 @@ public class MyCategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
       View source) {
     this.target = target;
 
-    target.img_restaurant = Utils.findRequiredViewAsType(source, R.id.img_category, "field 'img_restaurant'", ImageView.class);
+    target.img_category = Utils.findRequiredViewAsType(source, R.id.img_category, "field 'img_category'", ImageView.class);
     target.txt_category = Utils.findRequiredViewAsType(source, R.id.txt_category, "field 'txt_category'", TextView.class);
   }
 
@@ -31,7 +31,7 @@ public class MyCategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 
-    target.img_restaurant = null;
+    target.img_category = null;
     target.txt_category = null;
   }
 }

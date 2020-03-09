@@ -47,8 +47,8 @@ public class MyProductOrServiceAdapter extends RecyclerView.Adapter<MyProductOrS
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Picasso.get().load(mCategoryProductOrServicesList.get(position).getImage()).into(holder.img_restaurant);
-        holder.txt_restaurant_name.setText(mCategoryProductOrServicesList.get(position).getName());
+        Picasso.get().load(mCategoryProductOrServicesList.get(position).getImage()).into(holder.img_productOrServicest);
+        holder.txt_productOrServices_name.setText(mCategoryProductOrServicesList.get(position).getName());
 
         // Remember implement it if you don't want to get  crash
         holder.setIOnRecyclerViewClickListener((view, i) -> {
@@ -67,10 +67,10 @@ public class MyProductOrServiceAdapter extends RecyclerView.Adapter<MyProductOrS
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.txt_restaurant_name)
-        TextView txt_restaurant_name;
-        @BindView(R.id.img_restaurant)
-        ImageView img_restaurant;
+        @BindView(R.id.txt_productOrServices_name)
+        TextView txt_productOrServices_name;
+        @BindView(R.id.img_productOrServicest)
+        ImageView img_productOrServicest;
 
         IOnRecyclerViewClickListener mIOnRecyclerViewClickListener;
 
@@ -90,6 +90,24 @@ public class MyProductOrServiceAdapter extends RecyclerView.Adapter<MyProductOrS
         @Override
         public void onClick(View v) {
             mIOnRecyclerViewClickListener.onClick(v, getAdapterPosition());
+        }
+    }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mCategoryProductOrServicesList.size() == 1) {
+            return Common.DEFAULT_COLUMN_COUNT;
+        }
+        else {
+            if (mCategoryProductOrServicesList.size() % 2 == 0) {
+                return Common.DEFAULT_COLUMN_COUNT;
+            }
+            else {
+                return (position > 1 && position == mCategoryProductOrServicesList.size()-1)
+                        ? Common.FULL_WIDTH_COLUMN
+                        : Common.DEFAULT_COLUMN_COUNT;
+            }
         }
     }
 }

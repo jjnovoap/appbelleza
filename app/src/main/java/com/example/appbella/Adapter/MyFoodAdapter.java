@@ -30,6 +30,7 @@ import com.example.appbella.Retrofit.RetrofitClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -49,8 +50,8 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
     private List<Product_and_Service> mProductAndServiceList;
     private CompositeDisposable mCompositeDisposable;
     private CartDataSource mCartDataSource;
-    private IMyRestaurantAPI mIMyRestaurantAPI;
     private DatabaseReference favorite;
+    DocumentReference categoria;
 
     private final String TAG = "[Favorite] ";
 
@@ -63,7 +64,6 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         mProductAndServiceList = productandServiceList;
         mCompositeDisposable = new CompositeDisposable();
         mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(context).cartDAO());
-        mIMyRestaurantAPI = RetrofitClient.getInstance(Common.API_RESTAURANT_ENDPOINT).create(IMyRestaurantAPI.class);
     }
 
     @NonNull
@@ -85,7 +85,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
 
         // Check Favorite
         if (Common.currentFavOfRestaurant != null && Common.currentFavOfRestaurant.size() > 0) {
-            if (Common.checkFavorite(mProductAndServiceList.get(position).getId())) {
+            if (Common.checkFavorite(Integer.parseInt(mProductAndServiceList.get(position).getId()))) {
                 holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
                 holder.img_fav.setTag(true);
             }
@@ -110,7 +110,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                     fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
                     fav.setTag(false);
                     if (Common.currentFavOfRestaurant != null) {
-                        Common.removeFavorite(mProductAndServiceList.get(position).getId());
+                        Common.removeFavorite(Integer.parseInt(mProductAndServiceList.get(position).getId()));
                     }
                 }).addOnFailureListener(e ->
                                 Log.w(TAG, "Error deleting favorite", e));
@@ -119,7 +119,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                         Common.currentCategoryProductOrServices.getName(),
                         mProductAndServiceList.get(position).getName(),
                         mProductAndServiceList.get(position).getImage(),
-                        mProductAndServiceList.get(position).getId(),
+                        Integer.parseInt(mProductAndServiceList.get(position).getId()),
                         Common.currentCategoryProductOrServices.getId(),
                         mProductAndServiceList.get(position).getPrice());
 
@@ -129,7 +129,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                                 fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
                                 fav.setTag(true);
                                 if (Common.currentFavOfRestaurant != null) {
-                                    Common.currentFavOfRestaurant.add(new FavoriteOnlyId(mProductAndServiceList.get(position).getId()));
+                                    Common.currentFavOfRestaurant.add(new FavoriteOnlyId(Integer.parseInt(mProductAndServiceList.get(position).getId())));
                                 }
                                 Common.currentFavorite = favoriteServices;
                                 Toast.makeText(mContext, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
@@ -150,16 +150,16 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
             } else {
                 // Cart create
                 CartItem cartItem = new CartItem();
-                cartItem.setFoodId(mProductAndServiceList.get(i).getId());
-                cartItem.setFoodName(mProductAndServiceList.get(i).getName());
-                cartItem.setFoodPrice(mProductAndServiceList.get(i).getPrice());
-                cartItem.setFoodImage(mProductAndServiceList.get(i).getImage());
-                cartItem.setFoodQuantity(1);
+                cartItem.setProductId(mProductAndServiceList.get(i).getName());
+                cartItem.setCategoryId(mProductAndServiceList.get(i).getCategoryId());
+                cartItem.setProductName(mProductAndServiceList.get(i).getName());
+                cartItem.setProductPrice(mProductAndServiceList.get(i).getPrice());
+                cartItem.setProductImage(mProductAndServiceList.get(i).getImage());
+                cartItem.setProductQuantity(1);
                 cartItem.setUserPhone(Common.currentUser.getUserPhone());
-                cartItem.setRestaurantId(Common.currentCategoryProductOrServices.getId());
-                cartItem.setFoodAddon("NORMAL");
-                cartItem.setFoodSize("NORMAL");
-                cartItem.setFoodExtraPrice(0.0);
+                cartItem.setProductAddon("NORMAL");
+                cartItem.setProductSize("NORMAL");
+                cartItem.setProductExtraPrice(0.0);
                 cartItem.setFbid(Common.currentUser.getFbid());
 
                 mCompositeDisposable.add(mCartDataSource.insertOrReplaceAll(cartItem)
@@ -168,7 +168,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                         .subscribe(() -> {
                             Toast.makeText(mContext, "Added to Cart", Toast.LENGTH_SHORT).show();
                         }, throwable -> {
-
+                            Toast.makeText(mContext, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }));
             }
         });

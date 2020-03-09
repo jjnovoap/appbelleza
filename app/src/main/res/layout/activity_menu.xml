@@ -53,12 +53,6 @@
                 android:textColor="@android:color/black"
                 android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
         </LinearLayout>
         
         <androidx.recyclerview.widget.RecyclerView

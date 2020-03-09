@@ -43,48 +43,56 @@ public final class CartDAO_Impl implements CartDAO {
     this.__insertionAdapterOfCartItem = new EntityInsertionAdapter<CartItem>(__db) {
       @Override
       public String createQuery() {
-        return "INSERT OR REPLACE INTO `Cart` (`foodId`,`foodName`,`foodImage`,`foodPrice`,`foodQuantity`,`userPhone`,`restaurantId`,`foodAddon`,`foodSize`,`foodExtraPrice`,`fbid`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `Cart` (`productId`,`productName`,`productImage`,`productPrice`,`productQuantity`,`userPhone`,`categoryId`,`productAddon`,`productSize`,`productExtraPrice`,`fbid`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
       public void bind(SupportSQLiteStatement stmt, CartItem value) {
-        stmt.bindLong(1, value.getFoodId());
-        if (value.getFoodName() == null) {
+        if (value.getProductId() == null) {
+          stmt.bindNull(1);
+        } else {
+          stmt.bindString(1, value.getProductId());
+        }
+        if (value.getProductName() == null) {
           stmt.bindNull(2);
         } else {
-          stmt.bindString(2, value.getFoodName());
+          stmt.bindString(2, value.getProductName());
         }
-        if (value.getFoodImage() == null) {
+        if (value.getProductImage() == null) {
           stmt.bindNull(3);
         } else {
-          stmt.bindString(3, value.getFoodImage());
+          stmt.bindString(3, value.getProductImage());
         }
-        if (value.getFoodPrice() == null) {
+        if (value.getProductPrice() == null) {
           stmt.bindNull(4);
         } else {
-          stmt.bindDouble(4, value.getFoodPrice());
+          stmt.bindDouble(4, value.getProductPrice());
         }
-        stmt.bindLong(5, value.getFoodQuantity());
+        stmt.bindLong(5, value.getProductQuantity());
         if (value.getUserPhone() == null) {
           stmt.bindNull(6);
         } else {
           stmt.bindString(6, value.getUserPhone());
         }
-        stmt.bindLong(7, value.getRestaurantId());
-        if (value.getFoodAddon() == null) {
+        if (value.getCategoryId() == null) {
+          stmt.bindNull(7);
+        } else {
+          stmt.bindString(7, value.getCategoryId());
+        }
+        if (value.getProductAddon() == null) {
           stmt.bindNull(8);
         } else {
-          stmt.bindString(8, value.getFoodAddon());
+          stmt.bindString(8, value.getProductAddon());
         }
-        if (value.getFoodSize() == null) {
+        if (value.getProductSize() == null) {
           stmt.bindNull(9);
         } else {
-          stmt.bindString(9, value.getFoodSize());
+          stmt.bindString(9, value.getProductSize());
         }
-        if (value.getFoodExtraPrice() == null) {
+        if (value.getProductExtraPrice() == null) {
           stmt.bindNull(10);
         } else {
-          stmt.bindDouble(10, value.getFoodExtraPrice());
+          stmt.bindDouble(10, value.getProductExtraPrice());
         }
         if (value.getFbid() == null) {
           stmt.bindNull(11);
@@ -96,72 +104,88 @@ public final class CartDAO_Impl implements CartDAO {
     this.__deletionAdapterOfCartItem = new EntityDeletionOrUpdateAdapter<CartItem>(__db) {
       @Override
       public String createQuery() {
-        return "DELETE FROM `Cart` WHERE `foodId` = ?";
+        return "DELETE FROM `Cart` WHERE `productId` = ?";
       }
 
       @Override
       public void bind(SupportSQLiteStatement stmt, CartItem value) {
-        stmt.bindLong(1, value.getFoodId());
+        if (value.getProductId() == null) {
+          stmt.bindNull(1);
+        } else {
+          stmt.bindString(1, value.getProductId());
+        }
       }
     };
     this.__updateAdapterOfCartItem = new EntityDeletionOrUpdateAdapter<CartItem>(__db) {
       @Override
       public String createQuery() {
-        return "UPDATE OR REPLACE `Cart` SET `foodId` = ?,`foodName` = ?,`foodImage` = ?,`foodPrice` = ?,`foodQuantity` = ?,`userPhone` = ?,`restaurantId` = ?,`foodAddon` = ?,`foodSize` = ?,`foodExtraPrice` = ?,`fbid` = ? WHERE `foodId` = ?";
+        return "UPDATE OR REPLACE `Cart` SET `productId` = ?,`productName` = ?,`productImage` = ?,`productPrice` = ?,`productQuantity` = ?,`userPhone` = ?,`categoryId` = ?,`productAddon` = ?,`productSize` = ?,`productExtraPrice` = ?,`fbid` = ? WHERE `productId` = ?";
       }
 
       @Override
       public void bind(SupportSQLiteStatement stmt, CartItem value) {
-        stmt.bindLong(1, value.getFoodId());
-        if (value.getFoodName() == null) {
+        if (value.getProductId() == null) {
+          stmt.bindNull(1);
+        } else {
+          stmt.bindString(1, value.getProductId());
+        }
+        if (value.getProductName() == null) {
           stmt.bindNull(2);
         } else {
-          stmt.bindString(2, value.getFoodName());
+          stmt.bindString(2, value.getProductName());
         }
-        if (value.getFoodImage() == null) {
+        if (value.getProductImage() == null) {
           stmt.bindNull(3);
         } else {
-          stmt.bindString(3, value.getFoodImage());
+          stmt.bindString(3, value.getProductImage());
         }
-        if (value.getFoodPrice() == null) {
+        if (value.getProductPrice() == null) {
           stmt.bindNull(4);
         } else {
-          stmt.bindDouble(4, value.getFoodPrice());
+          stmt.bindDouble(4, value.getProductPrice());
         }
-        stmt.bindLong(5, value.getFoodQuantity());
+        stmt.bindLong(5, value.getProductQuantity());
         if (value.getUserPhone() == null) {
           stmt.bindNull(6);
         } else {
           stmt.bindString(6, value.getUserPhone());
         }
-        stmt.bindLong(7, value.getRestaurantId());
-        if (value.getFoodAddon() == null) {
+        if (value.getCategoryId() == null) {
+          stmt.bindNull(7);
+        } else {
+          stmt.bindString(7, value.getCategoryId());
+        }
+        if (value.getProductAddon() == null) {
           stmt.bindNull(8);
         } else {
-          stmt.bindString(8, value.getFoodAddon());
+          stmt.bindString(8, value.getProductAddon());
         }
-        if (value.getFoodSize() == null) {
+        if (value.getProductSize() == null) {
           stmt.bindNull(9);
         } else {
-          stmt.bindString(9, value.getFoodSize());
+          stmt.bindString(9, value.getProductSize());
         }
-        if (value.getFoodExtraPrice() == null) {
+        if (value.getProductExtraPrice() == null) {
           stmt.bindNull(10);
         } else {
-          stmt.bindDouble(10, value.getFoodExtraPrice());
+          stmt.bindDouble(10, value.getProductExtraPrice());
         }
         if (value.getFbid() == null) {
           stmt.bindNull(11);
         } else {
           stmt.bindString(11, value.getFbid());
         }
-        stmt.bindLong(12, value.getFoodId());
+        if (value.getProductId() == null) {
+          stmt.bindNull(12);
+        } else {
+          stmt.bindString(12, value.getProductId());
+        }
       }
     };
     this.__preparedStmtOfCleanCart = new SharedSQLiteStatement(__db) {
       @Override
       public String createQuery() {
-        final String _query = "DELETE FROM Cart WHERE fbid=? AND restaurantId=?";
+        final String _query = "DELETE FROM Cart WHERE userPhone=?";
         return _query;
       }
     };
@@ -221,19 +245,17 @@ public final class CartDAO_Impl implements CartDAO {
   }
 
   @Override
-  public Single<Integer> cleanCart(final String fbid, final int restaurantId) {
+  public Single<Integer> cleanCart(final String userPhone) {
     return Single.fromCallable(new Callable<Integer>() {
       @Override
       public Integer call() throws Exception {
         final SupportSQLiteStatement _stmt = __preparedStmtOfCleanCart.acquire();
         int _argIndex = 1;
-        if (fbid == null) {
+        if (userPhone == null) {
           _stmt.bindNull(_argIndex);
         } else {
-          _stmt.bindString(_argIndex, fbid);
+          _stmt.bindString(_argIndex, userPhone);
         }
-        _argIndex = 2;
-        _stmt.bindLong(_argIndex, restaurantId);
         __db.beginTransaction();
         try {
           final java.lang.Integer _result = _stmt.executeUpdateDelete();
@@ -248,75 +270,73 @@ public final class CartDAO_Impl implements CartDAO {
   }
 
   @Override
-  public Flowable<List<CartItem>> getAllCart(final String fbid, final int restaurantId) {
-    final String _sql = "SELECT * FROM Cart WHERE fbid=? AND restaurantId=?";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+  public Flowable<List<CartItem>> getAllCart(final String userPhone) {
+    final String _sql = "SELECT * FROM Cart WHERE userPhone=?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
-    if (fbid == null) {
+    if (userPhone == null) {
       _statement.bindNull(_argIndex);
     } else {
-      _statement.bindString(_argIndex, fbid);
+      _statement.bindString(_argIndex, userPhone);
     }
-    _argIndex = 2;
-    _statement.bindLong(_argIndex, restaurantId);
     return RxRoom.createFlowable(__db, false, new String[]{"Cart"}, new Callable<List<CartItem>>() {
       @Override
       public List<CartItem> call() throws Exception {
         final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
         try {
-          final int _cursorIndexOfFoodId = CursorUtil.getColumnIndexOrThrow(_cursor, "foodId");
-          final int _cursorIndexOfFoodName = CursorUtil.getColumnIndexOrThrow(_cursor, "foodName");
-          final int _cursorIndexOfFoodImage = CursorUtil.getColumnIndexOrThrow(_cursor, "foodImage");
-          final int _cursorIndexOfFoodPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "foodPrice");
-          final int _cursorIndexOfFoodQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "foodQuantity");
+          final int _cursorIndexOfProductId = CursorUtil.getColumnIndexOrThrow(_cursor, "productId");
+          final int _cursorIndexOfProductName = CursorUtil.getColumnIndexOrThrow(_cursor, "productName");
+          final int _cursorIndexOfProductImage = CursorUtil.getColumnIndexOrThrow(_cursor, "productImage");
+          final int _cursorIndexOfProductPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "productPrice");
+          final int _cursorIndexOfProductQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "productQuantity");
           final int _cursorIndexOfUserPhone = CursorUtil.getColumnIndexOrThrow(_cursor, "userPhone");
-          final int _cursorIndexOfRestaurantId = CursorUtil.getColumnIndexOrThrow(_cursor, "restaurantId");
-          final int _cursorIndexOfFoodAddon = CursorUtil.getColumnIndexOrThrow(_cursor, "foodAddon");
-          final int _cursorIndexOfFoodSize = CursorUtil.getColumnIndexOrThrow(_cursor, "foodSize");
-          final int _cursorIndexOfFoodExtraPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "foodExtraPrice");
+          final int _cursorIndexOfCategoryId = CursorUtil.getColumnIndexOrThrow(_cursor, "categoryId");
+          final int _cursorIndexOfProductAddon = CursorUtil.getColumnIndexOrThrow(_cursor, "productAddon");
+          final int _cursorIndexOfProductSize = CursorUtil.getColumnIndexOrThrow(_cursor, "productSize");
+          final int _cursorIndexOfProductExtraPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "productExtraPrice");
           final int _cursorIndexOfFbid = CursorUtil.getColumnIndexOrThrow(_cursor, "fbid");
           final List<CartItem> _result = new ArrayList<CartItem>(_cursor.getCount());
           while(_cursor.moveToNext()) {
             final CartItem _item;
             _item = new CartItem();
-            final int _tmpFoodId;
-            _tmpFoodId = _cursor.getInt(_cursorIndexOfFoodId);
-            _item.setFoodId(_tmpFoodId);
-            final String _tmpFoodName;
-            _tmpFoodName = _cursor.getString(_cursorIndexOfFoodName);
-            _item.setFoodName(_tmpFoodName);
-            final String _tmpFoodImage;
-            _tmpFoodImage = _cursor.getString(_cursorIndexOfFoodImage);
-            _item.setFoodImage(_tmpFoodImage);
-            final Double _tmpFoodPrice;
-            if (_cursor.isNull(_cursorIndexOfFoodPrice)) {
-              _tmpFoodPrice = null;
+            final String _tmpProductId;
+            _tmpProductId = _cursor.getString(_cursorIndexOfProductId);
+            _item.setProductId(_tmpProductId);
+            final String _tmpProductName;
+            _tmpProductName = _cursor.getString(_cursorIndexOfProductName);
+            _item.setProductName(_tmpProductName);
+            final String _tmpProductImage;
+            _tmpProductImage = _cursor.getString(_cursorIndexOfProductImage);
+            _item.setProductImage(_tmpProductImage);
+            final Double _tmpProductPrice;
+            if (_cursor.isNull(_cursorIndexOfProductPrice)) {
+              _tmpProductPrice = null;
             } else {
-              _tmpFoodPrice = _cursor.getDouble(_cursorIndexOfFoodPrice);
+              _tmpProductPrice = _cursor.getDouble(_cursorIndexOfProductPrice);
             }
-            _item.setFoodPrice(_tmpFoodPrice);
-            final int _tmpFoodQuantity;
-            _tmpFoodQuantity = _cursor.getInt(_cursorIndexOfFoodQuantity);
-            _item.setFoodQuantity(_tmpFoodQuantity);
+            _item.setProductPrice(_tmpProductPrice);
+            final int _tmpProductQuantity;
+            _tmpProductQuantity = _cursor.getInt(_cursorIndexOfProductQuantity);
+            _item.setProductQuantity(_tmpProductQuantity);
             final String _tmpUserPhone;
             _tmpUserPhone = _cursor.getString(_cursorIndexOfUserPhone);
             _item.setUserPhone(_tmpUserPhone);
-            final int _tmpRestaurantId;
-            _tmpRestaurantId = _cursor.getInt(_cursorIndexOfRestaurantId);
-            _item.setRestaurantId(_tmpRestaurantId);
-            final String _tmpFoodAddon;
-            _tmpFoodAddon = _cursor.getString(_cursorIndexOfFoodAddon);
-            _item.setFoodAddon(_tmpFoodAddon);
-            final String _tmpFoodSize;
-            _tmpFoodSize = _cursor.getString(_cursorIndexOfFoodSize);
-            _item.setFoodSize(_tmpFoodSize);
-            final Double _tmpFoodExtraPrice;
-            if (_cursor.isNull(_cursorIndexOfFoodExtraPrice)) {
-              _tmpFoodExtraPrice = null;
+            final String _tmpCategoryId;
+            _tmpCategoryId = _cursor.getString(_cursorIndexOfCategoryId);
+            _item.setCategoryId(_tmpCategoryId);
+            final String _tmpProductAddon;
+            _tmpProductAddon = _cursor.getString(_cursorIndexOfProductAddon);
+            _item.setProductAddon(_tmpProductAddon);
+            final String _tmpProductSize;
+            _tmpProductSize = _cursor.getString(_cursorIndexOfProductSize);
+            _item.setProductSize(_tmpProductSize);
+            final Double _tmpProductExtraPrice;
+            if (_cursor.isNull(_cursorIndexOfProductExtraPrice)) {
+              _tmpProductExtraPrice = null;
             } else {
-              _tmpFoodExtraPrice = _cursor.getDouble(_cursorIndexOfFoodExtraPrice);
+              _tmpProductExtraPrice = _cursor.getDouble(_cursorIndexOfProductExtraPrice);
             }
-            _item.setFoodExtraPrice(_tmpFoodExtraPrice);
+            _item.setProductExtraPrice(_tmpProductExtraPrice);
             final String _tmpFbid;
             _tmpFbid = _cursor.getString(_cursorIndexOfFbid);
             _item.setFbid(_tmpFbid);
@@ -336,17 +356,15 @@ public final class CartDAO_Impl implements CartDAO {
   }
 
   @Override
-  public Single<Integer> countItemInCart(final String fbid, final int restaurantId) {
-    final String _sql = "SELECT COUNT(*) FROM Cart WHERE fbid=? AND restaurantId=?";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+  public Single<Integer> countItemInCart(final String userPhone) {
+    final String _sql = "SELECT COUNT(*) FROM Cart WHERE userPhone=?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
-    if (fbid == null) {
+    if (userPhone == null) {
       _statement.bindNull(_argIndex);
     } else {
-      _statement.bindString(_argIndex, fbid);
+      _statement.bindString(_argIndex, userPhone);
     }
-    _argIndex = 2;
-    _statement.bindLong(_argIndex, restaurantId);
     return RxRoom.createSingle(new Callable<Integer>() {
       @Override
       public Integer call() throws Exception {
@@ -381,17 +399,15 @@ public final class CartDAO_Impl implements CartDAO {
   }
 
   @Override
-  public Single<Long> sumPrice(final String fbid, final int restaurantId) {
-    final String _sql = "SELECT SUM(foodPrice*foodQuantity) FROM Cart WHERE fbid=? AND restaurantId=?";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+  public Single<Long> sumPrice(final String userPhone) {
+    final String _sql = "SELECT SUM(productPrice*productQuantity) FROM Cart WHERE userPhone=?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
-    if (fbid == null) {
+    if (userPhone == null) {
       _statement.bindNull(_argIndex);
     } else {
-      _statement.bindString(_argIndex, fbid);
+      _statement.bindString(_argIndex, userPhone);
     }
-    _argIndex = 2;
-    _statement.bindLong(_argIndex, restaurantId);
     return RxRoom.createSingle(new Callable<Long>() {
       @Override
       public Long call() throws Exception {
@@ -426,89 +442,90 @@ public final class CartDAO_Impl implements CartDAO {
   }
 
   @Override
-  public Single<CartItem> getItemInCart(final String foodId, final String fbid,
-      final int restaurantId) {
-    final String _sql = "SELECT * FROM Cart WHERE foodId=? AND fbid=? AND restaurantId=?";
+  public Flowable<CartItem> getItemInCart(final String productId, final String categoryId,
+      final String userPhone) {
+    final String _sql = "SELECT * FROM Cart WHERE  productId=? AND categoryId=? AND userPhone=?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 3);
     int _argIndex = 1;
-    if (foodId == null) {
+    if (productId == null) {
       _statement.bindNull(_argIndex);
     } else {
-      _statement.bindString(_argIndex, foodId);
+      _statement.bindString(_argIndex, productId);
     }
     _argIndex = 2;
-    if (fbid == null) {
+    if (categoryId == null) {
       _statement.bindNull(_argIndex);
     } else {
-      _statement.bindString(_argIndex, fbid);
+      _statement.bindString(_argIndex, categoryId);
     }
     _argIndex = 3;
-    _statement.bindLong(_argIndex, restaurantId);
-    return RxRoom.createSingle(new Callable<CartItem>() {
+    if (userPhone == null) {
+      _statement.bindNull(_argIndex);
+    } else {
+      _statement.bindString(_argIndex, userPhone);
+    }
+    return RxRoom.createFlowable(__db, false, new String[]{"Cart"}, new Callable<CartItem>() {
       @Override
       public CartItem call() throws Exception {
         final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
         try {
-          final int _cursorIndexOfFoodId = CursorUtil.getColumnIndexOrThrow(_cursor, "foodId");
-          final int _cursorIndexOfFoodName = CursorUtil.getColumnIndexOrThrow(_cursor, "foodName");
-          final int _cursorIndexOfFoodImage = CursorUtil.getColumnIndexOrThrow(_cursor, "foodImage");
-          final int _cursorIndexOfFoodPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "foodPrice");
-          final int _cursorIndexOfFoodQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "foodQuantity");
+          final int _cursorIndexOfProductId = CursorUtil.getColumnIndexOrThrow(_cursor, "productId");
+          final int _cursorIndexOfProductName = CursorUtil.getColumnIndexOrThrow(_cursor, "productName");
+          final int _cursorIndexOfProductImage = CursorUtil.getColumnIndexOrThrow(_cursor, "productImage");
+          final int _cursorIndexOfProductPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "productPrice");
+          final int _cursorIndexOfProductQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "productQuantity");
           final int _cursorIndexOfUserPhone = CursorUtil.getColumnIndexOrThrow(_cursor, "userPhone");
-          final int _cursorIndexOfRestaurantId = CursorUtil.getColumnIndexOrThrow(_cursor, "restaurantId");
-          final int _cursorIndexOfFoodAddon = CursorUtil.getColumnIndexOrThrow(_cursor, "foodAddon");
-          final int _cursorIndexOfFoodSize = CursorUtil.getColumnIndexOrThrow(_cursor, "foodSize");
-          final int _cursorIndexOfFoodExtraPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "foodExtraPrice");
+          final int _cursorIndexOfCategoryId = CursorUtil.getColumnIndexOrThrow(_cursor, "categoryId");
+          final int _cursorIndexOfProductAddon = CursorUtil.getColumnIndexOrThrow(_cursor, "productAddon");
+          final int _cursorIndexOfProductSize = CursorUtil.getColumnIndexOrThrow(_cursor, "productSize");
+          final int _cursorIndexOfProductExtraPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "productExtraPrice");
           final int _cursorIndexOfFbid = CursorUtil.getColumnIndexOrThrow(_cursor, "fbid");
           final CartItem _result;
           if(_cursor.moveToFirst()) {
             _result = new CartItem();
-            final int _tmpFoodId;
-            _tmpFoodId = _cursor.getInt(_cursorIndexOfFoodId);
-            _result.setFoodId(_tmpFoodId);
-            final String _tmpFoodName;
-            _tmpFoodName = _cursor.getString(_cursorIndexOfFoodName);
-            _result.setFoodName(_tmpFoodName);
-            final String _tmpFoodImage;
-            _tmpFoodImage = _cursor.getString(_cursorIndexOfFoodImage);
-            _result.setFoodImage(_tmpFoodImage);
-            final Double _tmpFoodPrice;
-            if (_cursor.isNull(_cursorIndexOfFoodPrice)) {
-              _tmpFoodPrice = null;
+            final String _tmpProductId;
+            _tmpProductId = _cursor.getString(_cursorIndexOfProductId);
+            _result.setProductId(_tmpProductId);
+            final String _tmpProductName;
+            _tmpProductName = _cursor.getString(_cursorIndexOfProductName);
+            _result.setProductName(_tmpProductName);
+            final String _tmpProductImage;
+            _tmpProductImage = _cursor.getString(_cursorIndexOfProductImage);
+            _result.setProductImage(_tmpProductImage);
+            final Double _tmpProductPrice;
+            if (_cursor.isNull(_cursorIndexOfProductPrice)) {
+              _tmpProductPrice = null;
             } else {
-              _tmpFoodPrice = _cursor.getDouble(_cursorIndexOfFoodPrice);
+              _tmpProductPrice = _cursor.getDouble(_cursorIndexOfProductPrice);
             }
-            _result.setFoodPrice(_tmpFoodPrice);
-            final int _tmpFoodQuantity;
-            _tmpFoodQuantity = _cursor.getInt(_cursorIndexOfFoodQuantity);
-            _result.setFoodQuantity(_tmpFoodQuantity);
+            _result.setProductPrice(_tmpProductPrice);
+            final int _tmpProductQuantity;
+            _tmpProductQuantity = _cursor.getInt(_cursorIndexOfProductQuantity);
+            _result.setProductQuantity(_tmpProductQuantity);
             final String _tmpUserPhone;
             _tmpUserPhone = _cursor.getString(_cursorIndexOfUserPhone);
             _result.setUserPhone(_tmpUserPhone);
-            final int _tmpRestaurantId;
-            _tmpRestaurantId = _cursor.getInt(_cursorIndexOfRestaurantId);
-            _result.setRestaurantId(_tmpRestaurantId);
-            final String _tmpFoodAddon;
-            _tmpFoodAddon = _cursor.getString(_cursorIndexOfFoodAddon);
-            _result.setFoodAddon(_tmpFoodAddon);
-            final String _tmpFoodSize;
-            _tmpFoodSize = _cursor.getString(_cursorIndexOfFoodSize);
-            _result.setFoodSize(_tmpFoodSize);
-            final Double _tmpFoodExtraPrice;
-            if (_cursor.isNull(_cursorIndexOfFoodExtraPrice)) {
-              _tmpFoodExtraPrice = null;
+            final String _tmpCategoryId;
+            _tmpCategoryId = _cursor.getString(_cursorIndexOfCategoryId);
+            _result.setCategoryId(_tmpCategoryId);
+            final String _tmpProductAddon;
+            _tmpProductAddon = _cursor.getString(_cursorIndexOfProductAddon);
+            _result.setProductAddon(_tmpProductAddon);
+            final String _tmpProductSize;
+            _tmpProductSize = _cursor.getString(_cursorIndexOfProductSize);
+            _result.setProductSize(_tmpProductSize);
+            final Double _tmpProductExtraPrice;
+            if (_cursor.isNull(_cursorIndexOfProductExtraPrice)) {
+              _tmpProductExtraPrice = null;
             } else {
-              _tmpFoodExtraPrice = _cursor.getDouble(_cursorIndexOfFoodExtraPrice);
+              _tmpProductExtraPrice = _cursor.getDouble(_cursorIndexOfProductExtraPrice);
             }
-            _result.setFoodExtraPrice(_tmpFoodExtraPrice);
+            _result.setProductExtraPrice(_tmpProductExtraPrice);
             final String _tmpFbid;
             _tmpFbid = _cursor.getString(_cursorIndexOfFbid);
             _result.setFbid(_tmpFbid);
           } else {
             _result = null;
-          }
-          if(_result == null) {
-            throw new EmptyResultSetException("Query returned empty result set: " + _statement.getSql());
           }
           return _result;
         } finally {

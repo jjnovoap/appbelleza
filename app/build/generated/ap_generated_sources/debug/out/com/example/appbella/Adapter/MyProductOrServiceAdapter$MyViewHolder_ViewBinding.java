@@ -20,8 +20,8 @@ public class MyProductOrServiceAdapter$MyViewHolder_ViewBinding implements Unbin
       MyProductOrServiceAdapter.MyViewHolder target, View source) {
     this.target = target;
 
-    target.txt_restaurant_name = Utils.findRequiredViewAsType(source, R.id.txt_restaurant_name, "field 'txt_restaurant_name'", TextView.class);
-    target.img_restaurant = Utils.findRequiredViewAsType(source, R.id.img_restaurant, "field 'img_restaurant'", ImageView.class);
+    target.txt_productOrServices_name = Utils.findRequiredViewAsType(source, R.id.txt_productOrServices_name, "field 'txt_productOrServices_name'", TextView.class);
+    target.img_productOrServicest = Utils.findRequiredViewAsType(source, R.id.img_productOrServicest, "field 'img_productOrServicest'", ImageView.class);
   }
 
   @Override
@@ -31,7 +31,7 @@ public class MyProductOrServiceAdapter$MyViewHolder_ViewBinding implements Unbin
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 
-    target.txt_restaurant_name = null;
-    target.img_restaurant = null;
+    target.txt_productOrServices_name = null;
+    target.img_productOrServicest = null;
   }
 }

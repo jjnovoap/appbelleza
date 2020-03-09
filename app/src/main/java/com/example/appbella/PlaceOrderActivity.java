@@ -83,8 +83,6 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private IMyRestaurantAPI mIMyRestaurantAPI;
-
     private DatabaseReference setorder;
 
     //private IBraintreeAPI mIBraintreeAPI;
@@ -220,8 +218,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
         if (!isOnlinePayment) {
             String address = chb_default_address.isChecked() ? txt_user_address.getText().toString() : txt_new_address.getText().toString();
 
-            mCompositeDisposable.add(mCartDataSource.getAllCart(Common.currentUser.getFbid(),
-                    Common.currentCategoryProductOrServices.getId())
+            mCompositeDisposable.add(mCartDataSource.getAllCart(Common.currentUser.getUserPhone())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(cartItems -> {
@@ -247,8 +244,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                         setorder.child(auth.getCurrentUser().getUid()).child(OrderId).setValue(order)
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
-                                        mCartDataSource.cleanCart(Common.currentUser.getFbid(),
-                                                Common.currentCategoryProductOrServices.getId())
+                                        mCartDataSource.cleanCart(Common.currentUser.getUserPhone())
                                                 .subscribeOn(Schedulers.io())
                                                 .observeOn(AndroidSchedulers.mainThread())
                                                 .subscribe(new SingleObserver<Integer>() {
@@ -559,7 +555,6 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
     private void init() {
         Log.d(TAG, "init: called!!");
         Log.d(TAG, "init: "+Common.currentCategoryProductOrServices.getPaymentUrl());
-        mIMyRestaurantAPI = RetrofitClient.getInstance(Common.API_KEY).create(IMyRestaurantAPI.class);
         //mIBraintreeAPI = RetrofitBraintreeClient.getInstance(Common.currentRestaurant.getPaymentUrl()).create(IBraintreeAPI.class);
         mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
         mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());

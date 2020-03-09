@@ -54,16 +54,16 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Picasso.get().load(mCartItemList.get(position).getFoodImage()).into(holder.img_food);
-        holder.txt_food_name.setText(mCartItemList.get(position).getFoodName());
-        holder.txt_food_price.setText(String.valueOf(mCartItemList.get(position).getFoodPrice()));
-        holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position).getFoodQuantity()));
+        Picasso.get().load(mCartItemList.get(position).getProductImage()).into(holder.img_food);
+        holder.txt_food_name.setText(mCartItemList.get(position).getProductName());
+        holder.txt_food_price.setText(String.valueOf(mCartItemList.get(position).getProductPrice()));
+        holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position).getProductQuantity()));
 
-        Double finalResult = mCartItemList.get(position).getFoodPrice()*mCartItemList.get(position).getFoodQuantity();
+        Double finalResult = mCartItemList.get(position).getProductPrice()*mCartItemList.get(position).getProductQuantity();
         holder.txt_price_new.setText(String.valueOf(finalResult));
 
         holder.txt_extra_price.setText(new StringBuilder("Extra Price($) : +")
-        .append(mCartItemList.get(position).getFoodExtraPrice()));
+        .append(mCartItemList.get(position).getProductExtraPrice()));
 
         // Event
         holder.setIOnImageViewAdapterClickListener(new IOnImageViewAdapterClickListener() {
@@ -73,14 +73,14 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
                 if (!isDelete) {
                     // If decrease quantity
                     if (isDecrease) {
-                        if (mCartItemList.get(position).getFoodQuantity() > 1) {
-                            mCartItemList.get(position).setFoodQuantity(mCartItemList.get(position).getFoodQuantity()-1);
+                        if (mCartItemList.get(position).getProductQuantity() > 1) {
+                            mCartItemList.get(position).setProductQuantity(mCartItemList.get(position).getProductQuantity()-1);
                         }
                     }
                     // If increase quantity
                     else {
-                        if (mCartItemList.get(position).getFoodQuantity() < 99) {
-                            mCartItemList.get(position).setFoodQuantity(mCartItemList.get(position).getFoodQuantity()+1);
+                        if (mCartItemList.get(position).getProductQuantity() < 99) {
+                            mCartItemList.get(position).setProductQuantity(mCartItemList.get(position).getProductQuantity()+1);
                         }
                     }
 
@@ -96,7 +96,7 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
 
                                 @Override
                                 public void onSuccess(Integer integer) {
-                                    holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position).getFoodQuantity()));
+                                    holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position).getProductQuantity()));
                                     EventBus.getDefault().postSticky(new CalculatePriceEvent());
                                 }
 

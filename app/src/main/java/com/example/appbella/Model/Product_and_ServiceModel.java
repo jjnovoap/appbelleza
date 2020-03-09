@@ -2,7 +2,7 @@ package com.example.appbella.Model;
 
 import java.util.List;
 
-public class FoodModel {
+public class Product_and_ServiceModel {
     private boolean success;
     private String message;
     private List<Product_and_Service> result;

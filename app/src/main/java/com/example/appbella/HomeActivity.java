@@ -56,6 +56,7 @@ public class HomeActivity extends AppCompatActivity
 
     FirebaseFirestore userRef;
     DatabaseReference categoryRef;
+    private MyProductOrServiceAdapter mAdapter;
 
     MapsBottomDialogFragment BottomDialogFragmen;
     private DatabaseReference locationRef;
@@ -167,7 +168,27 @@ public class HomeActivity extends AppCompatActivity
     private void initView() {
         Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
-        LinearLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        // This code will select item view type
+        // If item is last, it will set full width on Grid layout
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (mAdapter != null) {
+                    switch (mAdapter.getItemViewType(position)) {
+                        case Common.DEFAULT_COLUMN_COUNT:
+                            return 1;
+                        case Common.FULL_WIDTH_COLUMN:
+                            return 2;
+                        default:
+                            return -1;
+                    }
+                } else {
+                    return -1;
+                }
+            }
+        });
         recycler_catalogo.setLayoutManager(layoutManager);
         recycler_catalogo.setHasFixedSize(true);
         setAddress();
@@ -312,8 +333,8 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onCategoriesLoadSuccess(List<CategoryProductOrServices> categoryProductOrServicesList) {
         Log.d(TAG, "displayRestaurant: called!!");
-        MyProductOrServiceAdapter adapter = new MyProductOrServiceAdapter(this, categoryProductOrServicesList);
-        recycler_catalogo.setAdapter(adapter);
+        mAdapter = new MyProductOrServiceAdapter(this, categoryProductOrServicesList);
+        recycler_catalogo.setAdapter(mAdapter);
         //recycler_catalogo.setLayoutAnimation(mLayoutAnimationController);
         Log.d(TAG, "displayBanner: called!!");
         Log.d(TAG, "displayBanner: size: "+categoryProductOrServicesList.size());

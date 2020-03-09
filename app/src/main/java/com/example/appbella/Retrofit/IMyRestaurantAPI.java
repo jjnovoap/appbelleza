@@ -4,7 +4,7 @@ import com.example.appbella.Model.AddonModel;
 import com.example.appbella.Model.CreateOrderModel;
 import com.example.appbella.Model.FavoriteModel;
 import com.example.appbella.Model.FavoriteOnlyIdModel;
-import com.example.appbella.Model.FoodModel;
+import com.example.appbella.Model.Product_and_ServiceModel;
 import com.example.appbella.Model.MaxOrderModel;
 import com.example.appbella.Model.MenuModel;
 import com.example.appbella.Model.OrderModel;
@@ -47,18 +47,18 @@ public interface IMyRestaurantAPI {
                                         @Query("restaurantId") int restaurantId);
 
     @GET("food")
-    Observable<FoodModel> getFoodOfMenu(@Query("key") String apiKey,
-                                        @Query("menuId") int menuId);
+    Observable<Product_and_ServiceModel> getFoodOfMenu(@Query("key") String apiKey,
+                                                       @Query("menuId") int menuId);
 
     @GET("foodById")
-    Observable<FoodModel> getFoodById(@Query("key") String apiKey,
-                                      @Query("foodId") int foodId);
+    Observable<Product_and_ServiceModel> getFoodById(@Query("key") String apiKey,
+                                                     @Query("foodId") int foodId);
 
 
     @GET("searchFood")
-    Observable<FoodModel> searchFood(@Query("key") String apiKey,
-                                     @Query("foodName") String foodName,
-                                     @Query("menuId") int menuId);
+    Observable<Product_and_ServiceModel> searchFood(@Query("key") String apiKey,
+                                                    @Query("foodName") String foodName,
+                                                    @Query("menuId") int menuId);
 
     @GET("size")
     Observable<SizeModel> getSizeOfFood(@Query("key") String apiKey,

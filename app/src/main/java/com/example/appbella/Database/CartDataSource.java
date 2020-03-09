@@ -8,13 +8,13 @@ import io.reactivex.Single;
 
 public interface CartDataSource {
 
-    Flowable<List<CartItem>> getAllCart(String fbid, int restaurantId);
+    Flowable<List<CartItem>> getAllCart(String userPhone);
 
-    Single<Integer> countItemInCart(String fbid, int restaurantId);
+    Single<Integer> countItemInCart(String userPhone);
 
-    Single<Long> sumPrice(String fbid, int restaurantId);
+    Single<Long> sumPrice(String userPhone);
 
-    Single<CartItem> getItemInCart(String foodId, String fbid, int restaurantId);
+    Flowable<CartItem> getItemInCart(String productId,String categoryId,String userPhone);
 
     Completable insertOrReplaceAll(CartItem... cartItems);
 
@@ -22,5 +22,5 @@ public interface CartDataSource {
 
     Single<Integer> deleteCart(CartItem cart);
 
-    Single<Integer> cleanCart(String fbid, int restaurantId);
+    Single<Integer> cleanCart(String userPhone);
 }

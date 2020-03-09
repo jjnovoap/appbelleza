@@ -85,8 +85,7 @@ public class CartListActivity extends AppCompatActivity {
 
     private void getAllItemInCart() {
         Log.d(TAG, "getAllItemInCart: called!!");
-        mCompositeDisposable.add(mCartDataSource.getAllCart(Common.currentUser.getFbid(),
-                Common.currentCategoryProductOrServices.getId())
+        mCompositeDisposable.add(mCartDataSource.getAllCart(Common.currentUser.getUserPhone())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cartItems -> {
@@ -117,7 +116,7 @@ public class CartListActivity extends AppCompatActivity {
 
     private void calculateCartTotalPrice() {
         Log.d(TAG, "calculateCartTotalPrice: called!!");
-        mCartDataSource.sumPrice(Common.currentUser.getFbid(), Common.currentCategoryProductOrServices.getId())
+        mCartDataSource.sumPrice(Common.currentUser.getUserPhone())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Long>() {

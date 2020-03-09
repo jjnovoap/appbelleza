@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -74,6 +75,7 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
     IAddonLoadListener iAddonLoadListener;
 
     private Product_and_Service selectedFood;
+    DocumentReference categoria;
     private Double originalPrice;
 
     private double addOnPrice = 0.0;
@@ -97,15 +99,17 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
 
         fab_add_to_cart.setOnClickListener(v -> {
             CartItem cartItem = new CartItem();
-            cartItem.setFoodId(selectedFood.getId());
-            cartItem.setFoodName(selectedFood.getName());
-            cartItem.setFoodPrice(selectedFood.getPrice());
-            cartItem.setFoodImage(selectedFood.getImage());
-            cartItem.setFoodQuantity(1);
+            cartItem.setProductId(categoria.getId());
+            cartItem.setCategoryId(categoria.getId());
+            //cartItem.setCategoryId(selectedFood.getCategoryId());
+            cartItem.setProductName(selectedFood.getName());
+            cartItem.setProductPrice(selectedFood.getPrice());
+            cartItem.setProductImage(selectedFood.getImage());
+            cartItem.setProductQuantity(1);
             cartItem.setUserPhone(Common.currentUser.getUserPhone());
-            cartItem.setRestaurantId(Common.currentCategoryProductOrServices.getId());
-            cartItem.setFoodAddon(new Gson().toJson(Common.addonList));
-            cartItem.setFoodExtraPrice(extraPrice);
+
+            cartItem.setProductAddon(new Gson().toJson(Common.addonList));
+            cartItem.setProductExtraPrice(extraPrice);
             cartItem.setFbid(Common.currentUser.getFbid());
 
             mCompositeDisposable.add(mCartDataSource.insertOrReplaceAll(cartItem)

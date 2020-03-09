@@ -27,12 +27,12 @@ public final class CartDatabase_Impl extends CartDatabase {
 
   @Override
   protected SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration configuration) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(configuration, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(configuration, new RoomOpenHelper.Delegate(4) {
       @Override
       public void createAllTables(SupportSQLiteDatabase _db) {
-        _db.execSQL("CREATE TABLE IF NOT EXISTS `Cart` (`foodId` INTEGER NOT NULL, `foodName` TEXT, `foodImage` TEXT, `foodPrice` REAL, `foodQuantity` INTEGER NOT NULL, `userPhone` TEXT, `restaurantId` INTEGER NOT NULL, `foodAddon` TEXT, `foodSize` TEXT, `foodExtraPrice` REAL, `fbid` TEXT, PRIMARY KEY(`foodId`))");
+        _db.execSQL("CREATE TABLE IF NOT EXISTS `Cart` (`productId` TEXT NOT NULL, `productName` TEXT, `productImage` TEXT, `productPrice` REAL, `productQuantity` INTEGER NOT NULL, `userPhone` TEXT, `categoryId` TEXT, `productAddon` TEXT, `productSize` TEXT, `productExtraPrice` REAL, `fbid` TEXT, PRIMARY KEY(`productId`))");
         _db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b08222e880d3440593ee4b0862d6ab4c')");
+        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd5691c3951e0ac006ea2edbb4b8110be')");
       }
 
       @Override
@@ -77,16 +77,16 @@ public final class CartDatabase_Impl extends CartDatabase {
       @Override
       protected RoomOpenHelper.ValidationResult onValidateSchema(SupportSQLiteDatabase _db) {
         final HashMap<String, TableInfo.Column> _columnsCart = new HashMap<String, TableInfo.Column>(11);
-        _columnsCart.put("foodId", new TableInfo.Column("foodId", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("foodName", new TableInfo.Column("foodName", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("foodImage", new TableInfo.Column("foodImage", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("foodPrice", new TableInfo.Column("foodPrice", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("foodQuantity", new TableInfo.Column("foodQuantity", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productId", new TableInfo.Column("productId", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productName", new TableInfo.Column("productName", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productImage", new TableInfo.Column("productImage", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productPrice", new TableInfo.Column("productPrice", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productQuantity", new TableInfo.Column("productQuantity", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("userPhone", new TableInfo.Column("userPhone", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("restaurantId", new TableInfo.Column("restaurantId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("foodAddon", new TableInfo.Column("foodAddon", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("foodSize", new TableInfo.Column("foodSize", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("foodExtraPrice", new TableInfo.Column("foodExtraPrice", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("categoryId", new TableInfo.Column("categoryId", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productAddon", new TableInfo.Column("productAddon", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productSize", new TableInfo.Column("productSize", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productExtraPrice", new TableInfo.Column("productExtraPrice", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("fbid", new TableInfo.Column("fbid", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysCart = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesCart = new HashSet<TableInfo.Index>(0);
@@ -99,7 +99,7 @@ public final class CartDatabase_Impl extends CartDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "b08222e880d3440593ee4b0862d6ab4c", "9123d856995aa24109411020f5f56be6");
+    }, "d5691c3951e0ac006ea2edbb4b8110be", "4783e93a30f4d9deaf5a8af4ff281d95");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)
         .name(configuration.name)
         .callback(_openCallback)

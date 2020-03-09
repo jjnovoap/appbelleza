@@ -61,7 +61,6 @@ public class MenuActivity extends AppCompatActivity implements ISpecificCategory
     @BindView(R.id.badge)
     NotificationBadge badge;
 
-    private IMyRestaurantAPI mIMyRestaurantAPI;
     ISpecificCategoryLoadListener iSpecificCategoryLoadListener;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     DatabaseReference categoriesServicesRef;
@@ -153,8 +152,7 @@ public class MenuActivity extends AppCompatActivity implements ISpecificCategory
 
     private void countCartByRestaurant() {
         Log.d(TAG, "countCartByRestaurant: called!!");
-        mCartDataSource.countItemInCart(Common.currentUser.getFbid(),
-                Common.currentCategoryProductOrServices.getId())
+        mCartDataSource.countItemInCart(Common.currentUser.getUserPhone())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Integer>() {
@@ -225,9 +223,6 @@ public class MenuActivity extends AppCompatActivity implements ISpecificCategory
     private void init() {
         Log.d(TAG, "init: called!!");
         mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
-        mIMyRestaurantAPI = RetrofitClient.getInstance(Common.API_RESTAURANT_ENDPOINT)
-                .create(IMyRestaurantAPI.class);
-
         mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());
     }
 
@@ -263,9 +258,9 @@ public class MenuActivity extends AppCompatActivity implements ISpecificCategory
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<Category> categoryList = new ArrayList<>();
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        int id = event.getProductOrServices().getId();
-                        int key = ds.child("id").getValue(Integer.class);
-                        if (id == key){
+                        String id = String.valueOf(event.getProductOrServices().getId());
+                        String key = ds.child("id").getValue(String.class);
+                        if (id.equals(key)){
                             Category category = ds.getValue(Category.class);
                             categoryList.add(category);
                         }
