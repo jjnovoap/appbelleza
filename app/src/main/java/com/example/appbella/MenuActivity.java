@@ -22,8 +22,6 @@ import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Interface.ISpecificCategoryLoadListener;
 import com.example.appbella.Model.Category;
 import com.example.appbella.Model.EventBust.MenuItemEvent;
-import com.example.appbella.Retrofit.IMyRestaurantAPI;
-import com.example.appbella.Retrofit.RetrofitClient;
 import com.example.appbella.Utils.SpaceItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;

@@ -101,7 +101,6 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
         uiSettings.setTiltGesturesEnabled(true);
         uiSettings.setZoomGesturesEnabled(true);
         uiSettings.setAllGesturesEnabled(true);
-
     }
 
     private void goToMyLocation()
@@ -166,7 +165,6 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
     }
 
     @Override
@@ -216,7 +214,7 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
         FirebaseDatabase.getInstance().getReference("Current Location").child(auth.getCurrentUser().getUid())
                 .setValue(helper).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
-                Toast.makeText(getContext(), "Ubicación Agregada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Ubicación Agregada Exitosamente", Toast.LENGTH_SHORT).show();
                 dismiss();
             }
             else{

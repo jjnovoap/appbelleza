@@ -6,6 +6,7 @@ public class Favorite {
     private String restaurantName;
     private String foodName;
     private String foodImage;
+    private String status;
     private int foodId;
     private int restaurantId;
     private Double price;
@@ -13,11 +14,12 @@ public class Favorite {
     public Favorite() {
     }
 
-    public Favorite(String fbid, String restaurantName, String foodName, String foodImage, int foodId, int restaurantId, Double price) {
+    public Favorite(String fbid, String restaurantName, String foodName, String foodImage, String status, int foodId, int restaurantId, Double price) {
         this.fbid = fbid;
         this.restaurantName = restaurantName;
         this.foodName = foodName;
         this.foodImage = foodImage;
+        this.status = status;
         this.foodId = foodId;
         this.restaurantId = restaurantId;
         this.price = price;
@@ -78,4 +80,14 @@ public class Favorite {
     public void setPrice(Double price) {
         this.price = price;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
+
+

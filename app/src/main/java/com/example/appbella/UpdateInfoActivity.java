@@ -15,7 +15,6 @@ import com.example.appbella.Common.Common;
 import com.example.appbella.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -86,8 +85,8 @@ public class UpdateInfoActivity extends AppCompatActivity {
             mDialog.show();
 
             FirebaseAuth auth = FirebaseAuth.getInstance();
-            DocumentReference currentUser = userRef.document(auth.getCurrentUser().getUid());
-            currentUser.get()
+            userRef.document(auth.getCurrentUser().getUid())
+                    .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             DocumentSnapshot userSnapShot = task.getResult();

@@ -25,17 +25,20 @@ import com.example.appbella.Model.Favorite;
 import com.example.appbella.Model.FavoriteOnlyId;
 import com.example.appbella.Model.Product_and_Service;
 import com.example.appbella.R;
-import com.example.appbella.Retrofit.IMyRestaurantAPI;
-import com.example.appbella.Retrofit.RetrofitClient;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,8 +53,8 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
     private List<Product_and_Service> mProductAndServiceList;
     private CompositeDisposable mCompositeDisposable;
     private CartDataSource mCartDataSource;
-    private DatabaseReference favorite;
-    DocumentReference categoria;
+    private DatabaseReference favorite, productAndService;
+
 
     private final String TAG = "[Favorite] ";
 
@@ -71,6 +74,8 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.layout_product_and_service, parent, false);
+        favorite = FirebaseDatabase.getInstance().getReference("Favorite");
+
         return new MyViewHolder(view);
     }
 
@@ -79,66 +84,67 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         Picasso.get().load(mProductAndServiceList.get(position).getImage())
                 .placeholder(R.drawable.app_icon).into(holder.img_food);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        //Solucionar
+        productAndService = FirebaseDatabase.getInstance().getReference("Services").child(mProductAndServiceList.get(position).getName());
+
         holder.txt_product_and_service_name.setText(mProductAndServiceList.get(position).getName());
         holder.txt_product_and_service_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
                 .append(mProductAndServiceList.get(position).getPrice()));
 
-        // Check Favorite
-        if (Common.currentFavOfRestaurant != null && Common.currentFavOfRestaurant.size() > 0) {
-            if (Common.checkFavorite(Integer.parseInt(mProductAndServiceList.get(position).getId()))) {
-                holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
-                holder.img_fav.setTag(true);
-            }
-            else {
-                holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
-                holder.img_fav.setTag(false);
-            }
-        }
-        else {
-            // Default, all item is no favorite
-            holder.img_fav.setTag(false);
+        if (mProductAndServiceList.get(position).getStatus().equals("1")) {
+            holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
+        } else {
+            holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
         }
 
         // Event
         holder.img_fav.setOnClickListener(v -> {
-            ImageView fav = (ImageView) v;
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            if ((Boolean) fav.getTag()) {
+            if (mProductAndServiceList.get(position).getStatus().equals("1")) {
                 // If tag = true -> Favorite item clicked
-                favorite.child(auth.getCurrentUser().getUid()).child(String.valueOf(mProductAndServiceList.get(position).getName())).removeValue().addOnCompleteListener(task -> {
+                favorite.child(auth.getCurrentUser().getUid()).child(mProductAndServiceList.get(position).getName()).removeValue().addOnCompleteListener(task -> {
                     Log.d(TAG, "Successfully deleted!");
-                    fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
-                    fav.setTag(false);
+                    holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
+                    holder.img_fav.setTag(false);
+                    Map<String, Object> status = new HashMap<>();
+                    status.put("status", "0");
+                    productAndService.updateChildren(status);
                     if (Common.currentFavOfRestaurant != null) {
                         Common.removeFavorite(Integer.parseInt(mProductAndServiceList.get(position).getId()));
                     }
                 }).addOnFailureListener(e ->
-                                Log.w(TAG, "Error deleting favorite", e));
+                        Log.w(TAG, "Error deleting favorite", e));
             } else {
                 Favorite favoriteServices = new Favorite(auth.getCurrentUser().getUid(),
                         Common.currentCategoryProductOrServices.getName(),
                         mProductAndServiceList.get(position).getName(),
                         mProductAndServiceList.get(position).getImage(),
+                        "0",
                         Integer.parseInt(mProductAndServiceList.get(position).getId()),
                         Common.currentCategoryProductOrServices.getId(),
                         mProductAndServiceList.get(position).getPrice());
 
-                favorite.child(auth.getCurrentUser().getUid()).child(String.valueOf(mProductAndServiceList.get(position).getName())).setValue(favoriteServices)
+                favorite.child(auth.getCurrentUser().getUid()).child(mProductAndServiceList.get(position).getName()).setValue(favoriteServices)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
-                                fav.setTag(true);
-                                if (Common.currentFavOfRestaurant != null) {
+                                holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
+                                holder.img_fav.setTag(true);
+                                Map<String, Object> status = new HashMap<>();
+                                status.put("status", "1");
+                                productAndService.updateChildren(status);
+                                /*if (Common.currentFavOfRestaurant != null) {
                                     Common.currentFavOfRestaurant.add(new FavoriteOnlyId(Integer.parseInt(mProductAndServiceList.get(position).getId())));
-                                }
+                                }*/
                                 Common.currentFavorite = favoriteServices;
                                 Toast.makeText(mContext, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
                             }
                         }).addOnFailureListener(e -> {
                     Toast.makeText(mContext, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-
             }
+
+
         });
 
         holder.setIFoodDetailOrCartClickListener((view, i, isDetail) -> {
@@ -205,8 +211,8 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
             mUnbinder = ButterKnife.bind(this, itemView);
+
             favorite = FirebaseDatabase.getInstance().getReference().child("Favorites");
             img_detail.setOnClickListener(this);
             img_add_cart.setOnClickListener(this);
@@ -216,8 +222,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         public void onClick(View v) {
             if (v.getId() == R.id.img_detail) {
                 mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true);
-            }
-            else if (v.getId() == R.id.img_cart) {
+            } else if (v.getId() == R.id.img_cart) {
                 mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false);
             }
         }

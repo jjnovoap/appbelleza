@@ -24,8 +24,6 @@ import com.example.appbella.Interface.IServicesOrProductLoadListener;
 import com.example.appbella.Model.Category;
 import com.example.appbella.Model.EventBust.FoodListEvent;
 import com.example.appbella.Model.Product_and_Service;
-import com.example.appbella.Retrofit.IMyRestaurantAPI;
-import com.example.appbella.Retrofit.RetrofitClient;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -228,7 +226,7 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<Product_and_Service> serviceList = new ArrayList<>();
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        String name = ds.child("categoryId").getValue().toString();
+                        String name = ds.child("categoryId").getValue(String.class);
                         if (event.getCategory().getCategoryId().equals(name)){
                             Product_and_Service service = ds.getValue(Product_and_Service.class);
                             serviceList.add(service);

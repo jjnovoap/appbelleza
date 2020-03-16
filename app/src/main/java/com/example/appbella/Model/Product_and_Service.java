@@ -4,9 +4,11 @@ public class Product_and_Service {
 
     private String id;
     private String categoryId;
+    private String key;
     private String name;
     private String description;
     private String image;
+    private String status;
     private Double price;
     private boolean isAddon;
     private int discount;
@@ -73,5 +75,21 @@ public class Product_and_Service {
 
     public void setDiscount(int discount) {
         this.discount = discount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

@@ -54,6 +54,17 @@ public class Common {
         return RetrofitClient.getInstance("https://fcm.googleapis.com/").create(IFCMService.class);
     }
 
+    public static String convertFavoriteStatus (String status){
+        switch (status) {
+            case "0":
+                return "No favorito";
+            case "1":
+                return "Favorito";
+            default:
+                return "Solicitud cancelada";
+        }
+    }
+
     public static boolean checkFavorite(int id) {
         boolean result = false;
         for (FavoriteOnlyId item : currentFavOfRestaurant) {

@@ -1,5 +1,6 @@
 package com.example.appbella;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -13,21 +14,30 @@ import android.widget.Toast;
 
 import com.example.appbella.Adapter.MyFavoriteAdapter;
 import com.example.appbella.Common.Common;
-import com.example.appbella.Retrofit.IMyRestaurantAPI;
-import com.example.appbella.Retrofit.RetrofitClient;
+import com.example.appbella.Interface.IFavoriteLoadListener;
+import com.example.appbella.Model.Favorite;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dmax.dialog.SpotsDialog;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
-public class FavoriteActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity implements IFavoriteLoadListener {
 
     private static final String TAG = FavoriteActivity.class.getSimpleName();
 
-    private IMyRestaurantAPI mIMyRestaurantAPI;
+    private DatabaseReference FavoriteRef;
+    private IFavoriteLoadListener iFavoriteLoadListener;
+    private MyFavoriteAdapter adapter;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private android.app.AlertDialog mDialog;
 
@@ -53,6 +63,9 @@ public class FavoriteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favorite);
         Log.d(TAG, "onCreate: started!!");
 
+        FavoriteRef = FirebaseDatabase.getInstance().getReference("Favorites");
+        iFavoriteLoadListener = this;
+
         init();
         initView();
         loadFavoriteItems();
@@ -62,7 +75,31 @@ public class FavoriteActivity extends AppCompatActivity {
         Log.d(TAG, "loadFavoriteItems: called!!");
         mDialog.show();
 
-        mCompositeDisposable.add(mIMyRestaurantAPI.getFavoriteByUser(Common.API_KEY, Common.currentUser.getFbid())
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        FavoriteRef.child(auth.getCurrentUser().getUid()).getRef().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                List<Favorite> favoriteList = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Favorite favorite = ds.getValue(Favorite.class);
+                    favoriteList.add(favorite);
+                    //If user already available in our system
+                    Common.currentFavorite = ds.getValue(Favorite.class);
+                    mDialog.dismiss();
+                }
+                iFavoriteLoadListener.onFavoriteLoadSuccess(favoriteList);
+                mDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                iFavoriteLoadListener.onFavoriteLoadFailed(databaseError.getMessage());
+                mDialog.dismiss();
+            }
+        });
+        /*mCompositeDisposable.add(mIMyRestaurantAPI.getFavoriteByUser(Common.API_KEY, Common.currentUser.getFbid())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(favoriteModel -> {
@@ -79,7 +116,7 @@ public class FavoriteActivity extends AppCompatActivity {
                 }, throwable -> {
                     mDialog.dismiss();
                     Toast.makeText(this, "[GET FAV]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }));
+                }));*/
     }
 
     @Override
@@ -112,7 +149,18 @@ public class FavoriteActivity extends AppCompatActivity {
     private void init() {
         Log.d(TAG, "init: called!!");
         mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
-        mIMyRestaurantAPI = RetrofitClient.getInstance(Common.API_RESTAURANT_ENDPOINT)
-                .create(IMyRestaurantAPI.class);
+    }
+
+    @Override
+    public void onFavoriteLoadSuccess(List<Favorite> favoriteList) {
+        adapter = new MyFavoriteAdapter(this,favoriteList);
+        recycler_fav.setAdapter(adapter);
+        recycler_fav.setHasFixedSize(true);
+        recycler_fav.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public void onFavoriteLoadFailed(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
