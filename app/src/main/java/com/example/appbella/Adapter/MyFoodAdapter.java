@@ -22,20 +22,14 @@ import com.example.appbella.ProductAndServiceDetailActivity;
 import com.example.appbella.Interface.IFoodDetailOrCartClickListener;
 import com.example.appbella.Model.EventBust.FoodDetailEvent;
 import com.example.appbella.Model.Favorite;
-import com.example.appbella.Model.FavoriteOnlyId;
 import com.example.appbella.Model.Product_and_Service;
 import com.example.appbella.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +48,6 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
     private CompositeDisposable mCompositeDisposable;
     private CartDataSource mCartDataSource;
     private DatabaseReference favorite, productAndService;
-
 
     private final String TAG = "[Favorite] ";
 
@@ -75,7 +68,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.layout_product_and_service, parent, false);
         favorite = FirebaseDatabase.getInstance().getReference("Favorite");
-
+        productAndService = FirebaseDatabase.getInstance().getReference("Services");
         return new MyViewHolder(view);
     }
 
@@ -85,9 +78,6 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                 .placeholder(R.drawable.app_icon).into(holder.img_food);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-
-        //Solucionar
-        productAndService = FirebaseDatabase.getInstance().getReference("Services").child(mProductAndServiceList.get(position).getName());
 
         holder.txt_product_and_service_name.setText(mProductAndServiceList.get(position).getName());
         holder.txt_product_and_service_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
@@ -102,19 +92,14 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         // Event
         holder.img_fav.setOnClickListener(v -> {
             if (mProductAndServiceList.get(position).getStatus().equals("1")) {
-                // If tag = true -> Favorite item clicked
                 favorite.child(auth.getCurrentUser().getUid()).child(mProductAndServiceList.get(position).getName()).removeValue().addOnCompleteListener(task -> {
-                    Log.d(TAG, "Successfully deleted!");
                     holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
                     holder.img_fav.setTag(false);
                     Map<String, Object> status = new HashMap<>();
                     status.put("status", "0");
-                    productAndService.updateChildren(status);
-                    if (Common.currentFavOfRestaurant != null) {
-                        Common.removeFavorite(Integer.parseInt(mProductAndServiceList.get(position).getId()));
-                    }
+                    productAndService.child(mProductAndServiceList.get(position).getKey()).updateChildren(status);
                 }).addOnFailureListener(e ->
-                        Log.w(TAG, "Error deleting favorite", e));
+                        Toast.makeText(mContext, "Error al eliminar de favoritos", Toast.LENGTH_SHORT).show());
             } else {
                 Favorite favoriteServices = new Favorite(auth.getCurrentUser().getUid(),
                         Common.currentCategoryProductOrServices.getName(),
@@ -132,10 +117,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                                 holder.img_fav.setTag(true);
                                 Map<String, Object> status = new HashMap<>();
                                 status.put("status", "1");
-                                productAndService.updateChildren(status);
-                                /*if (Common.currentFavOfRestaurant != null) {
-                                    Common.currentFavOfRestaurant.add(new FavoriteOnlyId(Integer.parseInt(mProductAndServiceList.get(position).getId())));
-                                }*/
+                                productAndService.child(mProductAndServiceList.get(position).getKey()).updateChildren(status);
                                 Common.currentFavorite = favoriteServices;
                                 Toast.makeText(mContext, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
                             }
@@ -172,7 +154,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
-                            Toast.makeText(mContext, "Added to Cart", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "Añadido al carro de compras", Toast.LENGTH_SHORT).show();
                         }, throwable -> {
                             Toast.makeText(mContext, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }));
