@@ -32,7 +32,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -75,7 +74,6 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
     IAddonLoadListener iAddonLoadListener;
 
     private Product_and_Service selectedFood;
-    DocumentReference categoria;
     private Double originalPrice;
 
     private double addOnPrice = 0.0;
@@ -99,15 +97,13 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
 
         fab_add_to_cart.setOnClickListener(v -> {
             CartItem cartItem = new CartItem();
-            cartItem.setProductId(categoria.getId());
-            cartItem.setCategoryId(categoria.getId());
-            //cartItem.setCategoryId(selectedFood.getCategoryId());
+            cartItem.setProductId(selectedFood.getName());
+            cartItem.setCategoryId(selectedFood.getCategoryId());
             cartItem.setProductName(selectedFood.getName());
-            cartItem.setProductPrice(selectedFood.getPrice());
+            cartItem.setProductPrice((selectedFood.getPrice()+extraPrice));
             cartItem.setProductImage(selectedFood.getImage());
             cartItem.setProductQuantity(1);
             cartItem.setUserPhone(Common.currentUser.getUserPhone());
-
             cartItem.setProductAddon(new Gson().toJson(Common.addonList));
             cartItem.setProductExtraPrice(extraPrice);
             cartItem.setFbid(Common.currentUser.getFbid());

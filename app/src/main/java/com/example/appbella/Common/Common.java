@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.appbella.Model.Addon;
 import com.example.appbella.Model.Favorite;
-import com.example.appbella.Model.FavoriteOnlyId;
 import com.example.appbella.Model.LocationHelper;
 import com.example.appbella.Model.Product_and_Service;
 import com.example.appbella.Model.CategoryProductOrServices;
@@ -24,7 +23,6 @@ import com.example.appbella.Retrofit.IFCMService;
 import com.example.appbella.Retrofit.RetrofitClient;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Common {
@@ -44,7 +42,6 @@ public class Common {
     public static Addon currentAddon;
     public static CategoryProductOrServices currentCategoryProductOrServices;
     public static Set<Addon> addonList = new HashSet<>();
-    public static List<FavoriteOnlyId> currentFavOfRestaurant;
     public static Favorite currentFavorite;
     public static Product_and_Service currentFood;
     public static String user;
@@ -52,35 +49,6 @@ public class Common {
 
     public static IFCMService getFCMService() {
         return RetrofitClient.getInstance("https://fcm.googleapis.com/").create(IFCMService.class);
-    }
-
-    public static String convertFavoriteStatus (String status){
-        switch (status) {
-            case "0":
-                return "No favorito";
-            case "1":
-                return "Favorito";
-            default:
-                return "Solicitud cancelada";
-        }
-    }
-
-    public static boolean checkFavorite(int id) {
-        boolean result = false;
-        for (FavoriteOnlyId item : currentFavOfRestaurant) {
-            if (item.getFoodId() == id) {
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    public static void removeFavorite(int id) {
-        for (FavoriteOnlyId item : currentFavOfRestaurant) {
-            if (item.getFoodId() == id) {
-                currentFavOfRestaurant.remove(item);
-            }
-        }
     }
 
     public static String convertStatusToString(int orderStatus) {

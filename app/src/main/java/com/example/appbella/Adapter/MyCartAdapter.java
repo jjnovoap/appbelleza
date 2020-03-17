@@ -59,76 +59,75 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
         holder.txt_food_price.setText(String.valueOf(mCartItemList.get(position).getProductPrice()));
         holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position).getProductQuantity()));
 
-        Double finalResult = mCartItemList.get(position).getProductPrice()*mCartItemList.get(position).getProductQuantity();
+        Double finalResult = ((mCartItemList.get(position).getProductPrice()*mCartItemList.get(position).getProductQuantity()));
+        String ItemsNumber = String.valueOf(mCartItemList.get(position).getProductExtraPrice()/1000);
         holder.txt_price_new.setText(String.valueOf(finalResult));
-
-        holder.txt_extra_price.setText(new StringBuilder("Extra Price($) : +")
+        holder.txt_items_add.setText(new StringBuilder("Items Añadidos: +")
+                .append(ItemsNumber));
+        holder.txt_extra_price.setText(new StringBuilder("Precio Extra($) : +")
         .append(mCartItemList.get(position).getProductExtraPrice()));
 
         // Event
-        holder.setIOnImageViewAdapterClickListener(new IOnImageViewAdapterClickListener() {
-            @Override
-            public void onCalculatePriceListener(View view, int position, boolean isDecrease, boolean isDelete) {
-                // If not button delete food from Cart click
-                if (!isDelete) {
-                    // If decrease quantity
-                    if (isDecrease) {
-                        if (mCartItemList.get(position).getProductQuantity() > 1) {
-                            mCartItemList.get(position).setProductQuantity(mCartItemList.get(position).getProductQuantity()-1);
-                        }
+        holder.setIOnImageViewAdapterClickListener((view, position1, isDecrease, isDelete) -> {
+            // If not button delete food from Cart click
+            if (!isDelete) {
+                // If decrease quantity
+                if (isDecrease) {
+                    if (mCartItemList.get(position1).getProductQuantity() > 1) {
+                        mCartItemList.get(position1).setProductQuantity(mCartItemList.get(position1).getProductQuantity()-1);
                     }
-                    // If increase quantity
-                    else {
-                        if (mCartItemList.get(position).getProductQuantity() < 99) {
-                            mCartItemList.get(position).setProductQuantity(mCartItemList.get(position).getProductQuantity()+1);
-                        }
-                    }
-
-                    // Update Cart
-                    mCartDataSource.updateCart(mCartItemList.get(position))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new SingleObserver<Integer>() {
-                                @Override
-                                public void onSubscribe(Disposable d) {
-
-                                }
-
-                                @Override
-                                public void onSuccess(Integer integer) {
-                                    holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position).getProductQuantity()));
-                                    EventBus.getDefault().postSticky(new CalculatePriceEvent());
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    Toast.makeText(mContext, "[UPDATE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
                 }
-                // Delete item
+                // If increase quantity
                 else {
-                    mCartDataSource.deleteCart(mCartItemList.get(position))
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new SingleObserver<Integer>() {
-                                @Override
-                                public void onSubscribe(Disposable d) {
-
-                                }
-
-                                @Override
-                                public void onSuccess(Integer integer) {
-                                    notifyItemRemoved(position);
-                                    EventBus.getDefault().postSticky(new CalculatePriceEvent());
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    Toast.makeText(mContext, "[DELETE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                    if (mCartItemList.get(position1).getProductQuantity() < 99) {
+                        mCartItemList.get(position1).setProductQuantity(mCartItemList.get(position1).getProductQuantity()+1);
+                    }
                 }
+
+                // Update Cart
+                mCartDataSource.updateCart(mCartItemList.get(position1))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new SingleObserver<Integer>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Integer integer) {
+                                holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position1).getProductQuantity()));
+                                EventBus.getDefault().postSticky(new CalculatePriceEvent());
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Toast.makeText(mContext, "[UPDATE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+            // Delete item
+            else {
+                mCartDataSource.deleteCart(mCartItemList.get(position1))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new SingleObserver<Integer>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(Integer integer) {
+                                notifyItemRemoved(position1);
+                                EventBus.getDefault().postSticky(new CalculatePriceEvent());
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Toast.makeText(mContext, "[DELETE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
     }
@@ -150,6 +149,8 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
         TextView txt_quantity;
         @BindView(R.id.txt_extra_price)
         TextView txt_extra_price;
+        @BindView(R.id.txt_items_add)
+        TextView txt_items_add;
 
         @BindView(R.id.img_food)
         ImageView img_food;

@@ -24,6 +24,7 @@ public class MyCartAdapter$MyViewHolder_ViewBinding implements Unbinder {
     target.txt_food_price = Utils.findRequiredViewAsType(source, R.id.txt_food_price, "field 'txt_food_price'", TextView.class);
     target.txt_quantity = Utils.findRequiredViewAsType(source, R.id.txt_quantity, "field 'txt_quantity'", TextView.class);
     target.txt_extra_price = Utils.findRequiredViewAsType(source, R.id.txt_extra_price, "field 'txt_extra_price'", TextView.class);
+    target.txt_items_add = Utils.findRequiredViewAsType(source, R.id.txt_items_add, "field 'txt_items_add'", TextView.class);
     target.img_food = Utils.findRequiredViewAsType(source, R.id.img_food, "field 'img_food'", ImageView.class);
     target.img_delete_food = Utils.findRequiredViewAsType(source, R.id.img_delete_food, "field 'img_delete_food'", ImageView.class);
     target.img_decrease = Utils.findRequiredViewAsType(source, R.id.img_decrease, "field 'img_decrease'", ImageView.class);
@@ -42,6 +43,7 @@ public class MyCartAdapter$MyViewHolder_ViewBinding implements Unbinder {
     target.txt_food_price = null;
     target.txt_quantity = null;
     target.txt_extra_price = null;
+    target.txt_items_add = null;
     target.img_food = null;
     target.img_delete_food = null;
     target.img_decrease = null;

@@ -3,7 +3,6 @@ package com.example.appbella.Retrofit;
 import com.example.appbella.Model.AddonModel;
 import com.example.appbella.Model.CreateOrderModel;
 import com.example.appbella.Model.FavoriteModel;
-import com.example.appbella.Model.FavoriteOnlyIdModel;
 import com.example.appbella.Model.Product_and_ServiceModel;
 import com.example.appbella.Model.MaxOrderModel;
 import com.example.appbella.Model.MenuModel;
@@ -71,11 +70,6 @@ public interface IMyRestaurantAPI {
     @GET("favorite")
     Observable<FavoriteModel> getFavoriteByUser(@Query("key") String apiKey,
                                                 @Query("fbid") String fbid);
-
-    @GET("favoriteByRestaurant")
-    Observable<FavoriteOnlyIdModel> getFavoriteByRestaurant(@Query("key") String apiKey,
-                                                            @Query("fbid") String fbid,
-                                                            @Query("restaurantId") int restaurantId);
 
     @GET("order")
     Observable<OrderModel> getOrder(@Query("key") String apiKey,
