@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.appbella.Adapter.MyFoodAdapter;
+import com.example.appbella.Adapter.MyItemAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Interface.IServicesOrProductLoadListener;
 import com.example.appbella.Model.Category;
@@ -60,8 +60,8 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
     IServicesOrProductLoadListener iServicesOrProductLoadListener;
 
-    private MyFoodAdapter adapter;
-    private MyFoodAdapter searchAdapter;
+    private MyItemAdapter adapter;
+    private MyItemAdapter searchAdapter;
     private Category selectedCategory;
     DatabaseReference servicesRef;
 
@@ -249,7 +249,7 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
     @Override
     public void onServicesOProductLoadSuccess(List<Product_and_Service> servicesOrProductList) {
-        adapter = new MyFoodAdapter(this, servicesOrProductList);
+        adapter = new MyItemAdapter(this, servicesOrProductList);
         recycler_food_list.setAdapter(adapter);
         recycler_food_list.setLayoutAnimation(mLayoutAnimationController);
         mDialog.dismiss();

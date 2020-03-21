@@ -120,6 +120,7 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
 
         btn_view_cart.setOnClickListener(v -> {
             startActivity(new Intent(ProductAndServiceDetailActivity.this, CartListActivity.class));
+            finish();
         });
     }
 

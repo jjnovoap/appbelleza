@@ -40,7 +40,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHolder> {
+public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.MyViewHolder> {
 
     private Context mContext;
     private List<Product_and_Service> mProductAndServiceList;
@@ -54,7 +54,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         mCompositeDisposable.clear();
     }
 
-    public MyFoodAdapter(Context context, List<Product_and_Service> productandServiceList) {
+    public MyItemAdapter(Context context, List<Product_and_Service> productandServiceList) {
         mContext = context;
         mProductAndServiceList = productandServiceList;
         mCompositeDisposable = new CompositeDisposable();
