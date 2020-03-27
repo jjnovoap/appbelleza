@@ -17,18 +17,28 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.IntentCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
+import com.example.appbella.Adapter.CategoryAdapter;
 import com.example.appbella.Adapter.MyProductOrServiceAdapter;
 import com.example.appbella.Common.Common;
+import com.example.appbella.Database.CartDataSource;
+import com.example.appbella.Database.CartDatabase;
+import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Fragments.MapsBottomDialogFragment;
+import com.example.appbella.Fragments.ProductFragment;
+import com.example.appbella.Fragments.ServiceFragment;
 import com.example.appbella.Interface.IGeneralCategoriesLoadListener;
 import com.example.appbella.Model.CategoryProductOrServices;
 import com.example.appbella.Model.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +46,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.nex3z.notificationbadge.NotificationBadge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +54,11 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, IGeneralCategoriesLoadListener {
@@ -65,6 +80,12 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.recycler_catalogo)
     RecyclerView recycler_catalogo;
 
+    @BindView(R.id.fab)
+    ImageView btn_cart;
+    @BindView(R.id.badge)
+    NotificationBadge badge;
+    private CartDataSource mCartDataSource;
+
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     //private LayoutAnimationController mLayoutAnimationController;
 
@@ -75,16 +96,42 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        countCartByRestaurant();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(HomeActivity.this);
         Log.d(TAG, "onCreate: started!!");
 
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+
+        // adapter
+        CategoryAdapter adapter = new CategoryAdapter(getSupportFragmentManager());
+        //se pueden añadir fragmentos
+        adapter.AddFragment(new ServiceFragment(), "Servicios");
+        adapter.AddFragment(new ProductFragment(),"Productos");
+        //configuración adapter
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        Common.user = auth.getCurrentUser().getUid();
+        locationRef = FirebaseDatabase.getInstance().getReference().child("Current Location").child(auth.getCurrentUser().getUid());
         userRef = FirebaseFirestore.getInstance();
         categoryRef = FirebaseDatabase.getInstance().getReference("General Categories");
 
         iGeneralCategoriesLoadListener = this;
+
+        init();
+        countCartByRestaurant();
+        initView();
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -109,17 +156,10 @@ public class HomeActivity extends AppCompatActivity
 
         txt_address.setOnClickListener(v -> showBottomSheet());
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        Common.user = auth.getCurrentUser().getUid();
-        locationRef = FirebaseDatabase.getInstance().getReference().child("Current Location").child(auth.getCurrentUser().getUid());
-
         BottomDialogFragmen = MapsBottomDialogFragment.newInstance();
-
-        init();
-        initView();
-        
         loadCatalogo();
         setUserInformation();
+
     }
 
     private void setUserInformation() {
@@ -129,7 +169,6 @@ public class HomeActivity extends AppCompatActivity
                         documentSnapshot -> {
                             if (documentSnapshot.exists()) {
                                 String username = documentSnapshot.getString("name");
-                                String userPhone = documentSnapshot.getString("userPhone");
                                 txt_user_name.setText(username);
                                 Common.currentUser = documentSnapshot.toObject(User.class);
                             }
@@ -167,8 +206,13 @@ public class HomeActivity extends AppCompatActivity
     private void initView() {
         Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
+
+        btn_cart.setOnClickListener(v -> {
+            startActivity(new Intent(HomeActivity.this, CartListActivity.class));
+        });
+
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
         // This code will select item view type
         // If item is last, it will set full width on Grid layout
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -192,6 +236,30 @@ public class HomeActivity extends AppCompatActivity
         recycler_catalogo.setHasFixedSize(true);
         setAddress();
         //mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
+    }
+
+    private void countCartByRestaurant() {
+        Log.d(TAG, "countCartByRestaurant: called!!");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        mCartDataSource.countItemInCart(auth.getCurrentUser().getPhoneNumber())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        badge.setText(String.valueOf(integer));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(HomeActivity.this, "[COUNT CART}"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 
@@ -257,6 +325,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void init() {
         Log.d(TAG, "init: called!!");
+        mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());
     }
 
     @Override
