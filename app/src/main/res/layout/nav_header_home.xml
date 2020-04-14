@@ -26,22 +26,25 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints">
 
-        <ImageView
-            android:id="@+id/image"
+        <TextView
+            android:id="@+id/logo"
             android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:contentDescription="@string/nav_header_desc"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroybold"
+            android:gravity="center|center_horizontal"
+            android:text="DomCare"
+            android:textColor="@android:color/black"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_ticket" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/txt_user_name"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/gilroylight"
         android:gravity="center_vertical"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -142,6 +145,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="Creditos"
+                android:fontFamily="@font/gilroylight"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
@@ -187,6 +191,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="Cupones"
+                android:fontFamily="@font/gilroylight"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
@@ -229,7 +234,7 @@
                 android:text="Mi Cuenta"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/gilroybold"
                 tools:ignore="RtlSymmetry" />
 
             <ImageView
@@ -267,6 +272,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
+                android:fontFamily="@font/gilroylight"
                 android:text="Perfil"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
@@ -312,7 +318,7 @@
                 android:text="Informacion"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/gilroybold"
                 tools:ignore="RtlSymmetry" />
 
             <ImageView
@@ -332,7 +338,7 @@
             android:background="@color/division" />
 
         <LinearLayout
-            android:id="@+id/layout_Work_with_us"
+            android:id="@+id/layout_terms"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal">
@@ -350,6 +356,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
+                android:fontFamily="@font/gilroylight"
+                android:text="Terminos y condiciones"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
@@ -362,7 +370,7 @@
             android:background="@color/division" />
 
         <LinearLayout
-            android:id="@+id/layout_Terminos_Condiciones"
+            android:id="@+id/layout_help"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal">
@@ -380,7 +388,8 @@
                 android:layout_width="165dp"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:text="Terminos y condiciones"
+                android:text="Ayuda"
+                android:fontFamily="@font/gilroylight"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
@@ -429,6 +438,7 @@
                 android:layout_height="50dp"
                 android:gravity="center_vertical"
                 android:text="@string/sign_out"
+                android:fontFamily="@font/gilroylight"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
@@ -448,6 +458,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:text="Version"
+        android:fontFamily="@font/gilroylight"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

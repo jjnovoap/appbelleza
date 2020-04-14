@@ -552,7 +552,6 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
 
     private void init() {
         Log.d(TAG, "init: called!!");
-        Log.d(TAG, "init: "+Common.currentCategoryProductOrServices.getPaymentUrl());
         //mIBraintreeAPI = RetrofitBraintreeClient.getInstance(Common.currentRestaurant.getPaymentUrl()).create(IBraintreeAPI.class);
         mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
         mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());

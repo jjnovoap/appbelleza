@@ -101,12 +101,12 @@ public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.MyViewHold
                         Toast.makeText(mContext, "Error al eliminar de favoritos", Toast.LENGTH_SHORT).show());
             } else {
                 Favorite favoriteServices = new Favorite(auth.getCurrentUser().getUid(),
-                        Common.currentCategoryProductOrServices.getName(),
+                        "",
                         mProductAndServiceList.get(position).getName(),
                         mProductAndServiceList.get(position).getImage(),
                         "0",
                         Integer.parseInt(mProductAndServiceList.get(position).getId()),
-                        Common.currentCategoryProductOrServices.getId(),
+                        1,
                         mProductAndServiceList.get(position).getPrice());
 
                 favorite.child(auth.getCurrentUser().getUid()).child(mProductAndServiceList.get(position).getName()).setValue(favoriteServices)

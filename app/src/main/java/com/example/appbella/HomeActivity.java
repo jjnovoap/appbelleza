@@ -5,40 +5,36 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.IntentCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-
-import com.example.appbella.Adapter.CategoryAdapter;
-import com.example.appbella.Adapter.MyProductOrServiceAdapter;
+import com.example.appbella.Adapter.MyCategoryAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Fragments.MapsBottomDialogFragment;
-import com.example.appbella.Fragments.ProductFragment;
-import com.example.appbella.Fragments.ServiceFragment;
-import com.example.appbella.Interface.IGeneralCategoriesLoadListener;
-import com.example.appbella.Model.CategoryProductOrServices;
+import com.example.appbella.Interface.IProductCategoryLoadListener;
+import com.example.appbella.Interface.IservicesCategoryLoadListener;
+import com.example.appbella.Model.Category;
 import com.example.appbella.Model.User;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,7 +57,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, IGeneralCategoriesLoadListener {
+        implements NavigationView.OnNavigationItemSelectedListener, IProductCategoryLoadListener, IservicesCategoryLoadListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
@@ -70,24 +66,29 @@ public class HomeActivity extends AppCompatActivity
 
     FirebaseFirestore userRef;
     DatabaseReference categoryRef;
-    private MyProductOrServiceAdapter mAdapter;
+    private long mLastClickTime = 0;
 
     MapsBottomDialogFragment BottomDialogFragmen;
     private DatabaseReference locationRef;
-    IGeneralCategoriesLoadListener iGeneralCategoriesLoadListener;
+    IservicesCategoryLoadListener iservicesCategoryLoadListener;
+    IProductCategoryLoadListener iProductCategoryLoadListener;
+    private MyCategoryAdapter Adapter;
     @BindView(R.id.img_user)
     ImageView img_user;
     @BindView(R.id.recycler_catalogo)
     RecyclerView recycler_catalogo;
+    @BindView(R.id.recycler_category)
+    RecyclerView recycler_category;
 
     @BindView(R.id.fab)
     ImageView btn_cart;
     @BindView(R.id.badge)
     NotificationBadge badge;
     private CartDataSource mCartDataSource;
+    DatabaseReference categoriesServicesRef;
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-    //private LayoutAnimationController mLayoutAnimationController;
+    private LayoutAnimationController mLayoutAnimationController;
 
     @Override
     protected void onDestroy() {
@@ -108,25 +109,22 @@ public class HomeActivity extends AppCompatActivity
         ButterKnife.bind(HomeActivity.this);
         Log.d(TAG, "onCreate: started!!");
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
-        ViewPager viewPager = findViewById(R.id.viewPager);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        // adapter
-        CategoryAdapter adapter = new CategoryAdapter(getSupportFragmentManager());
-        //se pueden añadir fragmentos
-        adapter.AddFragment(new ServiceFragment(), "Servicios");
-        adapter.AddFragment(new ProductFragment(),"Productos");
-        //configuración adapter
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
+        View headerView = navigationView.getHeaderView(0);
+        LinearLayout layout_profile = headerView.findViewById(R.id.layout_profile);
+        LinearLayout layout_logout = headerView.findViewById(R.id.layout_logout);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         Common.user = auth.getCurrentUser().getUid();
         locationRef = FirebaseDatabase.getInstance().getReference().child("Current Location").child(auth.getCurrentUser().getUid());
+        categoriesServicesRef = FirebaseDatabase.getInstance().getReference("Services Categories");
         userRef = FirebaseFirestore.getInstance();
         categoryRef = FirebaseDatabase.getInstance().getReference("General Categories");
 
-        iGeneralCategoriesLoadListener = this;
+        iProductCategoryLoadListener = this;
+        iservicesCategoryLoadListener = this;
 
         init();
         countCartByRestaurant();
@@ -136,9 +134,6 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
-
-        navigationView.setNavigationItemSelectedListener(this);
 
         img_user.setOnClickListener(new View.OnClickListener() {
 
@@ -150,11 +145,26 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        View headerView = navigationView.getHeaderView(0);
         txt_user_name = headerView.findViewById(R.id.txt_user_name);
         txt_address = findViewById(R.id.txt_address);
 
         txt_address.setOnClickListener(v -> showBottomSheet());
+
+
+        layout_profile.setOnClickListener(v -> {
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+                return;
+            }
+            mLastClickTime = SystemClock.elapsedRealtime();
+            Intent intent = new Intent(HomeActivity.this, UpdateInfoActivity.class);
+            startActivity(intent);
+        });
+
+
+        layout_logout.setOnClickListener(v -> {
+            signOut();
+        });
+
 
         BottomDialogFragmen = MapsBottomDialogFragment.newInstance();
         loadCatalogo();
@@ -169,7 +179,8 @@ public class HomeActivity extends AppCompatActivity
                         documentSnapshot -> {
                             if (documentSnapshot.exists()) {
                                 String username = documentSnapshot.getString("name");
-                                txt_user_name.setText(username);
+                                txt_user_name.setText(new StringBuilder("¡Hola ")
+                                        .append(username).append("!"));
                                 Common.currentUser = documentSnapshot.toObject(User.class);
                             }
                         }).addOnFailureListener(e ->
@@ -177,49 +188,66 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void loadCatalogo() {
-        Log.d(TAG, "loadCatalago: called!!");
 
-        categoryRef.getRef().addValueEventListener(new ValueEventListener() {
+        categoriesServicesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: dataSnapshot1 "+dataSnapshot1.getKey()+" = "+dataSnapshot1.getValue());
+                List<Category> categoryList = new ArrayList<>();
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+                    String id = String.valueOf(1);
+                    String key = ds.child("id").getValue(String.class);
+                    if (id.equals(key)){
+                        Category category = ds.getValue(Category.class);
+                        categoryList.add(category);
+                    }
                 }
-
-                List<CategoryProductOrServices> categories = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    CategoryProductOrServices category = ds.getValue(CategoryProductOrServices.class);
-                    categories.add(category);
-                    Common.currentCategoryProductOrServices = ds.getValue(CategoryProductOrServices.class);
-                }
-                iGeneralCategoriesLoadListener.onCategoriesLoadSuccess(categories);
+                iservicesCategoryLoadListener.onServiceCategoryLoadSuccess(categoryList);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                iGeneralCategoriesLoadListener.onCategoriesLoadFailed(databaseError.getMessage());
+                iservicesCategoryLoadListener.onServiceCategoryLoadFailed(databaseError.getMessage());
+            }
+        });
+
+        categoriesServicesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Category> categoryList = new ArrayList<>();
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+                    String id = String.valueOf(2);
+                    String key = ds.child("id").getValue(String.class);
+                    if (id.equals(key)){
+                        Category category = ds.getValue(Category.class);
+                        categoryList.add(category);
+                    }
+                }
+                iProductCategoryLoadListener.onProductCategoryLoadSuccess(categoryList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                iProductCategoryLoadListener.onProductCategoryLoadFailed(databaseError.getMessage());
             }
         });
     }
 
     private void initView() {
-        Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
 
         btn_cart.setOnClickListener(v -> {
             startActivity(new Intent(HomeActivity.this, CartListActivity.class));
         });
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
+        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
         // This code will select item view type
         // If item is last, it will set full width on Grid layout
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (mAdapter != null) {
-                    switch (mAdapter.getItemViewType(position)) {
+                if (Adapter != null) {
+                    switch (Adapter.getItemViewType(position)) {
                         case Common.DEFAULT_COLUMN_COUNT:
                             return 1;
                         case Common.FULL_WIDTH_COLUMN:
@@ -236,6 +264,32 @@ public class HomeActivity extends AppCompatActivity
         recycler_catalogo.setHasFixedSize(true);
         setAddress();
         //mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
+
+        mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
+
+        GridLayoutManager layoutMan = new GridLayoutManager(this, 1);
+        layoutMan.setOrientation(RecyclerView.HORIZONTAL);
+        // This code will select item view type
+        // If item is last, it will set full width on Grid layout
+        layoutMan.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (Adapter != null) {
+                    switch (Adapter.getItemViewType(position)) {
+                        case Common.DEFAULT_COLUMN_COUNT:
+                            return 1;
+                        case Common.FULL_WIDTH_COLUMN:
+                            return 1;
+                        default:
+                            return -1;
+                    }
+                } else {
+                    return -1;
+                }
+            }
+        });
+        recycler_category.setLayoutManager(layoutMan);
+        recycler_category.setHasFixedSize(true);
     }
 
     private void countCartByRestaurant() {
@@ -357,7 +411,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        /*int id = item.getItemId();
 
         if (id == R.id.nav_log_out) {
             signOut();
@@ -370,7 +424,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_fav) {
             startActivity(new Intent(HomeActivity.this, FavoriteActivity.class));
         }
-
+*/
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -399,17 +453,26 @@ public class HomeActivity extends AppCompatActivity
 
 
     @Override
-    public void onCategoriesLoadSuccess(List<CategoryProductOrServices> categoryProductOrServicesList) {
-        Log.d(TAG, "displayRestaurant: called!!");
-        mAdapter = new MyProductOrServiceAdapter(this, categoryProductOrServicesList);
-        recycler_catalogo.setAdapter(mAdapter);
-        //recycler_catalogo.setLayoutAnimation(mLayoutAnimationController);
-        Log.d(TAG, "displayBanner: called!!");
-        Log.d(TAG, "displayBanner: size: "+categoryProductOrServicesList.size());
+    public void onProductCategoryLoadSuccess(List<Category> categoryList) {
+        Adapter = new MyCategoryAdapter(HomeActivity.this, categoryList);
+        recycler_category.setAdapter(Adapter);
+        recycler_category.setLayoutAnimation(mLayoutAnimationController);
     }
 
     @Override
-    public void onCategoriesLoadFailed(String message) {
+    public void onProductCategoryLoadFailed(String message) {
+        Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public void onServiceCategoryLoadSuccess(List<Category> categoryList) {
+        Adapter = new MyCategoryAdapter(HomeActivity.this, categoryList);
+        recycler_catalogo.setAdapter(Adapter);
+    }
+
+    @Override
+    public void onServiceCategoryLoadFailed(String message) {
         Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
     }
 }

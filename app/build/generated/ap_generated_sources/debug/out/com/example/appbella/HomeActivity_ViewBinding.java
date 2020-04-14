@@ -26,6 +26,7 @@ public class HomeActivity_ViewBinding implements Unbinder {
 
     target.img_user = Utils.findRequiredViewAsType(source, R.id.img_user, "field 'img_user'", ImageView.class);
     target.recycler_catalogo = Utils.findRequiredViewAsType(source, R.id.recycler_catalogo, "field 'recycler_catalogo'", RecyclerView.class);
+    target.recycler_category = Utils.findRequiredViewAsType(source, R.id.recycler_category, "field 'recycler_category'", RecyclerView.class);
     target.btn_cart = Utils.findRequiredViewAsType(source, R.id.fab, "field 'btn_cart'", ImageView.class);
     target.badge = Utils.findRequiredViewAsType(source, R.id.badge, "field 'badge'", NotificationBadge.class);
   }
@@ -39,6 +40,7 @@ public class HomeActivity_ViewBinding implements Unbinder {
 
     target.img_user = null;
     target.recycler_catalogo = null;
+    target.recycler_category = null;
     target.btn_cart = null;
     target.badge = null;
   }

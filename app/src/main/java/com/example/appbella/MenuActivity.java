@@ -19,7 +19,7 @@ import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.LocalCartDataSource;
-import com.example.appbella.Interface.ISpecificCategoryLoadListener;
+import com.example.appbella.Interface.IProductCategoryLoadListener;
 import com.example.appbella.Model.Category;
 import com.example.appbella.Model.EventBust.MenuItemEvent;
 import com.example.appbella.Utils.SpaceItemDecoration;
@@ -46,7 +46,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MenuActivity extends AppCompatActivity implements ISpecificCategoryLoadListener {
+public class MenuActivity extends AppCompatActivity implements IProductCategoryLoadListener {
 
     private static final String TAG = MenuActivity.class.getSimpleName();
 
@@ -59,7 +59,7 @@ public class MenuActivity extends AppCompatActivity implements ISpecificCategory
     @BindView(R.id.badge)
     NotificationBadge badge;
 
-    ISpecificCategoryLoadListener iSpecificCategoryLoadListener;
+    IProductCategoryLoadListener iProductCategoryLoadListener;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     DatabaseReference categoriesServicesRef;
     private android.app.AlertDialog mDialog;
@@ -90,12 +90,11 @@ public class MenuActivity extends AppCompatActivity implements ISpecificCategory
         Log.d(TAG, "onCreate: started!!");
 
         categoriesServicesRef = FirebaseDatabase.getInstance().getReference("Services Categories");
-        iSpecificCategoryLoadListener = this;
+        iProductCategoryLoadListener = this;
         favorite = FirebaseDatabase.getInstance().getReference().child("Favorites");
 
         init();
         initView();
-
         countCartByRestaurant();
 
     }
@@ -262,26 +261,27 @@ public class MenuActivity extends AppCompatActivity implements ISpecificCategory
                             Category category = ds.getValue(Category.class);
                             categoryList.add(category);
                         }
-                    }iSpecificCategoryLoadListener.onCategoryLoadSuccess(categoryList);
+                    }
+                    iProductCategoryLoadListener.onProductCategoryLoadSuccess(categoryList);
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    iSpecificCategoryLoadListener.onCategoryLoadFailed(databaseError.getMessage());
+                    iProductCategoryLoadListener.onProductCategoryLoadFailed(databaseError.getMessage());
                 }
             });
         }
     }
 
     @Override
-    public void onCategoryLoadSuccess(List<Category> categoryList) {
+    public void onProductCategoryLoadSuccess(List<Category> categoryList) {
         mAdapter = new MyCategoryAdapter(MenuActivity.this, categoryList);
         recycler_category.setAdapter(mAdapter);
         recycler_category.setLayoutAnimation(mLayoutAnimationController);
     }
 
     @Override
-    public void onCategoryLoadFailed(String message) {
+    public void onProductCategoryLoadFailed(String message) {
 
     }
 }
