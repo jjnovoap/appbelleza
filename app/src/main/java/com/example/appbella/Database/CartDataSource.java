@@ -14,6 +14,8 @@ public interface CartDataSource {
 
     Single<Long> sumPrice(String userPhone);
 
+    Single<Long> sumQuantity(String userPhone);
+
     Flowable<CartItem> getItemInCart(String productId,String categoryId,String userPhone);
 
     Completable insertOrReplaceAll(CartItem... cartItems);

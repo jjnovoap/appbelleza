@@ -13,9 +13,9 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:elevation="0dp"
+        android:layout_height="60dp"
         android:background="@android:color/white"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,40 +23,19 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            app:titleTextColor="@android:color/black"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            android:layout_height="wrap_content"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleTextColor="@android:color/black">
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.flaviofaria.kenburnsview.KenBurnsView
-        android:id="@+id/img_category"
-        android:scaleType="centerCrop"
-        android:layout_width="match_parent"
-        android:layout_height="150dp" />
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="15dp"
-            android:paddingLeft="15dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"
-            android:text="SERVICIOS"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_food_list"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    
+        android:layout_height="match_parent"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp" />
+
 </LinearLayout>

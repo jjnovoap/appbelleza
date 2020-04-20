@@ -28,6 +28,9 @@ public interface CartDAO {
     @Query("SELECT SUM(productPrice*productQuantity) FROM Cart WHERE userPhone=:userPhone")
     Single<Long> sumPrice(String userPhone);
 
+    @Query("SELECT SUM(productQuantity) FROM Cart WHERE userPhone=:userPhone")
+    Single<Long> sumQuantity(String userPhone);
+
     @Query("SELECT * FROM Cart WHERE  productId=:productId AND categoryId=:categoryId AND userPhone=:userPhone")
     Flowable<CartItem> getItemInCart(String productId, String categoryId,String userPhone);
 

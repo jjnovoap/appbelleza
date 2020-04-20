@@ -74,10 +74,10 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
     IAddonLoadListener iAddonLoadListener;
 
     private Product_and_Service selectedFood;
-    private Double originalPrice;
+    private Long originalPrice;
 
-    private double addOnPrice = 0.0;
-    private double extraPrice;
+    private long addOnPrice = 0;
+    private long extraPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,8 +205,8 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
 
     private void calculatePrice() {
         Log.d(TAG, "calculatePrice: called!!");
-        extraPrice = 0.0;
-        double newPrice;
+        extraPrice = 0;
+        long newPrice;
 
         extraPrice += addOnPrice;
 

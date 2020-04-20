@@ -146,7 +146,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.MyViewHold
                 cartItem.setUserPhone(Common.currentUser.getUserPhone());
                 cartItem.setProductAddon("NORMAL");
                 cartItem.setProductSize("NORMAL");
-                cartItem.setProductExtraPrice(0.0);
+                cartItem.setProductExtraPrice((long) 0);
                 cartItem.setFbid(Common.currentUser.getFbid());
 
                 mCompositeDisposable.add(mCartDataSource.insertOrReplaceAll(cartItem)

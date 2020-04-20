@@ -9,12 +9,12 @@ public class Favorite {
     private String status;
     private int foodId;
     private int restaurantId;
-    private Double price;
+    private Long price;
 
     public Favorite() {
     }
 
-    public Favorite(String fbid, String restaurantName, String foodName, String foodImage, String status, int foodId, int restaurantId, Double price) {
+    public Favorite(String fbid, String restaurantName, String foodName, String foodImage, String status, int foodId, int restaurantId, Long price) {
         this.fbid = fbid;
         this.restaurantName = restaurantName;
         this.foodName = foodName;
@@ -73,11 +73,11 @@ public class Favorite {
         this.restaurantId = restaurantId;
     }
 
-    public Double getPrice() {
+    public Long getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
 

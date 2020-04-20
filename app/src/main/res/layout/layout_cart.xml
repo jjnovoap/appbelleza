@@ -1,134 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="7dp">
 
-    <LinearLayout
-        android:padding="8dp"
-        android:weightSum="10"
+
+    <ImageView
+        android:id="@+id/img_food"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/app_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.144"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.542" />
+
+    <TextView
+        android:id="@+id/txt_food_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/gilroylight"
+        android:text="Chicken Biryani"
+        android:textColor="#1f4e5b"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toEndOf="@+id/img_food"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="163dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/txt_food_name"
+        app:layout_constraintTop_toBottomOf="@+id/txt_food_name">
 
-        <ImageView
-            android:id="@+id/img_food"
-            android:scaleType="centerCrop"
-            android:src="@drawable/app_icon"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            app:cardCornerRadius="6dp"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_quantity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/txt_quantity">
 
-        <LinearLayout
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical"
-            android:layout_marginStart="8dp"
-            android:layout_weight="10"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/img_decrease"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="#E6EBEC"
+                android:src="@drawable/ic_remove_primary_24dp" />
 
-            <TextView
-                android:id="@+id/txt_food_name"
+            <ImageView
+                android:id="@+id/img_delete_food"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/magnifika"
-                android:text="Chicken Biryani"
-                android:textColor="@android:color/black" />
+                android:background="#E6EBEC"
+                android:src="@drawable/ic_remove_primary_24dp" />
 
-            <LinearLayout
-                android:weightSum="18"
-                android:orientation="horizontal"
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/txt_quantity"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/gilroybold"
+            android:gravity="center"
+            android:textColor="#1f4e5b"
+            android:text="1"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/cardView"
+            app:layout_constraintTop_toBottomOf="@+id/txt_price_new" />
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="5dp"
+            app:cardCornerRadius="6dp"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_quantity"
+            app:layout_constraintStart_toEndOf="@+id/txt_quantity"
+            app:layout_constraintTop_toTopOf="@+id/txt_quantity"
+            app:layout_constraintVertical_bias="0.0">
+
+            <ImageView
+                android:id="@+id/img_increase"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="#E6EBEC"
+                android:src="@drawable/ic_add_primary_24dp" />
 
-                <TextView
-                    android:id="@+id/txt_food_price"
-                    android:text="$180"
-                    android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:layout_weight="5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
+        </androidx.cardview.widget.CardView>
 
-                <ImageView
-                    android:src="@drawable/ic_clear_gray_24dp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:id="@+id/img_decrease"
-                    android:src="@drawable/ic_remove_primary_24dp"
-                    android:layout_weight="2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/txt_quantity"
-                    android:text="1"
-                    android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:gravity="center_horizontal"
-                    android:background="@drawable/quantity_background_textview"
-                    android:layout_weight="2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:id="@+id/img_increase"
-                    android:src="@drawable/ic_add_primary_24dp"
-                    android:layout_weight="2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_drag_handle_gray_24dp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/txt_price_new"
-                    android:text="180"
-                    android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:gravity="center_horizontal"
-                    android:layout_weight="5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:weightSum="18"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                
-                <TextView
-                    android:id="@+id/txt_extra_price"
-                    android:text="Extra Price($): +180"
-                    android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txt_items_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Items Añadidos" />
-
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/img_delete_food"
-            android:src="@drawable/ic_clear_primary_24dp"
+        <TextView
+            android:id="@+id/signomas"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="$"
+            android:textColor="#1f4e5b"
+            android:fontFamily="@font/gilroymedium"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/txt_price_new"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="5"
+            android:textColor="#1f4e5b"
+            android:fontFamily="@font/gilroymedium"
+            android:text="180"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/signomas"
+            app:layout_constraintStart_toEndOf="@+id/signomas"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.cardview.widget.CardView>
+        <TextView
+            android:id="@+id/txt_food_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1800"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_price_new"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/txt_price_new" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/txt_items_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:textColor="#1f4e5b"
+        android:fontFamily="@font/gilroylight"
+        android:text="Servicios Añadidos"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout4"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
+    <TextView
+        android:id="@+id/txt_extra_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/gilroylight"
+        android:layout_marginBottom="15dp"
+        android:textColor="#1f4e5b"
+        android:text="Precio Extra: $ 180"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/txt_items_add"
+        app:layout_constraintTop_toBottomOf="@+id/txt_items_add"
+        app:layout_constraintVertical_bias="0.857" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

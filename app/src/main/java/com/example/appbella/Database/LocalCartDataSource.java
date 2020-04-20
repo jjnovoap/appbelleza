@@ -30,6 +30,11 @@ public class LocalCartDataSource implements CartDataSource {
     }
 
     @Override
+    public Single<Long> sumQuantity(String userPhone) {
+        return mCartDAO.sumQuantity(userPhone);
+    }
+
+    @Override
     public Flowable<CartItem> getItemInCart(String productId, String categoryId,String userPhone) {
         return mCartDAO.getItemInCart(productId,categoryId,userPhone);
     }

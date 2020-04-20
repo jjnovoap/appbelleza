@@ -27,12 +27,12 @@ public final class CartDatabase_Impl extends CartDatabase {
 
   @Override
   protected SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration configuration) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(configuration, new RoomOpenHelper.Delegate(4) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(configuration, new RoomOpenHelper.Delegate(5) {
       @Override
       public void createAllTables(SupportSQLiteDatabase _db) {
-        _db.execSQL("CREATE TABLE IF NOT EXISTS `Cart` (`productId` TEXT NOT NULL, `productName` TEXT, `productImage` TEXT, `productPrice` REAL, `productQuantity` INTEGER NOT NULL, `userPhone` TEXT, `categoryId` TEXT, `productAddon` TEXT, `productSize` TEXT, `productExtraPrice` REAL, `fbid` TEXT, PRIMARY KEY(`productId`))");
+        _db.execSQL("CREATE TABLE IF NOT EXISTS `Cart` (`productId` TEXT NOT NULL, `productName` TEXT, `productImage` TEXT, `productPrice` INTEGER, `productQuantity` INTEGER NOT NULL, `userPhone` TEXT, `categoryId` TEXT, `productAddon` TEXT, `productSize` TEXT, `productExtraPrice` INTEGER, `fbid` TEXT, PRIMARY KEY(`productId`))");
         _db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd5691c3951e0ac006ea2edbb4b8110be')");
+        _db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b86b91046f8ad62c606697c1cefd1e4e')");
       }
 
       @Override
@@ -80,13 +80,13 @@ public final class CartDatabase_Impl extends CartDatabase {
         _columnsCart.put("productId", new TableInfo.Column("productId", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("productName", new TableInfo.Column("productName", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("productImage", new TableInfo.Column("productImage", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("productPrice", new TableInfo.Column("productPrice", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productPrice", new TableInfo.Column("productPrice", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("productQuantity", new TableInfo.Column("productQuantity", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("userPhone", new TableInfo.Column("userPhone", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("categoryId", new TableInfo.Column("categoryId", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("productAddon", new TableInfo.Column("productAddon", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("productSize", new TableInfo.Column("productSize", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsCart.put("productExtraPrice", new TableInfo.Column("productExtraPrice", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCart.put("productExtraPrice", new TableInfo.Column("productExtraPrice", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCart.put("fbid", new TableInfo.Column("fbid", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysCart = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesCart = new HashSet<TableInfo.Index>(0);
@@ -99,7 +99,7 @@ public final class CartDatabase_Impl extends CartDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "d5691c3951e0ac006ea2edbb4b8110be", "4783e93a30f4d9deaf5a8af4ff281d95");
+    }, "b86b91046f8ad62c606697c1cefd1e4e", "16a7152f1c91da56f2bf60c771af17e7");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)
         .name(configuration.name)
         .callback(_openCallback)

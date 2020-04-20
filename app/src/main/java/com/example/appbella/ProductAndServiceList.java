@@ -2,6 +2,7 @@ package com.example.appbella;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -9,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,8 +53,6 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private android.app.AlertDialog mDialog;
 
-    @BindView(R.id.img_category)
-    KenBurnsView img_category;
     @BindView(R.id.recycler_food_list)
     RecyclerView recycler_food_list;
     @BindView(R.id.toolbar)
@@ -86,6 +86,8 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
         Log.d(TAG, "onCreate: started!!");
 
         servicesRef = FirebaseDatabase.getInstance().getReference("Services");
+
+
 
         iServicesOrProductLoadListener = this;
 
@@ -212,12 +214,14 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
             selectedCategory = event.getCategory();
 
-            Picasso.get().load(event.getCategory().getImage()).into(img_category);
             toolbar.setTitle(event.getCategory().getName());
-
+            toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
+            Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/gilroybold.ttf");
+            ((TextView) toolbar.getChildAt(0)).setTypeface(typeFace);
+            ((TextView) toolbar.getChildAt(0)).setTextSize(16);
             setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             mDialog.show();
 

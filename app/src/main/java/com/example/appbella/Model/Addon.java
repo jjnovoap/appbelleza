@@ -4,7 +4,7 @@ public class Addon {
     private int id;
     private String name;
     private String description;
-    private float extraPrice;
+    private Long extraPrice;
 
     public int getId() {
         return id;
@@ -30,11 +30,11 @@ public class Addon {
         this.description = description;
     }
 
-    public float getExtraPrice() {
+    public Long getExtraPrice() {
         return extraPrice;
     }
 
-    public void setExtraPrice(float extraPrice) {
+    public void setExtraPrice(Long extraPrice) {
         this.extraPrice = extraPrice;
     }
 }

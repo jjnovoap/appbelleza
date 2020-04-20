@@ -20,7 +20,7 @@ public class CartItem {
     private String productImage;
 
     @ColumnInfo(name = "productPrice")
-    private Double productPrice;
+    private Long productPrice;
 
     @ColumnInfo(name = "productQuantity")
     private int productQuantity;
@@ -38,7 +38,7 @@ public class CartItem {
     private String productSize;
 
     @ColumnInfo(name = "productExtraPrice")
-    private Double productExtraPrice;
+    private Long productExtraPrice;
 
     @ColumnInfo(name = "fbid")
     private String fbid;
@@ -72,11 +72,11 @@ public class CartItem {
         this.productImage = productImage;
     }
 
-    public Double getProductPrice() {
+    public Long getProductPrice() {
         return productPrice;
     }
 
-    public void setProductPrice(Double productPrice) {
+    public void setProductPrice(Long productPrice) {
         this.productPrice = productPrice;
     }
 
@@ -120,11 +120,11 @@ public class CartItem {
         this.productSize = productSize;
     }
 
-    public Double getProductExtraPrice() {
+    public Long getProductExtraPrice() {
         return productExtraPrice;
     }
 
-    public void setProductExtraPrice(Double productExtraPrice) {
+    public void setProductExtraPrice(Long productExtraPrice) {
         this.productExtraPrice = productExtraPrice;
     }
 

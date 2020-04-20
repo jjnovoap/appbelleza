@@ -2,6 +2,8 @@ package com.example.appbella;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
@@ -23,6 +25,8 @@ import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Model.EventBust.CalculatePriceEvent;
 import com.example.appbella.Model.EventBust.SendTotalCashEvent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,6 +52,10 @@ public class CartListActivity extends AppCompatActivity {
     TextView txt_final_price;
     @BindView(R.id.btn_order)
     Button btn_order;
+    @BindView(R.id.numero_items)
+    TextView numero_items;
+    static boolean isInit = true;
+
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private CartDataSource mCartDataSource;
@@ -89,16 +97,16 @@ public class CartListActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cartItems -> {
-
+                    cartItems.size();
                     if (cartItems.isEmpty()) {
                         btn_order.setText(getString(R.string.empty_cart));
                         btn_order.setEnabled(false);
-                        btn_order.setBackgroundResource(android.R.color.darker_gray);
+                        btn_order.setBackgroundResource(R.drawable.border_buttom_unselected);
                     }
                     else {
                         btn_order.setText(getString(R.string.place_order));
                         btn_order.setEnabled(true);
-                        btn_order.setBackgroundResource(R.color.colorPrimary);
+                        btn_order.setBackgroundResource(R.drawable.border_button);
 
                         MyCartAdapter adapter = new MyCartAdapter(CartListActivity.this, cartItems);
                         recycler_cart.setAdapter(adapter);
@@ -116,6 +124,40 @@ public class CartListActivity extends AppCompatActivity {
 
     private void calculateCartTotalPrice() {
         Log.d(TAG, "calculateCartTotalPrice: called!!");
+        mCartDataSource.sumQuantity(Common.currentUser.getUserPhone()).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Long>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Long aLong) {
+                        numero_items.setText(new StringBuilder(String.valueOf(aLong))
+                                    .append(" Ítems"));
+                        isInit = true;
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e.getMessage().contains("Query returned empty")){
+                            numero_items.setText(new StringBuilder("0")
+                                    .append(" Ítems"));
+                            if(isInit) {
+                                isInit = false;
+                                overridePendingTransition(0, 0);
+                                startActivity(getIntent());
+                                overridePendingTransition(0, 0);
+                                finish();
+
+                            }
+
+                        }
+                        else
+                            Toast.makeText(CartListActivity.this, "[SUM CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         mCartDataSource.sumPrice(Common.currentUser.getUserPhone())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -130,12 +172,12 @@ public class CartListActivity extends AppCompatActivity {
                         if (aLong == 0) {
                             btn_order.setText(getString(R.string.empty_cart));
                             btn_order.setEnabled(false);
-                            btn_order.setBackgroundResource(android.R.color.darker_gray);
+                            btn_order.setBackgroundResource(R.drawable.border_buttom_unselected);
                         }
                         else {
                             btn_order.setText(getString(R.string.place_order));
                             btn_order.setEnabled(true);
-                            btn_order.setBackgroundResource(R.color.colorPrimary);
+                            btn_order.setBackgroundResource(R.drawable.border_button);
                         }
 
                         txt_final_price.setText(String.valueOf(aLong));
@@ -157,7 +199,6 @@ public class CartListActivity extends AppCompatActivity {
 
         mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
 
-        toolbar.setTitle(getString(R.string.cart));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -165,7 +206,7 @@ public class CartListActivity extends AppCompatActivity {
         recycler_cart.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recycler_cart.setLayoutManager(layoutManager);
-        recycler_cart.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
+        //recycler_cart.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
 
         btn_order.setOnClickListener(v -> {
             EventBus.getDefault().postSticky(new SendTotalCashEvent(txt_final_price.getText().toString()));

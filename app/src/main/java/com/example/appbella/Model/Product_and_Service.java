@@ -9,7 +9,7 @@ public class Product_and_Service {
     private String description;
     private String image;
     private String status;
-    private Double price;
+    private Long price;
     private boolean isAddon;
     private int discount;
 
@@ -53,11 +53,11 @@ public class Product_and_Service {
         this.image = image;
     }
 
-    public Double getPrice() {
+    public Long getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
 

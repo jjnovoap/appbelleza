@@ -2,6 +2,7 @@ package com.example.appbella;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -129,6 +130,10 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
         setorder = FirebaseDatabase.getInstance().getReference().child("Order");
 
         toolbar.setTitle(getString(R.string.place_order));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/gilroybold.ttf");
+        ((TextView) toolbar.getChildAt(0)).setTypeface(typeFace);
+        ((TextView) toolbar.getChildAt(0)).setTextSize(25);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

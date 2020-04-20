@@ -32,7 +32,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHolder> {
+public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHolder> {
 
     private Context mContext;
     private List<CartItem> mCartItemList;
@@ -58,14 +58,18 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
         holder.txt_food_name.setText(mCartItemList.get(position).getProductName());
         holder.txt_food_price.setText(String.valueOf(mCartItemList.get(position).getProductPrice()));
         holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position).getProductQuantity()));
-
-        Double finalResult = ((mCartItemList.get(position).getProductPrice()*mCartItemList.get(position).getProductQuantity()));
-        String ItemsNumber = String.valueOf(mCartItemList.get(position).getProductExtraPrice()/1000);
+        Long finalResult = ((mCartItemList.get(position).getProductPrice() * mCartItemList.get(position).getProductQuantity()));
         holder.txt_price_new.setText(String.valueOf(finalResult));
-        holder.txt_items_add.setText(new StringBuilder("Items Añadidos: +")
-                .append(ItemsNumber));
-        holder.txt_extra_price.setText(new StringBuilder("Precio Extra($) : +")
-        .append(mCartItemList.get(position).getProductExtraPrice()));
+        holder.txt_items_add.setText(new StringBuilder("Adiciones: ")
+                .append(mCartItemList.get(position).getProductExtraPrice() / 1000));
+        holder.txt_extra_price.setText(new StringBuilder("Precio Extra: $ ")
+                .append(mCartItemList.get(position).getProductExtraPrice()));
+        holder.img_delete_food.setVisibility(View.GONE);
+
+        if (holder.txt_quantity.getText().equals("1")) {
+            holder.img_decrease.setVisibility(View.GONE);
+            holder.img_delete_food.setVisibility(View.VISIBLE);
+        }
 
         // Event
         holder.setIOnImageViewAdapterClickListener((view, position1, isDecrease, isDelete) -> {
@@ -74,13 +78,13 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
                 // If decrease quantity
                 if (isDecrease) {
                     if (mCartItemList.get(position1).getProductQuantity() > 1) {
-                        mCartItemList.get(position1).setProductQuantity(mCartItemList.get(position1).getProductQuantity()-1);
+                        mCartItemList.get(position1).setProductQuantity(mCartItemList.get(position1).getProductQuantity() - 1);
                     }
                 }
                 // If increase quantity
                 else {
                     if (mCartItemList.get(position1).getProductQuantity() < 99) {
-                        mCartItemList.get(position1).setProductQuantity(mCartItemList.get(position1).getProductQuantity()+1);
+                        mCartItemList.get(position1).setProductQuantity(mCartItemList.get(position1).getProductQuantity() + 1);
                     }
                 }
 
@@ -96,13 +100,12 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
 
                             @Override
                             public void onSuccess(Integer integer) {
-                                holder.txt_quantity.setText(String.valueOf(mCartItemList.get(position1).getProductQuantity()));
                                 EventBus.getDefault().postSticky(new CalculatePriceEvent());
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                Toast.makeText(mContext, "[UPDATE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "[UPDATE CART]" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
             }
@@ -125,7 +128,7 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
 
                             @Override
                             public void onError(Throwable e) {
-                                Toast.makeText(mContext, "[DELETE CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "[DELETE CART]" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
             }
@@ -168,6 +171,7 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
         }
 
         Unbinder mUnbinder;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -182,11 +186,9 @@ public class MyCartAdapter  extends RecyclerView.Adapter<MyCartAdapter.MyViewHol
         public void onClick(View v) {
             if (v == img_decrease) {
                 mIOnImageViewAdapterClickListener.onCalculatePriceListener(v, getAdapterPosition(), true, false);
-            }
-            else if (v == img_increase) {
+            } else if (v == img_increase) {
                 mIOnImageViewAdapterClickListener.onCalculatePriceListener(v, getAdapterPosition(), false, false);
-            }
-            else if (v == img_delete_food) {
+            } else if (v == img_delete_food) {
                 mIOnImageViewAdapterClickListener.onCalculatePriceListener(v, getAdapterPosition(), true, true);
             }
         }

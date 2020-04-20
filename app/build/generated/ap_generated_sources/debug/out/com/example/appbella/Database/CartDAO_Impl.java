@@ -14,7 +14,6 @@ import androidx.sqlite.db.SupportSQLiteStatement;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import java.lang.Double;
 import java.lang.Exception;
 import java.lang.Integer;
 import java.lang.Long;
@@ -66,7 +65,7 @@ public final class CartDAO_Impl implements CartDAO {
         if (value.getProductPrice() == null) {
           stmt.bindNull(4);
         } else {
-          stmt.bindDouble(4, value.getProductPrice());
+          stmt.bindLong(4, value.getProductPrice());
         }
         stmt.bindLong(5, value.getProductQuantity());
         if (value.getUserPhone() == null) {
@@ -92,7 +91,7 @@ public final class CartDAO_Impl implements CartDAO {
         if (value.getProductExtraPrice() == null) {
           stmt.bindNull(10);
         } else {
-          stmt.bindDouble(10, value.getProductExtraPrice());
+          stmt.bindLong(10, value.getProductExtraPrice());
         }
         if (value.getFbid() == null) {
           stmt.bindNull(11);
@@ -142,7 +141,7 @@ public final class CartDAO_Impl implements CartDAO {
         if (value.getProductPrice() == null) {
           stmt.bindNull(4);
         } else {
-          stmt.bindDouble(4, value.getProductPrice());
+          stmt.bindLong(4, value.getProductPrice());
         }
         stmt.bindLong(5, value.getProductQuantity());
         if (value.getUserPhone() == null) {
@@ -168,7 +167,7 @@ public final class CartDAO_Impl implements CartDAO {
         if (value.getProductExtraPrice() == null) {
           stmt.bindNull(10);
         } else {
-          stmt.bindDouble(10, value.getProductExtraPrice());
+          stmt.bindLong(10, value.getProductExtraPrice());
         }
         if (value.getFbid() == null) {
           stmt.bindNull(11);
@@ -308,11 +307,11 @@ public final class CartDAO_Impl implements CartDAO {
             final String _tmpProductImage;
             _tmpProductImage = _cursor.getString(_cursorIndexOfProductImage);
             _item.setProductImage(_tmpProductImage);
-            final Double _tmpProductPrice;
+            final Long _tmpProductPrice;
             if (_cursor.isNull(_cursorIndexOfProductPrice)) {
               _tmpProductPrice = null;
             } else {
-              _tmpProductPrice = _cursor.getDouble(_cursorIndexOfProductPrice);
+              _tmpProductPrice = _cursor.getLong(_cursorIndexOfProductPrice);
             }
             _item.setProductPrice(_tmpProductPrice);
             final int _tmpProductQuantity;
@@ -330,11 +329,11 @@ public final class CartDAO_Impl implements CartDAO {
             final String _tmpProductSize;
             _tmpProductSize = _cursor.getString(_cursorIndexOfProductSize);
             _item.setProductSize(_tmpProductSize);
-            final Double _tmpProductExtraPrice;
+            final Long _tmpProductExtraPrice;
             if (_cursor.isNull(_cursorIndexOfProductExtraPrice)) {
               _tmpProductExtraPrice = null;
             } else {
-              _tmpProductExtraPrice = _cursor.getDouble(_cursorIndexOfProductExtraPrice);
+              _tmpProductExtraPrice = _cursor.getLong(_cursorIndexOfProductExtraPrice);
             }
             _item.setProductExtraPrice(_tmpProductExtraPrice);
             final String _tmpFbid;
@@ -442,6 +441,49 @@ public final class CartDAO_Impl implements CartDAO {
   }
 
   @Override
+  public Single<Long> sumQuantity(final String userPhone) {
+    final String _sql = "SELECT SUM(productQuantity) FROM Cart WHERE userPhone=?";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    if (userPhone == null) {
+      _statement.bindNull(_argIndex);
+    } else {
+      _statement.bindString(_argIndex, userPhone);
+    }
+    return RxRoom.createSingle(new Callable<Long>() {
+      @Override
+      public Long call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final Long _result;
+          if(_cursor.moveToFirst()) {
+            final Long _tmp;
+            if (_cursor.isNull(0)) {
+              _tmp = null;
+            } else {
+              _tmp = _cursor.getLong(0);
+            }
+            _result = _tmp;
+          } else {
+            _result = null;
+          }
+          if(_result == null) {
+            throw new EmptyResultSetException("Query returned empty result set: " + _statement.getSql());
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
+  }
+
+  @Override
   public Flowable<CartItem> getItemInCart(final String productId, final String categoryId,
       final String userPhone) {
     final String _sql = "SELECT * FROM Cart WHERE  productId=? AND categoryId=? AND userPhone=?";
@@ -492,11 +534,11 @@ public final class CartDAO_Impl implements CartDAO {
             final String _tmpProductImage;
             _tmpProductImage = _cursor.getString(_cursorIndexOfProductImage);
             _result.setProductImage(_tmpProductImage);
-            final Double _tmpProductPrice;
+            final Long _tmpProductPrice;
             if (_cursor.isNull(_cursorIndexOfProductPrice)) {
               _tmpProductPrice = null;
             } else {
-              _tmpProductPrice = _cursor.getDouble(_cursorIndexOfProductPrice);
+              _tmpProductPrice = _cursor.getLong(_cursorIndexOfProductPrice);
             }
             _result.setProductPrice(_tmpProductPrice);
             final int _tmpProductQuantity;
@@ -514,11 +556,11 @@ public final class CartDAO_Impl implements CartDAO {
             final String _tmpProductSize;
             _tmpProductSize = _cursor.getString(_cursorIndexOfProductSize);
             _result.setProductSize(_tmpProductSize);
-            final Double _tmpProductExtraPrice;
+            final Long _tmpProductExtraPrice;
             if (_cursor.isNull(_cursorIndexOfProductExtraPrice)) {
               _tmpProductExtraPrice = null;
             } else {
-              _tmpProductExtraPrice = _cursor.getDouble(_cursorIndexOfProductExtraPrice);
+              _tmpProductExtraPrice = _cursor.getLong(_cursorIndexOfProductExtraPrice);
             }
             _result.setProductExtraPrice(_tmpProductExtraPrice);
             final String _tmpFbid;
