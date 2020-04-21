@@ -1,12 +1,12 @@
 package com.example.appbella.Model.EventBust;
 
-import com.example.appbella.Model.Product_and_Service;
+import com.example.appbella.Model.ProductOrService;
 
 public class FoodDetailEvent {
     private boolean success;
-    private Product_and_Service food;
+    private ProductOrService food;
 
-    public FoodDetailEvent(boolean success, Product_and_Service food) {
+    public FoodDetailEvent(boolean success, ProductOrService food) {
         this.success = success;
         this.food = food;
     }
@@ -19,11 +19,11 @@ public class FoodDetailEvent {
         this.success = success;
     }
 
-    public Product_and_Service getFood() {
+    public ProductOrService getFood() {
         return food;
     }
 
-    public void setFood(Product_and_Service food) {
+    public void setFood(ProductOrService food) {
         this.food = food;
     }
 }

@@ -13,16 +13,16 @@ import com.nex3z.notificationbadge.NotificationBadge;
 import java.lang.IllegalStateException;
 import java.lang.Override;
 
-public class MenuActivity_ViewBinding implements Unbinder {
-  private MenuActivity target;
+public class SubcategoryActivity_ViewBinding implements Unbinder {
+  private SubcategoryActivity target;
 
   @UiThread
-  public MenuActivity_ViewBinding(MenuActivity target) {
+  public SubcategoryActivity_ViewBinding(SubcategoryActivity target) {
     this(target, target.getWindow().getDecorView());
   }
 
   @UiThread
-  public MenuActivity_ViewBinding(MenuActivity target, View source) {
+  public SubcategoryActivity_ViewBinding(SubcategoryActivity target, View source) {
     this.target = target;
 
     target.recycler_category = Utils.findRequiredViewAsType(source, R.id.recycler_category, "field 'recycler_category'", RecyclerView.class);
@@ -34,7 +34,7 @@ public class MenuActivity_ViewBinding implements Unbinder {
   @Override
   @CallSuper
   public void unbind() {
-    MenuActivity target = this.target;
+    SubcategoryActivity target = this.target;
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 

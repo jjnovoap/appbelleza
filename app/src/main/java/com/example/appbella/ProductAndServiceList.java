@@ -20,19 +20,17 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.appbella.Adapter.MyItemAdapter;
+import com.example.appbella.Adapter.ProductOrServiceAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Interface.IServicesOrProductLoadListener;
-import com.example.appbella.Model.Category;
+import com.example.appbella.Model.Subcategory;
 import com.example.appbella.Model.EventBust.FoodListEvent;
-import com.example.appbella.Model.Product_and_Service;
-import com.flaviofaria.kenburnsview.KenBurnsView;
+import com.example.appbella.Model.ProductOrService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -60,9 +58,9 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
     IServicesOrProductLoadListener iServicesOrProductLoadListener;
 
-    private MyItemAdapter adapter;
-    private MyItemAdapter searchAdapter;
-    private Category selectedCategory;
+    private ProductOrServiceAdapter adapter;
+    private ProductOrServiceAdapter searchAdapter;
+    private Subcategory selectedSubcategory;
     DatabaseReference servicesRef;
 
     private LayoutAnimationController mLayoutAnimationController;
@@ -86,8 +84,6 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
         Log.d(TAG, "onCreate: started!!");
 
         servicesRef = FirebaseDatabase.getInstance().getReference("Services");
-
-
 
         iServicesOrProductLoadListener = this;
 
@@ -140,7 +136,7 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
     private void startSearchFood(String query) {
         Log.d(TAG, "startSearchFood: called!!");
         mDialog.show();
-        /*mCompositeDisposable.add(mIMyRestaurantAPI.searchFood(Common.API_KEY, query, selectedCategory.getId())
+        /*mCompositeDisposable.add(mIMyRestaurantAPI.searchFood(Common.API_KEY, query, selectedSubcategory.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(foodModel -> {
@@ -212,9 +208,9 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
         Log.d(TAG, "loadFoodListByCategory: called!!");
         if (event.isSuccess()) {
 
-            selectedCategory = event.getCategory();
+            selectedSubcategory = event.getSubcategory();
 
-            toolbar.setTitle(event.getCategory().getName());
+            toolbar.setTitle(event.getSubcategory().getName());
             toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
             Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/gilroybold.ttf");
             ((TextView) toolbar.getChildAt(0)).setTypeface(typeFace);
@@ -228,11 +224,11 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
             servicesRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    List<Product_and_Service> serviceList = new ArrayList<>();
+                    List<ProductOrService> serviceList = new ArrayList<>();
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
                         String name = ds.child("categoryId").getValue(String.class);
-                        if (event.getCategory().getCategoryId().equals(name)){
-                            Product_and_Service service = ds.getValue(Product_and_Service.class);
+                        if (event.getSubcategory().getCategoryId().equals(name)){
+                            ProductOrService service = ds.getValue(ProductOrService.class);
                             serviceList.add(service);
                             Common.currentFood = service;
                             mDialog.dismiss();
@@ -252,8 +248,8 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
     }
 
     @Override
-    public void onServicesOProductLoadSuccess(List<Product_and_Service> servicesOrProductList) {
-        adapter = new MyItemAdapter(this, servicesOrProductList);
+    public void onServicesOProductLoadSuccess(List<ProductOrService> servicesOrProductList) {
+        adapter = new ProductOrServiceAdapter(this, servicesOrProductList);
         recycler_food_list.setAdapter(adapter);
         recycler_food_list.setLayoutAnimation(mLayoutAnimationController);
         mDialog.dismiss();

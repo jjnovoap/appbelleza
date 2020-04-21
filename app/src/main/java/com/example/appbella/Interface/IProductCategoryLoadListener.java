@@ -1,10 +1,10 @@
 package com.example.appbella.Interface;
 
-import com.example.appbella.Model.Category;
+import com.example.appbella.Model.Subcategory;
 
 import java.util.List;
 
 public interface IProductCategoryLoadListener {
-    void onProductCategoryLoadSuccess(List<Category> categoryList);
+    void onProductCategoryLoadSuccess(List<Subcategory> subcategoryList);
     void onProductCategoryLoadFailed(String message);
 }

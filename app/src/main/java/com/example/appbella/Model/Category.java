@@ -2,25 +2,17 @@ package com.example.appbella.Model;
 
 public class Category {
 
-    private String id;
-    private String categoryId;
+    // Remember, all name of variable need EXACTLY name orf JSON property return from API
+    // That will help Gson parse it for you correct
+    private int id;
     private String name;
-    private String description;
-    private String image;
+    private boolean isSelected;
 
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -32,19 +24,11 @@ public class Category {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean isSelected() {
+        return isSelected;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

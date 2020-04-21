@@ -18,8 +18,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.appbella.Common.Common;
-import com.example.appbella.Model.EventBust.MenuItemEvent;
-import com.example.appbella.Model.CategoryProductOrServices;
+import com.example.appbella.Model.EventBust.SubcategoryEvent;
+import com.example.appbella.Model.Category;
 import com.example.appbella.Retrofit.IMyRestaurantAPI;
 import com.example.appbella.Retrofit.RetrofitClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -175,17 +175,8 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
                 }));
     }
 
-    private void addRestaurantMarker(List<CategoryProductOrServices> restaurantList) {
+    private void addRestaurantMarker(List<Category> restaurantList) {
         Log.d(TAG, "addRestaurantMarker: called!!");
-        for (CategoryProductOrServices restaurant : restaurantList) {
-            mMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.restaurant_marker))
-                    .position(new LatLng(restaurant.getLat(), restaurant.getLng()))
-                    .snippet(restaurant.getAddress())
-                    .title(new StringBuilder().append(restaurant.getId())
-                            .append(".")
-                            .append(restaurant.getName()).toString()));
-        }
     }
 
     private void addMarkerAndMoveCamera(Location lastLocation) {
@@ -237,9 +228,9 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
                 .subscribe(restaurantByIdModel -> {
 
                     if (restaurantByIdModel.isSuccess()) {
-                        Common.currentCategoryProductOrServices = restaurantByIdModel.getResult().get(0);
-                        EventBus.getDefault().postSticky(new MenuItemEvent(true, Common.currentCategoryProductOrServices));
-                        startActivity(new Intent(NearbyRestaurantActivity.this, MenuActivity.class));
+                        Common.currentCategory = restaurantByIdModel.getResult().get(0);
+                        EventBus.getDefault().postSticky(new SubcategoryEvent(true, Common.currentCategory));
+                        startActivity(new Intent(NearbyRestaurantActivity.this, SubcategoryActivity.class));
                         finish();
                     }
                     else {

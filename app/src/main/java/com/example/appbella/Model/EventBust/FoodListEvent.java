@@ -1,15 +1,15 @@
 package com.example.appbella.Model.EventBust;
 
-import com.example.appbella.Model.Category;
+import com.example.appbella.Model.Subcategory;
 
 public class FoodListEvent {
 
     private boolean success;
-    private Category category;
+    private Subcategory subcategory;
 
-    public FoodListEvent(boolean success, Category category) {
+    public FoodListEvent(boolean success, Subcategory subcategory) {
         this.success = success;
-        this.category = category;
+        this.subcategory = subcategory;
     }
 
     public boolean isSuccess() {
@@ -20,11 +20,11 @@ public class FoodListEvent {
         this.success = success;
     }
 
-    public Category getCategory() {
-        return category;
+    public Subcategory getSubcategory() {
+        return subcategory;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setSubcategory(Subcategory subcategory) {
+        this.subcategory = subcategory;
     }
 }

@@ -12,10 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Common.Common;
-import com.example.appbella.ProductAndServiceList;
 import com.example.appbella.Interface.IOnRecyclerViewClickListener;
-import com.example.appbella.Model.Category;
+import com.example.appbella.Model.Subcategory;
 import com.example.appbella.Model.EventBust.FoodListEvent;
+import com.example.appbella.ProductAndServiceList;
 import com.example.appbella.R;
 import com.squareup.picasso.Picasso;
 
@@ -27,48 +27,47 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MyCategoryAdapter extends RecyclerView.Adapter<MyCategoryAdapter.MyViewHolder> {
+public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.MyViewHolder> {
 
     private Context mContext;
-    private List<Category> mCategoryList;
+    private List<Subcategory> mSubcategoryList;
 
-    public MyCategoryAdapter(Context context, List<Category> categoryList) {
+    public SubcategoryAdapter(Context context, List<Subcategory> subcategoryList) {
         mContext = context;
-        mCategoryList = categoryList;
+        mSubcategoryList = subcategoryList;
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.layout_category, parent, false);
+                .inflate(R.layout.layout_subcategory, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Picasso.get().load(mCategoryList.get(position).getImage()).into(holder.img_category);
-        holder.txt_category.setText(mCategoryList.get(position).getName());
+        Picasso.get().load(mSubcategoryList.get(position).getImage()).into(holder.img_subcategory);
+        holder.txt_subcategory.setText(mSubcategoryList.get(position).getName());
 
         holder.setIOnRecyclerViewClickListener((view, i) -> {
             // Send sticky post event to FoodListActivity
-            EventBus.getDefault().postSticky(new FoodListEvent(true, mCategoryList.get(i)));
+            EventBus.getDefault().postSticky(new FoodListEvent(true, mSubcategoryList.get(position)));
             mContext.startActivity(new Intent(mContext, ProductAndServiceList.class));
-
         });
     }
 
     @Override
     public int getItemCount() {
-        return mCategoryList.size();
+        return mSubcategoryList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.img_category)
-        ImageView img_category;
-        @BindView(R.id.txt_category)
-        TextView txt_category;
+        @BindView(R.id.img_subcategory)
+        ImageView img_subcategory;
+        @BindView(R.id.txt_subcategory)
+        TextView txt_subcategory;
 
         IOnRecyclerViewClickListener mIOnRecyclerViewClickListener;
 
@@ -94,15 +93,15 @@ public class MyCategoryAdapter extends RecyclerView.Adapter<MyCategoryAdapter.My
 
     @Override
     public int getItemViewType(int position) {
-        if (mCategoryList.size() == 1) {
+        if (mSubcategoryList.size() == 1) {
             return Common.DEFAULT_COLUMN_COUNT;
         }
         else {
-            if (mCategoryList.size() % 2 == 0) {
+            if (mSubcategoryList.size() % 2 == 0) {
                 return Common.DEFAULT_COLUMN_COUNT;
             }
             else {
-                return (position > 1 && position == mCategoryList.size()-1)
+                return (position > 1 && position == mSubcategoryList.size()-1)
                         ? Common.FULL_WIDTH_COLUMN
                         : Common.DEFAULT_COLUMN_COUNT;
             }

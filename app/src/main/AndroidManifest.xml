@@ -39,7 +39,7 @@
         <activity android:name="com.example.appbella.FavoriteActivity" />
         <activity android:name="com.example.appbella.ProductAndServiceDetailActivity" />
         <activity android:name="com.example.appbella.ProductAndServiceList" />
-        <activity android:name="com.example.appbella.MenuActivity" />
+        <activity android:name="com.example.appbella.SubcategoryActivity" />
         <activity android:name="com.example.appbella.UpdateInfoActivity" />
         <activity
             android:name="com.example.appbella.HomeActivity"

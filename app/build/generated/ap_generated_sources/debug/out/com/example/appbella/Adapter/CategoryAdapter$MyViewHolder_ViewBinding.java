@@ -6,32 +6,35 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.UiThread;
+import androidx.cardview.widget.CardView;
 import butterknife.Unbinder;
 import butterknife.internal.Utils;
 import com.example.appbella.R;
 import java.lang.IllegalStateException;
 import java.lang.Override;
 
-public class MyCategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
-  private MyCategoryAdapter.MyViewHolder target;
+public class CategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
+  private CategoryAdapter.MyViewHolder target;
 
   @UiThread
-  public MyCategoryAdapter$MyViewHolder_ViewBinding(MyCategoryAdapter.MyViewHolder target,
+  public CategoryAdapter$MyViewHolder_ViewBinding(CategoryAdapter.MyViewHolder target,
       View source) {
     this.target = target;
 
-    target.img_category = Utils.findRequiredViewAsType(source, R.id.img_category, "field 'img_category'", ImageView.class);
     target.txt_category = Utils.findRequiredViewAsType(source, R.id.txt_category, "field 'txt_category'", TextView.class);
+    target.img_view = Utils.findRequiredViewAsType(source, R.id.img_view, "field 'img_view'", ImageView.class);
+    target.card = Utils.findRequiredViewAsType(source, R.id.card, "field 'card'", CardView.class);
   }
 
   @Override
   @CallSuper
   public void unbind() {
-    MyCategoryAdapter.MyViewHolder target = this.target;
+    CategoryAdapter.MyViewHolder target = this.target;
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 
-    target.img_category = null;
     target.txt_category = null;
+    target.img_view = null;
+    target.card = null;
   }
 }

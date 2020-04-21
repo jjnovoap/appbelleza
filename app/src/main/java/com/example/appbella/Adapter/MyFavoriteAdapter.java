@@ -17,7 +17,7 @@ import com.example.appbella.ProductAndServiceDetailActivity;
 import com.example.appbella.Interface.IOnRecyclerViewClickListener;
 import com.example.appbella.Model.EventBust.FoodDetailEvent;
 import com.example.appbella.Model.Favorite;
-import com.example.appbella.Model.CategoryProductOrServices;
+import com.example.appbella.Model.Category;
 import com.example.appbella.R;
 import com.example.appbella.Retrofit.IMyRestaurantAPI;
 import com.example.appbella.Retrofit.RetrofitClient;
@@ -78,11 +78,11 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
                 if (foodModel.isSuccess()) {
                     // When user click to favorite item, just start FoodDetailActivity
                     mContext.startActivity(new Intent(mContext, ProductAndServiceDetailActivity.class));
-                    if (Common.currentCategoryProductOrServices == null) {
-                        Common.currentCategoryProductOrServices = new CategoryProductOrServices();
+                    if (Common.currentCategory == null) {
+                        Common.currentCategory = new Category();
                     }
-                    Common.currentCategoryProductOrServices.setId(mFavoriteList.get(i).getRestaurantId());
-                    Common.currentCategoryProductOrServices.setName(mFavoriteList.get(i).getRestaurantName());
+                    Common.currentCategory.setId(mFavoriteList.get(i).getRestaurantId());
+                    Common.currentCategory.setName(mFavoriteList.get(i).getRestaurantName());
                     EventBus.getDefault().postSticky(new FoodDetailEvent(true, foodModel.getResult().get(0)));
 
                 }

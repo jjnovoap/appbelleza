@@ -15,8 +15,8 @@ import androidx.core.app.NotificationCompat;
 import com.example.appbella.Model.Addon;
 import com.example.appbella.Model.Favorite;
 import com.example.appbella.Model.LocationHelper;
-import com.example.appbella.Model.Product_and_Service;
-import com.example.appbella.Model.CategoryProductOrServices;
+import com.example.appbella.Model.ProductOrService;
+import com.example.appbella.Model.Category;
 import com.example.appbella.Model.User;
 import com.example.appbella.R;
 import com.example.appbella.Retrofit.IFCMService;
@@ -40,10 +40,10 @@ public class Common {
 
     public static User currentUser;
     public static Addon currentAddon;
-    public static CategoryProductOrServices currentCategoryProductOrServices;
+    public static Category currentCategory;
     public static Set<Addon> addonList = new HashSet<>();
     public static Favorite currentFavorite;
-    public static Product_and_Service currentFood;
+    public static ProductOrService currentFood;
     public static String user;
     public static LocationHelper currentlocation;
 

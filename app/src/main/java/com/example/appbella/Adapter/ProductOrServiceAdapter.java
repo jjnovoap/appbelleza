@@ -21,7 +21,7 @@ import com.example.appbella.ProductAndServiceDetailActivity;
 import com.example.appbella.Interface.IFoodDetailOrCartClickListener;
 import com.example.appbella.Model.EventBust.FoodDetailEvent;
 import com.example.appbella.Model.Favorite;
-import com.example.appbella.Model.Product_and_Service;
+import com.example.appbella.Model.ProductOrService;
 import com.example.appbella.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -40,10 +40,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.MyViewHolder> {
+public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServiceAdapter.MyViewHolder> {
 
     private Context mContext;
-    private List<Product_and_Service> mProductAndServiceList;
+    private List<ProductOrService> mProductAndServiceList;
     private CompositeDisposable mCompositeDisposable;
     private CartDataSource mCartDataSource;
     private DatabaseReference favorite, productAndService;
@@ -54,7 +54,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.MyViewHold
         mCompositeDisposable.clear();
     }
 
-    public MyItemAdapter(Context context, List<Product_and_Service> productandServiceList) {
+    public ProductOrServiceAdapter(Context context, List<ProductOrService> productandServiceList) {
         mContext = context;
         mProductAndServiceList = productandServiceList;
         mCompositeDisposable = new CompositeDisposable();

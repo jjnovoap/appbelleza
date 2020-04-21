@@ -24,7 +24,7 @@ import com.example.appbella.Interface.IAddonLoadListener;
 import com.example.appbella.Model.Addon;
 import com.example.appbella.Model.EventBust.AddOnEventChange;
 import com.example.appbella.Model.EventBust.FoodDetailEvent;
-import com.example.appbella.Model.Product_and_Service;
+import com.example.appbella.Model.ProductOrService;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
@@ -73,7 +73,7 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
     DatabaseReference addonRef;
     IAddonLoadListener iAddonLoadListener;
 
-    private Product_and_Service selectedFood;
+    private ProductOrService selectedFood;
     private Long originalPrice;
 
     private long addOnPrice = 0;

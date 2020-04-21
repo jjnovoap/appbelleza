@@ -1,11 +1,11 @@
 package com.example.appbella.Interface;
 
 
-import com.example.appbella.Model.Product_and_Service;
+import com.example.appbella.Model.ProductOrService;
 
 import java.util.List;
 
 public interface IServicesOrProductLoadListener {
-    void onServicesOProductLoadSuccess(List<Product_and_Service> servicesOrProductList);
+    void onServicesOProductLoadSuccess(List<ProductOrService> servicesOrProductList);
     void onServicesOProductLoadFailed(String message);
 }

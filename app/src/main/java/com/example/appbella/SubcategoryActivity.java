@@ -8,20 +8,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
-import com.example.appbella.Adapter.MyCategoryAdapter;
+import com.example.appbella.Adapter.SubcategoryAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Interface.IProductCategoryLoadListener;
-import com.example.appbella.Model.Category;
-import com.example.appbella.Model.EventBust.MenuItemEvent;
+import com.example.appbella.Model.Subcategory;
+import com.example.appbella.Model.EventBust.SubcategoryEvent;
 import com.example.appbella.Utils.SpaceItemDecoration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
@@ -39,16 +38,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import dmax.dialog.SpotsDialog;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MenuActivity extends AppCompatActivity implements IProductCategoryLoadListener {
-
-    private static final String TAG = MenuActivity.class.getSimpleName();
+public class SubcategoryActivity extends AppCompatActivity implements IProductCategoryLoadListener {
 
     @BindView(R.id.recycler_category)
     RecyclerView recycler_category;
@@ -62,11 +58,10 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
     IProductCategoryLoadListener iProductCategoryLoadListener;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     DatabaseReference categoriesServicesRef;
-    private android.app.AlertDialog mDialog;
     private DatabaseReference favorite;
 
 
-    private MyCategoryAdapter mAdapter;
+    private SubcategoryAdapter mAdapter;
     private CartDataSource mCartDataSource;
 
     private LayoutAnimationController mLayoutAnimationController;
@@ -87,7 +82,6 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        Log.d(TAG, "onCreate: started!!");
 
         categoriesServicesRef = FirebaseDatabase.getInstance().getReference("Services Categories");
         iProductCategoryLoadListener = this;
@@ -100,7 +94,6 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
     }
 
     private void loadFavoriteByRestaurant(int id) {
-        Log.d(TAG, "loadFavoriteByRestaurant: called!!");
         /*FirebaseAuth auth = FirebaseAuth.getInstance();
         favorite.child(auth.getCurrentUser().getUid()).child(String.valueOf(id)).getRef().addValueEventListener(new ValueEventListener() {
             @Override
@@ -148,7 +141,6 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
     }
 
     private void countCartByRestaurant() {
-        Log.d(TAG, "countCartByRestaurant: called!!");
         mCartDataSource.countItemInCart(Common.currentUser.getUserPhone())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -165,7 +157,7 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(MenuActivity.this, "[COUNT CART}"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SubcategoryActivity.this, "[COUNT CART}"+e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -183,13 +175,12 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
     }
 
     private void initView() {
-        Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
 
         mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
 
         btn_cart.setOnClickListener(v -> {
-            startActivity(new Intent(MenuActivity.this, CartListActivity.class));
+            startActivity(new Intent(SubcategoryActivity.this, CartListActivity.class));
         });
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
@@ -218,8 +209,6 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
     }
 
     private void init() {
-        Log.d(TAG, "init: called!!");
-        mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
         mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());
     }
 
@@ -240,7 +229,7 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
 
     // Listen EventBus
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void loadMenuByRestaurant(MenuItemEvent event) {
+    public void loadSubacategoryByCategory(SubcategoryEvent event) {
 
         loadFavoriteByRestaurant(event.getProductOrServices().getId());
         if (event.isSuccess()) {
@@ -253,16 +242,16 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
             categoriesServicesRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    List<Category> categoryList = new ArrayList<>();
+                    List<Subcategory> subcategoryList = new ArrayList<>();
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
                         String id = String.valueOf(event.getProductOrServices().getId());
                         String key = ds.child("id").getValue(String.class);
                         if (id.equals(key)){
-                            Category category = ds.getValue(Category.class);
-                            categoryList.add(category);
+                            Subcategory subcategory = ds.getValue(Subcategory.class);
+                            subcategoryList.add(subcategory);
                         }
                     }
-                    iProductCategoryLoadListener.onProductCategoryLoadSuccess(categoryList);
+                    iProductCategoryLoadListener.onProductCategoryLoadSuccess(subcategoryList);
                 }
 
                 @Override
@@ -274,14 +263,14 @@ public class MenuActivity extends AppCompatActivity implements IProductCategoryL
     }
 
     @Override
-    public void onProductCategoryLoadSuccess(List<Category> categoryList) {
-        mAdapter = new MyCategoryAdapter(MenuActivity.this, categoryList);
+    public void onProductCategoryLoadSuccess(List<Subcategory> subcategoryList) {
+        mAdapter = new SubcategoryAdapter(SubcategoryActivity.this, subcategoryList);
         recycler_category.setAdapter(mAdapter);
         recycler_category.setLayoutAnimation(mLayoutAnimationController);
     }
 
     @Override
     public void onProductCategoryLoadFailed(String message) {
-
+        Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
     }
 }

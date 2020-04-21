@@ -234,7 +234,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
 
                         Order order = new Order(OrderId,
                                 0,
-                                Common.currentCategoryProductOrServices.getId(),
+                                Common.currentCategory.getId(),
                                 Common.currentUser.getUserPhone(),
                                 Common.currentUser.getName(),
                                 address,

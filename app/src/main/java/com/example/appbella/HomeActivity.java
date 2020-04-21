@@ -10,8 +10,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,18 +20,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.appbella.Adapter.MyCategoryAdapter;
+import androidx.fragment.app.Fragment;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.LocalCartDataSource;
+import com.example.appbella.Fragments.HomeFragment;
 import com.example.appbella.Fragments.MapsBottomDialogFragment;
-import com.example.appbella.Interface.IProductCategoryLoadListener;
-import com.example.appbella.Interface.IservicesCategoryLoadListener;
-import com.example.appbella.Model.Category;
 import com.example.appbella.Model.User;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +39,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nex3z.notificationbadge.NotificationBadge;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,38 +51,33 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, IProductCategoryLoadListener, IservicesCategoryLoadListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     private TextView txt_user_name;
     private TextView txt_address;
+    private boolean isTransactionSafe;
+    private boolean isTransactionPending;
 
     FirebaseFirestore userRef;
     DatabaseReference categoryRef;
     private long mLastClickTime = 0;
 
+    @BindView(R.id.bottom_navigation)
+    BottomNavigationView bottom_navigation;
+
     MapsBottomDialogFragment BottomDialogFragmen;
     private DatabaseReference locationRef;
-    IservicesCategoryLoadListener iservicesCategoryLoadListener;
-    IProductCategoryLoadListener iProductCategoryLoadListener;
-    private MyCategoryAdapter Adapter;
     @BindView(R.id.img_user)
     ImageView img_user;
-    @BindView(R.id.recycler_catalogo)
-    RecyclerView recycler_catalogo;
-    @BindView(R.id.recycler_category)
-    RecyclerView recycler_category;
-
     @BindView(R.id.fab)
     ImageView btn_cart;
     @BindView(R.id.badge)
     NotificationBadge badge;
     private CartDataSource mCartDataSource;
-    DatabaseReference categoriesServicesRef;
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-    private LayoutAnimationController mLayoutAnimationController;
 
     @Override
     protected void onDestroy() {
@@ -119,12 +108,9 @@ public class HomeActivity extends AppCompatActivity
         FirebaseAuth auth = FirebaseAuth.getInstance();
         Common.user = auth.getCurrentUser().getUid();
         locationRef = FirebaseDatabase.getInstance().getReference().child("Current Location").child(auth.getCurrentUser().getUid());
-        categoriesServicesRef = FirebaseDatabase.getInstance().getReference("Services Categories");
         userRef = FirebaseFirestore.getInstance();
         categoryRef = FirebaseDatabase.getInstance().getReference("General Categories");
 
-        iProductCategoryLoadListener = this;
-        iservicesCategoryLoadListener = this;
 
         init();
         countCartByRestaurant();
@@ -165,11 +151,50 @@ public class HomeActivity extends AppCompatActivity
             signOut();
         });
 
+        bottom_navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            Fragment fragment = null;
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                //add fragments
+                if (menuItem.getItemId() == R.id.action_home)
+                    fragment = new HomeFragment();
+                /*else if (menuItem.getItemId() == R.id.action_questions)
+                    fragment = new FrequentQuestionsFragment();
+                else if (menuItem.getItemId() == R.id.action_about_us_cuber)
+                    fragment = new AboutUsFragment();
+                else if (menuItem.getItemId() == R.id.action_shopping)
+                    fragment = new ShoppingFragment();*/
+                return loadFragment(fragment);
+            }
+        });
+
 
         BottomDialogFragmen = MapsBottomDialogFragment.newInstance();
-        loadCatalogo();
         setUserInformation();
 
+    }
+
+    public void onPostResume() {
+        super.onPostResume();
+        isTransactionSafe = true;
+    }
+    public void onPause() {
+        super.onPause();
+        isTransactionSafe = false;
+    }
+
+
+    private boolean loadFragment(Fragment fragment) {
+        if (isTransactionSafe){
+            if (fragment != null){
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).commit();
+                return true;
+            }
+        }else {
+            isTransactionPending = true;
+        }
+        return false;
     }
 
     private void setUserInformation() {
@@ -181,56 +206,13 @@ public class HomeActivity extends AppCompatActivity
                                 String username = documentSnapshot.getString("name");
                                 txt_user_name.setText(new StringBuilder("¡Hola ")
                                         .append(username).append("!"));
+                                bottom_navigation.setSelectedItemId(R.id.action_home);
                                 Common.currentUser = documentSnapshot.toObject(User.class);
                             }
                         }).addOnFailureListener(e ->
                 Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void loadCatalogo() {
-
-        categoriesServicesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Category> categoryList = new ArrayList<>();
-                for (DataSnapshot ds: dataSnapshot.getChildren()){
-                    String id = String.valueOf(1);
-                    String key = ds.child("id").getValue(String.class);
-                    if (id.equals(key)){
-                        Category category = ds.getValue(Category.class);
-                        categoryList.add(category);
-                    }
-                }
-                iservicesCategoryLoadListener.onServiceCategoryLoadSuccess(categoryList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                iservicesCategoryLoadListener.onServiceCategoryLoadFailed(databaseError.getMessage());
-            }
-        });
-
-        categoriesServicesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Category> categoryList = new ArrayList<>();
-                for (DataSnapshot ds: dataSnapshot.getChildren()){
-                    String id = String.valueOf(2);
-                    String key = ds.child("id").getValue(String.class);
-                    if (id.equals(key)){
-                        Category category = ds.getValue(Category.class);
-                        categoryList.add(category);
-                    }
-                }
-                iProductCategoryLoadListener.onProductCategoryLoadSuccess(categoryList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                iProductCategoryLoadListener.onProductCategoryLoadFailed(databaseError.getMessage());
-            }
-        });
-    }
 
     private void initView() {
         ButterKnife.bind(this);
@@ -239,57 +221,7 @@ public class HomeActivity extends AppCompatActivity
             startActivity(new Intent(HomeActivity.this, CartListActivity.class));
         });
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
-        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        // This code will select item view type
-        // If item is last, it will set full width on Grid layout
-        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (Adapter != null) {
-                    switch (Adapter.getItemViewType(position)) {
-                        case Common.DEFAULT_COLUMN_COUNT:
-                            return 1;
-                        case Common.FULL_WIDTH_COLUMN:
-                            return 2;
-                        default:
-                            return -1;
-                    }
-                } else {
-                    return -1;
-                }
-            }
-        });
-        recycler_catalogo.setLayoutManager(layoutManager);
-        recycler_catalogo.setHasFixedSize(true);
         setAddress();
-        //mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
-
-        mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
-
-        GridLayoutManager layoutMan = new GridLayoutManager(this, 1);
-        layoutMan.setOrientation(RecyclerView.HORIZONTAL);
-        // This code will select item view type
-        // If item is last, it will set full width on Grid layout
-        layoutMan.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (Adapter != null) {
-                    switch (Adapter.getItemViewType(position)) {
-                        case Common.DEFAULT_COLUMN_COUNT:
-                            return 1;
-                        case Common.FULL_WIDTH_COLUMN:
-                            return 1;
-                        default:
-                            return -1;
-                    }
-                } else {
-                    return -1;
-                }
-            }
-        });
-        recycler_category.setLayoutManager(layoutMan);
-        recycler_category.setHasFixedSize(true);
     }
 
     private void countCartByRestaurant() {
@@ -440,7 +372,7 @@ public class HomeActivity extends AppCompatActivity
                 .setPositiveButton("OK", (dialog, which) -> {
                     FirebaseAuth.getInstance().signOut();
                     Common.currentUser = null;
-                    Common.currentCategoryProductOrServices = null;
+                    Common.currentCategory = null;
                     Intent intent = new Intent(HomeActivity.this, MainActivity.class);
                     // Clear all previous activity
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -451,28 +383,4 @@ public class HomeActivity extends AppCompatActivity
         confirmDialog.show();
     }
 
-
-    @Override
-    public void onProductCategoryLoadSuccess(List<Category> categoryList) {
-        Adapter = new MyCategoryAdapter(HomeActivity.this, categoryList);
-        recycler_category.setAdapter(Adapter);
-        recycler_category.setLayoutAnimation(mLayoutAnimationController);
-    }
-
-    @Override
-    public void onProductCategoryLoadFailed(String message) {
-        Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
-    }
-
-
-    @Override
-    public void onServiceCategoryLoadSuccess(List<Category> categoryList) {
-        Adapter = new MyCategoryAdapter(HomeActivity.this, categoryList);
-        recycler_catalogo.setAdapter(Adapter);
-    }
-
-    @Override
-    public void onServiceCategoryLoadFailed(String message) {
-        Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
-    }
 }
