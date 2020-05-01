@@ -2,6 +2,7 @@ package com.example.appbella.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Common.Common;
@@ -17,11 +19,14 @@ import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.CartItem;
 import com.example.appbella.Database.LocalCartDataSource;
+import com.example.appbella.Interface.IOnImageViewAdapterClickListener;
+import com.example.appbella.Model.EventBust.CalculatePriceEvent;
 import com.example.appbella.ProductAndServiceDetailActivity;
 import com.example.appbella.Interface.IFoodDetailOrCartClickListener;
 import com.example.appbella.Model.EventBust.FoodDetailEvent;
 import com.example.appbella.Model.Favorite;
 import com.example.appbella.Model.ProductOrService;
+import com.example.appbella.ProductAndServiceList;
 import com.example.appbella.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -36,8 +41,10 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServiceAdapter.MyViewHolder> {
@@ -49,6 +56,7 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
     private DatabaseReference favorite, productAndService;
 
     private final String TAG = "[Favorite] ";
+
 
     public void onStop() {
         mCompositeDisposable.clear();
@@ -71,13 +79,13 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
         return new MyViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Picasso.get().load(mProductAndServiceList.get(position).getImage())
                 .placeholder(R.drawable.app_icon).into(holder.img_food);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-
         holder.txt_product_and_service_name.setText(mProductAndServiceList.get(position).getName());
         holder.txt_product_and_service_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
                 .append(mProductAndServiceList.get(position).getPrice()));
@@ -87,6 +95,15 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
         } else {
             holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
         }
+
+        if (Long.parseLong(String.valueOf(holder.txt_quantity.getText())) == 1) {
+            holder.img_decrease.setVisibility(View.GONE);
+            holder.img_delete_food.setVisibility(View.VISIBLE);
+        }else{
+            holder.img_decrease.setVisibility(View.VISIBLE);
+            holder.img_delete_food.setVisibility(View.GONE);
+        }
+
 
         // Event
         holder.img_fav.setOnClickListener(v -> {
@@ -128,26 +145,47 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
 
         });
 
-        holder.setIFoodDetailOrCartClickListener((view, i, isDetail) -> {
+        holder.img_increase.setOnClickListener(v -> {
+            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
+            q += 1;
+            holder.txt_quantity.setText(q + "");
+            notifyDataSetChanged();
+        });
+
+        holder.img_decrease.setOnClickListener(v -> {
+            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
+            if (q > 0) {
+                q -= 1;
+                holder.txt_quantity.setText(q + "");
+                notifyDataSetChanged();
+            }
+
+        });
+
+
+        holder.setIFoodDetailOrCartClickListener((view, i, isDetail, isDelete) -> {
+            CartItem cartItem = null;
             if (isDetail) {
 
                 mContext.startActivity(new Intent(mContext, ProductAndServiceDetailActivity.class));
                 EventBus.getDefault().postSticky(new FoodDetailEvent(true, mProductAndServiceList.get(i)));
 
             } else {
+                long j = Long.parseLong(holder.txt_quantity.getText().toString());
                 // Cart create
-                CartItem cartItem = new CartItem();
+                cartItem = new CartItem();
                 cartItem.setProductId(mProductAndServiceList.get(i).getName());
                 cartItem.setCategoryId(mProductAndServiceList.get(i).getCategoryId());
                 cartItem.setProductName(mProductAndServiceList.get(i).getName());
                 cartItem.setProductPrice(mProductAndServiceList.get(i).getPrice());
                 cartItem.setProductImage(mProductAndServiceList.get(i).getImage());
-                cartItem.setProductQuantity(1);
+                cartItem.setProductQuantity(Math.toIntExact(j));
                 cartItem.setUserPhone(Common.currentUser.getUserPhone());
                 cartItem.setProductAddon("NORMAL");
                 cartItem.setProductSize("NORMAL");
                 cartItem.setProductExtraPrice((long) 0);
                 cartItem.setFbid(Common.currentUser.getFbid());
+
 
                 mCompositeDisposable.add(mCartDataSource.insertOrReplaceAll(cartItem)
                         .subscribeOn(Schedulers.io())
@@ -157,6 +195,14 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
                         }, throwable -> {
                             Toast.makeText(mContext, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }));
+
+            }
+
+            if (isDelete) {
+                mCompositeDisposable.delete(mCartDataSource.deleteCart(cartItem)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe());
             }
         });
 
@@ -173,20 +219,30 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
         ImageView img_food;
         @BindView(R.id.img_fav)
         ImageView img_fav;
+        @BindView(R.id.txt_quantity)
+        TextView txt_quantity;
         @BindView(R.id.txt_product_and_service_name)
         TextView txt_product_and_service_name;
         @BindView(R.id.txt_product_and_service_price)
         TextView txt_product_and_service_price;
         @BindView(R.id.img_detail)
-        ImageView img_detail;
+        TextView img_detail;
         @BindView(R.id.img_cart)
         ImageView img_add_cart;
+
+        @BindView(R.id.img_delete_food)
+        ImageView img_delete_food;
+        @BindView(R.id.img_decrease)
+        ImageView img_decrease;
+        @BindView(R.id.img_increase)
+        ImageView img_increase;
 
         IFoodDetailOrCartClickListener mIFoodDetailOrCartClickListener;
 
         public void setIFoodDetailOrCartClickListener(IFoodDetailOrCartClickListener IFoodDetailOrCartClickListener) {
             mIFoodDetailOrCartClickListener = IFoodDetailOrCartClickListener;
         }
+
 
         Unbinder mUnbinder;
 
@@ -197,15 +253,19 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
             favorite = FirebaseDatabase.getInstance().getReference().child("Favorites");
             img_detail.setOnClickListener(this);
             img_add_cart.setOnClickListener(this);
+            img_delete_food.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.img_detail) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true, false);
             } else if (v.getId() == R.id.img_cart) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false);
+            } else if (v == img_delete_food) {
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true);
             }
+
         }
     }
 }

@@ -2,6 +2,7 @@
 package com.example.appbella;
 
 import android.view.View;
+import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.Toolbar;
@@ -25,6 +26,7 @@ public class ProductAndServiceList_ViewBinding implements Unbinder {
 
     target.recycler_food_list = Utils.findRequiredViewAsType(source, R.id.recycler_food_list, "field 'recycler_food_list'", RecyclerView.class);
     target.toolbar = Utils.findRequiredViewAsType(source, R.id.toolbar, "field 'toolbar'", Toolbar.class);
+    target.txt_subcategory = Utils.findRequiredViewAsType(source, R.id.txt_subcategory, "field 'txt_subcategory'", TextView.class);
   }
 
   @Override
@@ -36,5 +38,6 @@ public class ProductAndServiceList_ViewBinding implements Unbinder {
 
     target.recycler_food_list = null;
     target.toolbar = null;
+    target.txt_subcategory = null;
   }
 }

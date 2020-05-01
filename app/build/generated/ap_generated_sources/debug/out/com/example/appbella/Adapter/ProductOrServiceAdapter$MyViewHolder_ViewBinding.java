@@ -22,10 +22,14 @@ public class ProductOrServiceAdapter$MyViewHolder_ViewBinding implements Unbinde
 
     target.img_food = Utils.findRequiredViewAsType(source, R.id.img_food, "field 'img_food'", ImageView.class);
     target.img_fav = Utils.findRequiredViewAsType(source, R.id.img_fav, "field 'img_fav'", ImageView.class);
+    target.txt_quantity = Utils.findRequiredViewAsType(source, R.id.txt_quantity, "field 'txt_quantity'", TextView.class);
     target.txt_product_and_service_name = Utils.findRequiredViewAsType(source, R.id.txt_product_and_service_name, "field 'txt_product_and_service_name'", TextView.class);
     target.txt_product_and_service_price = Utils.findRequiredViewAsType(source, R.id.txt_product_and_service_price, "field 'txt_product_and_service_price'", TextView.class);
-    target.img_detail = Utils.findRequiredViewAsType(source, R.id.img_detail, "field 'img_detail'", ImageView.class);
+    target.img_detail = Utils.findRequiredViewAsType(source, R.id.img_detail, "field 'img_detail'", TextView.class);
     target.img_add_cart = Utils.findRequiredViewAsType(source, R.id.img_cart, "field 'img_add_cart'", ImageView.class);
+    target.img_delete_food = Utils.findRequiredViewAsType(source, R.id.img_delete_food, "field 'img_delete_food'", ImageView.class);
+    target.img_decrease = Utils.findRequiredViewAsType(source, R.id.img_decrease, "field 'img_decrease'", ImageView.class);
+    target.img_increase = Utils.findRequiredViewAsType(source, R.id.img_increase, "field 'img_increase'", ImageView.class);
   }
 
   @Override
@@ -37,9 +41,13 @@ public class ProductOrServiceAdapter$MyViewHolder_ViewBinding implements Unbinde
 
     target.img_food = null;
     target.img_fav = null;
+    target.txt_quantity = null;
     target.txt_product_and_service_name = null;
     target.txt_product_and_service_price = null;
     target.img_detail = null;
     target.img_add_cart = null;
+    target.img_delete_food = null;
+    target.img_decrease = null;
+    target.img_increase = null;
   }
 }

@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,6 +56,8 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
     RecyclerView recycler_food_list;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.txt_subcategory)
+    TextView txt_subcategory;
 
     IServicesOrProductLoadListener iServicesOrProductLoadListener;
 
@@ -210,11 +213,12 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
             selectedSubcategory = event.getSubcategory();
 
-            toolbar.setTitle(event.getSubcategory().getName());
-            toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
+            txt_subcategory.setText(event.getSubcategory().getName());
+            toolbar.setTitle("");
+            /*toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
             Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/gilroybold.ttf");
             ((TextView) toolbar.getChildAt(0)).setTypeface(typeFace);
-            ((TextView) toolbar.getChildAt(0)).setTextSize(16);
+            ((TextView) toolbar.getChildAt(0)).setTextSize(16);*/
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -257,6 +261,6 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
     @Override
     public void onServicesOProductLoadFailed(String message) {
-
+        Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
     }
 }

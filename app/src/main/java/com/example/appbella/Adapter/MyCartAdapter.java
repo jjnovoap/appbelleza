@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Database.CartDataSource;
@@ -176,7 +177,6 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHold
             super(itemView);
 
             mUnbinder = ButterKnife.bind(this, itemView);
-
             img_decrease.setOnClickListener(this);
             img_increase.setOnClickListener(this);
             img_delete_food.setOnClickListener(this);

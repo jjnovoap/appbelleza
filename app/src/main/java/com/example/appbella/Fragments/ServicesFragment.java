@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -133,8 +134,29 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
     @Override
     public void onSubcategoryLoadSuccess(List<Subcategory> subcategoryList) {
         SubcategoryAdapter adapter = new SubcategoryAdapter(getContext(), subcategoryList);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        //LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recycler_subcategory.setAdapter(adapter);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        // This code will select item view type
+        // If item is last, it will set full width on Grid layout
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (adapter != null) {
+                    switch (adapter.getItemViewType(position)) {
+                        case Common.DEFAULT_COLUMN_COUNT:
+                            return 1;
+                        case Common.FULL_WIDTH_COLUMN:
+                            return 2;
+                        default:
+                            return -1;
+                    }
+                } else {
+                    return -1;
+                }
+            }
+        });
         recycler_subcategory.setHasFixedSize(true);
         recycler_subcategory.setLayoutManager(layoutManager);
     }
