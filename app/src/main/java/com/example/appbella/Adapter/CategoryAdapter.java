@@ -95,11 +95,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         @BindView(R.id.card)
         CardView card;
 
-        IOnRecyclerViewClickListener mIOnRecyclerViewClickListener;
-
-        public void setIOnRecyclerViewClickListener(IOnRecyclerViewClickListener IOnRecyclerViewClickListener) {
-            mIOnRecyclerViewClickListener = IOnRecyclerViewClickListener;
-        }
+        //IOnRecyclerViewClickListener mIOnRecyclerViewClickListener;
 
         Unbinder mUnbinder;
         public MyViewHolder(@NonNull View itemView) {
@@ -112,7 +108,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
 
         @Override
         public void onClick(View v) {
-            mIOnRecyclerViewClickListener.onClick(v, getAdapterPosition());
+            //mIOnRecyclerViewClickListener.onClick(v, getAdapterPosition());
         }
     }
 
