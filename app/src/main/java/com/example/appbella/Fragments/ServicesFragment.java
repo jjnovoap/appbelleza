@@ -136,8 +136,8 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
         SubcategoryAdapter adapter = new SubcategoryAdapter(getContext(), subcategoryList);
         //LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recycler_subcategory.setAdapter(adapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        /*GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
         // This code will select item view type
         // If item is last, it will set full width on Grid layout
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -156,7 +156,8 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
                     return -1;
                 }
             }
-        });
+        });*/
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recycler_subcategory.setHasFixedSize(true);
         recycler_subcategory.setLayoutManager(layoutManager);
     }
