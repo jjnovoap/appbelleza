@@ -9,11 +9,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appbella.Adapter.CategoryAdapter;
 import com.example.appbella.Adapter.SubcategoryAdapter;
 import com.example.appbella.Common.Common;
+import com.example.appbella.Interface.ICategoryLoadListener;
 import com.example.appbella.Interface.IProductCategoryLoadListener;
+import com.example.appbella.Interface.ISubcategoryLoadListener;
+import com.example.appbella.Model.Category;
+import com.example.appbella.Model.EventBust.SubcategoryEvent;
 import com.example.appbella.Model.Subcategory;
 import com.example.appbella.R;
 import com.google.firebase.database.DataSnapshot;
@@ -22,6 +28,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +39,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class ProductsFragment extends Fragment implements IProductCategoryLoadListener {
+public class ProductsFragment extends Fragment implements ICategoryLoadListener, ISubcategoryLoadListener {
 
     public ProductsFragment() {
         // Required empty public constructor
     }
-    private Unbinder unbinder;
-    private SubcategoryAdapter Adapter;
+    private DatabaseReference subcategoryRef;
+    Unbinder unbinder;
     @BindView(R.id.recycler_category)
     RecyclerView recycler_category;
-    private IProductCategoryLoadListener iProductCategoryLoadListener;
-    private DatabaseReference categoriesServicesRef;
+    @BindView(R.id.recycler_subcategory)
+    RecyclerView recycler_subcategory;
+    private ICategoryLoadListener iCategoryLoadListener;
+    private com.example.appbella.Interface.ISubcategoryLoadListener ISubcategoryLoadListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,67 +59,103 @@ public class ProductsFragment extends Fragment implements IProductCategoryLoadLi
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_products, container, false);
         unbinder = ButterKnife.bind(this,view);
-        iProductCategoryLoadListener = this;
+        unbinder = ButterKnife.bind(this, view);
 
-        categoriesServicesRef = FirebaseDatabase.getInstance().getReference("Services Categories");
+        ISubcategoryLoadListener = this;
+        iCategoryLoadListener = this;
 
+        subcategoryRef = FirebaseDatabase.getInstance().getReference("Products Categories");
+        DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("General Products Categories");
 
-        GridLayoutManager layoutMan = new GridLayoutManager(getContext(), 1);
-        layoutMan.setOrientation(RecyclerView.HORIZONTAL);
-        // This code will select item view type
-        // If item is last, it will set full width on Grid layout
-        layoutMan.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (Adapter != null) {
-                    switch (Adapter.getItemViewType(position)) {
-                        case Common.DEFAULT_COLUMN_COUNT:
-                            return 1;
-                        case Common.FULL_WIDTH_COLUMN:
-                            return 1;
-                        default:
-                            return -1;
-                    }
-                } else {
-                    return -1;
-                }
-            }
-        });
-        recycler_category.setLayoutManager(layoutMan);
-        recycler_category.setHasFixedSize(true);
-
-        categoriesServicesRef.addValueEventListener(new ValueEventListener() {
+        categoryRef.getRef().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Subcategory> subcategoryList = new ArrayList<>();
-                for (DataSnapshot ds: dataSnapshot.getChildren()){
-                    String id = String.valueOf(2);
-                    String key = ds.child("id").getValue(String.class);
-                    if (id.equals(key)){
-                        Subcategory subcategory = ds.getValue(Subcategory.class);
-                        subcategoryList.add(subcategory);
-                    }
+
+                List<Category> categories = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Category category = ds.getValue(Category.class);
+                    categories.add(category);
+                    Common.currentCategory = ds.getValue(Category.class);
                 }
-                iProductCategoryLoadListener.onProductCategoryLoadSuccess(subcategoryList);
+                iCategoryLoadListener.onCategoriesLoadSuccess(categories);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                iProductCategoryLoadListener.onProductCategoryLoadFailed(databaseError.getMessage());
+                iCategoryLoadListener.onCategoriesLoadFailed(databaseError.getMessage());
             }
         });
-
         return view;
     }
 
+    /**
+     * REGISTER EVENT BUS
+     */
     @Override
-    public void onProductCategoryLoadSuccess(List<Subcategory> subcategoryList) {
-        Adapter = new SubcategoryAdapter(getContext(), subcategoryList);
-        recycler_category.setAdapter(Adapter);
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onProductCategoryLoadFailed(String message) {
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    // Listen EventBus
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void loadSubacategoryByCategory(SubcategoryEvent event) {
+
+        if (event.isSuccess()) {
+            subcategoryRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<Subcategory> subcategoryList = new ArrayList<>();
+                    for (DataSnapshot ds: dataSnapshot.getChildren()){
+                        String id = String.valueOf(event.getProductOrServices().getId());
+                        String key = ds.child("id").getValue(String.class);
+                        if (id.equals(key)){
+                            Subcategory subcategory = ds.getValue(Subcategory.class);
+                            subcategoryList.add(subcategory);
+                        }
+                    }
+                    ISubcategoryLoadListener.onSubcategoryLoadSuccess(subcategoryList);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    ISubcategoryLoadListener.onSubcategoryLoadFailed(databaseError.getMessage());
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onSubcategoryLoadSuccess(List<Subcategory> subcategoryList) {
+        SubcategoryAdapter adapter = new SubcategoryAdapter(getContext(), subcategoryList);
+        recycler_subcategory.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recycler_subcategory.setHasFixedSize(true);
+        recycler_subcategory.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    public void onSubcategoryLoadFailed(String message) {
+        Toast.makeText(getContext(), ""+message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCategoriesLoadSuccess(List<Category> categoryList) {
+        CategoryAdapter mAdapter = new CategoryAdapter(getContext(), categoryList);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recycler_category.setAdapter(mAdapter);
+        recycler_category.setHasFixedSize(true);
+        recycler_category.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    public void onCategoriesLoadFailed(String message) {
         Toast.makeText(getContext(), ""+message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -88,7 +88,7 @@ public class ProductOrServiceAdapter extends RecyclerView.Adapter<ProductOrServi
         FirebaseAuth auth = FirebaseAuth.getInstance();
         holder.txt_product_and_service_name.setText(mProductAndServiceList.get(position).getName());
         holder.txt_product_and_service_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
-                .append(mProductAndServiceList.get(position).getPrice()));
+                .append(" ").append(mProductAndServiceList.get(position).getPrice()));
 
         if (mProductAndServiceList.get(position).getStatus().equals("1")) {
             holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);

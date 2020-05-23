@@ -19,6 +19,7 @@ public class ProductsFragment_ViewBinding implements Unbinder {
     this.target = target;
 
     target.recycler_category = Utils.findRequiredViewAsType(source, R.id.recycler_category, "field 'recycler_category'", RecyclerView.class);
+    target.recycler_subcategory = Utils.findRequiredViewAsType(source, R.id.recycler_subcategory, "field 'recycler_subcategory'", RecyclerView.class);
   }
 
   @Override
@@ -29,5 +30,6 @@ public class ProductsFragment_ViewBinding implements Unbinder {
     this.target = null;
 
     target.recycler_category = null;
+    target.recycler_subcategory = null;
   }
 }

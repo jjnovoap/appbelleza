@@ -1,10 +1,10 @@
 package com.example.appbella;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,8 +25,6 @@ import com.example.appbella.Model.Addon;
 import com.example.appbella.Model.EventBust.AddOnEventChange;
 import com.example.appbella.Model.EventBust.FoodDetailEvent;
 import com.example.appbella.Model.ProductOrService;
-import com.flaviofaria.kenburnsview.KenBurnsView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,18 +50,18 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
 
     private static final String TAG = ProductAndServiceDetailActivity.class.getSimpleName();
 
-    @BindView(R.id.fab_add_to_cart)
-    FloatingActionButton fab_add_to_cart;
-    @BindView(R.id.btn_view_cart)
-    Button btn_view_cart;
+    @BindView(R.id.btn_add)
+    Button btn_add;
     @BindView(R.id.txt_money)
     TextView txt_money;
+    @BindView(R.id.txt_service)
+    TextView txt_service;
     @BindView(R.id.recycler_addon)
     RecyclerView recycler_addon;
     @BindView(R.id.txt_description)
     TextView txt_description;
-    @BindView(R.id.img_food_detail)
-    KenBurnsView img_food_detail;
+    @BindView(R.id.header)
+    ImageView header;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -95,7 +93,7 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
         Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
 
-        fab_add_to_cart.setOnClickListener(v -> {
+        btn_add.setOnClickListener(v -> {
             CartItem cartItem = new CartItem();
             cartItem.setProductId(selectedFood.getName());
             cartItem.setCategoryId(selectedFood.getCategoryId());
@@ -116,11 +114,6 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
                     }, throwable -> {
                         Toast.makeText(this, "[ADD CART]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }));
-        });
-
-        btn_view_cart.setOnClickListener(v -> {
-            startActivity(new Intent(ProductAndServiceDetailActivity.this, CartListActivity.class));
-            finish();
         });
     }
 
@@ -158,7 +151,8 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
         Log.d(TAG, "displayFoodDetail: Name: " + event.getFood().getName());
         if (event.isSuccess()) {
 
-            toolbar.setTitle(event.getFood().getName());
+            txt_service.setText(event.getFood().getName());
+            toolbar.setTitle("");
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -166,9 +160,10 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
             selectedFood = event.getFood();
             originalPrice = event.getFood().getPrice();
 
-            txt_money.setText(String.valueOf(originalPrice));
+            txt_money.setText(new StringBuilder(this.getString(R.string.money_sign))
+                    .append(" ").append(originalPrice));
             txt_description.setText(event.getFood().getDescription());
-            Picasso.get().load(event.getFood().getImage()).into(img_food_detail);
+            Picasso.get().load(event.getFood().getImage()).into(header);
 
             addonRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -212,7 +207,8 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
 
         newPrice = originalPrice + extraPrice;
 
-        txt_money.setText(String.valueOf(newPrice));
+        txt_money.setText(new StringBuilder(this.getString(R.string.money_sign))
+                .append(" ").append(newPrice));
     }
 
     @Override

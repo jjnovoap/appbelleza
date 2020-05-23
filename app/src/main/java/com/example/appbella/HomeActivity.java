@@ -25,6 +25,7 @@ import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.LocalCartDataSource;
+import com.example.appbella.Fragments.FavoriteFragment;
 import com.example.appbella.Fragments.HomeFragment;
 import com.example.appbella.Fragments.MapsBottomDialogFragment;
 import com.example.appbella.Model.User;
@@ -159,9 +160,9 @@ public class HomeActivity extends AppCompatActivity
                 //add fragments
                 if (menuItem.getItemId() == R.id.action_home)
                     fragment = new HomeFragment();
-                /*else if (menuItem.getItemId() == R.id.action_questions)
-                    fragment = new FrequentQuestionsFragment();
-                else if (menuItem.getItemId() == R.id.action_about_us_cuber)
+                else if (menuItem.getItemId() == R.id.action_likes)
+                    fragment = new FavoriteFragment();
+                /*else if (menuItem.getItemId() == R.id.action_about_us_cuber)
                     fragment = new AboutUsFragment();
                 else if (menuItem.getItemId() == R.id.action_shopping)
                     fragment = new ShoppingFragment();*/

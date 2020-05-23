@@ -25,13 +25,6 @@ public class HomeFragment extends Fragment  {
     public HomeFragment() {
         // Required empty public constructor
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,14 +34,13 @@ public class HomeFragment extends Fragment  {
 
         TabLayout tabLayout = view.findViewById(R.id.tabs);
         // adapter
-        HomeFragmentsAdapter adapter = new HomeFragmentsAdapter(getFragmentManager());
+        HomeFragmentsAdapter adapter = new HomeFragmentsAdapter(getChildFragmentManager());
         //se pueden añadir fragmentos
         adapter.AddFragment(new ServicesFragment(), "Servicios");
         adapter.AddFragment(new ProductsFragment(),"Productos");
         //configuración adapter
         view_pager.setAdapter(adapter);
         tabLayout.setupWithViewPager(view_pager);
-
         return view;
 
     }

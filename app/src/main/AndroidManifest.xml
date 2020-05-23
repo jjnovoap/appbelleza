@@ -36,7 +36,6 @@
         <activity android:name="com.example.appbella.ViewOrderActivity" />
         <activity android:name="com.example.appbella.CartListActivity" />
         <activity android:name="com.example.appbella.PlaceOrderActivity" />
-        <activity android:name="com.example.appbella.FavoriteActivity" />
         <activity android:name="com.example.appbella.ProductAndServiceDetailActivity" />
         <activity android:name="com.example.appbella.ProductAndServiceList" />
         <activity android:name="com.example.appbella.SubcategoryActivity" />
