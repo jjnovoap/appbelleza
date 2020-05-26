@@ -13,7 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
-import com.example.appbella.Adapter.SubcategoryAdapter;
+import com.example.appbella.Adapter.SubcategoryServiceAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
@@ -61,7 +61,7 @@ public class SubcategoryActivity extends AppCompatActivity implements IProductCa
     private DatabaseReference favorite;
 
 
-    private SubcategoryAdapter mAdapter;
+    private SubcategoryServiceAdapter mAdapter;
     private CartDataSource mCartDataSource;
 
     private LayoutAnimationController mLayoutAnimationController;
@@ -264,7 +264,7 @@ public class SubcategoryActivity extends AppCompatActivity implements IProductCa
 
     @Override
     public void onProductCategoryLoadSuccess(List<Subcategory> subcategoryList) {
-        mAdapter = new SubcategoryAdapter(SubcategoryActivity.this, subcategoryList);
+        mAdapter = new SubcategoryServiceAdapter(SubcategoryActivity.this, subcategoryList);
         recycler_category.setAdapter(mAdapter);
         recycler_category.setLayoutAnimation(mLayoutAnimationController);
     }

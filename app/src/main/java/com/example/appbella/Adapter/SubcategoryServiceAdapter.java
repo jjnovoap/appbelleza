@@ -27,12 +27,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.MyViewHolder> {
+public class SubcategoryServiceAdapter extends RecyclerView.Adapter<SubcategoryServiceAdapter.MyViewHolder> {
 
     private Context mContext;
     private List<Subcategory> mSubcategoryList;
 
-    public SubcategoryAdapter(Context context, List<Subcategory> subcategoryList) {
+    public SubcategoryServiceAdapter(Context context, List<Subcategory> subcategoryList) {
         mContext = context;
         mSubcategoryList = subcategoryList;
     }
@@ -41,7 +41,7 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.layout_subcategory, parent, false);
+                .inflate(R.layout.layout_service_subcategory, parent, false);
         return new MyViewHolder(view);
     }
 

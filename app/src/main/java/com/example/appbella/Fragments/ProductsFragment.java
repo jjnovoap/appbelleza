@@ -13,10 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Adapter.CategoryAdapter;
-import com.example.appbella.Adapter.SubcategoryAdapter;
+import com.example.appbella.Adapter.SubcategoryProductAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Interface.ICategoryLoadListener;
-import com.example.appbella.Interface.IProductCategoryLoadListener;
 import com.example.appbella.Interface.ISubcategoryLoadListener;
 import com.example.appbella.Model.Category;
 import com.example.appbella.Model.EventBust.SubcategoryEvent;
@@ -133,9 +132,10 @@ public class ProductsFragment extends Fragment implements ICategoryLoadListener,
 
     @Override
     public void onSubcategoryLoadSuccess(List<Subcategory> subcategoryList) {
-        SubcategoryAdapter adapter = new SubcategoryAdapter(getContext(), subcategoryList);
+        SubcategoryProductAdapter adapter = new SubcategoryProductAdapter(getContext(), subcategoryList);
         recycler_subcategory.setAdapter(adapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager =
+                new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false);
         recycler_subcategory.setHasFixedSize(true);
         recycler_subcategory.setLayoutManager(layoutManager);
     }

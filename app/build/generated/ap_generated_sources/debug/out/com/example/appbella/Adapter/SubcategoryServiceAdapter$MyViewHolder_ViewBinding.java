@@ -12,12 +12,12 @@ import com.example.appbella.R;
 import java.lang.IllegalStateException;
 import java.lang.Override;
 
-public class SubcategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
-  private SubcategoryAdapter.MyViewHolder target;
+public class SubcategoryServiceAdapter$MyViewHolder_ViewBinding implements Unbinder {
+  private SubcategoryServiceAdapter.MyViewHolder target;
 
   @UiThread
-  public SubcategoryAdapter$MyViewHolder_ViewBinding(SubcategoryAdapter.MyViewHolder target,
-      View source) {
+  public SubcategoryServiceAdapter$MyViewHolder_ViewBinding(
+      SubcategoryServiceAdapter.MyViewHolder target, View source) {
     this.target = target;
 
     target.img_subcategory = Utils.findRequiredViewAsType(source, R.id.img_subcategory, "field 'img_subcategory'", ImageView.class);
@@ -27,7 +27,7 @@ public class SubcategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
   @Override
   @CallSuper
   public void unbind() {
-    SubcategoryAdapter.MyViewHolder target = this.target;
+    SubcategoryServiceAdapter.MyViewHolder target = this.target;
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 

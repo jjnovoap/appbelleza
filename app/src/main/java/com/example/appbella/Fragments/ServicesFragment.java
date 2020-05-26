@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Adapter.CategoryAdapter;
-import com.example.appbella.Adapter.SubcategoryAdapter;
+import com.example.appbella.Adapter.SubcategoryServiceAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Interface.ICategoryLoadListener;
 import com.example.appbella.Interface.ISubcategoryLoadListener;
@@ -132,7 +132,7 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
 
     @Override
     public void onSubcategoryLoadSuccess(List<Subcategory> subcategoryList) {
-        SubcategoryAdapter adapter = new SubcategoryAdapter(getContext(), subcategoryList);
+        SubcategoryServiceAdapter adapter = new SubcategoryServiceAdapter(getContext(), subcategoryList);
         recycler_subcategory.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recycler_subcategory.setHasFixedSize(true);
