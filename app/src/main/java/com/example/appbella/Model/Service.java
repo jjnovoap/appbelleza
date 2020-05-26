@@ -1,6 +1,6 @@
 package com.example.appbella.Model;
 
-public class ProductOrService {
+public class Service {
 
     private String id;
     private String categoryId;

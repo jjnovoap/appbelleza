@@ -23,8 +23,8 @@ import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Interface.IAddonLoadListener;
 import com.example.appbella.Model.Addon;
 import com.example.appbella.Model.EventBust.AddOnEventChange;
-import com.example.appbella.Model.EventBust.FoodDetailEvent;
-import com.example.appbella.Model.ProductOrService;
+import com.example.appbella.Model.EventBust.ServiceDetailEvent;
+import com.example.appbella.Model.Service;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -71,7 +71,7 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
     DatabaseReference addonRef;
     IAddonLoadListener iAddonLoadListener;
 
-    private ProductOrService selectedFood;
+    private Service selectedFood;
     private Long originalPrice;
 
     private long addOnPrice = 0;
@@ -146,24 +146,24 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void displayFoodDetail(FoodDetailEvent event) {
+    public void displayFoodDetail(ServiceDetailEvent event) {
         Log.d(TAG, "displayFoodDetail: called!!");
-        Log.d(TAG, "displayFoodDetail: Name: " + event.getFood().getName());
+        Log.d(TAG, "displayFoodDetail: Name: " + event.getService().getName());
         if (event.isSuccess()) {
 
-            txt_service.setText(event.getFood().getName());
+            txt_service.setText(event.getService().getName());
             toolbar.setTitle("");
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            selectedFood = event.getFood();
-            originalPrice = event.getFood().getPrice();
+            selectedFood = event.getService();
+            originalPrice = event.getService().getPrice();
 
             txt_money.setText(new StringBuilder(this.getString(R.string.money_sign))
                     .append(" ").append(originalPrice));
-            txt_description.setText(event.getFood().getDescription());
-            Picasso.get().load(event.getFood().getImage()).into(header);
+            txt_description.setText(event.getService().getDescription());
+            Picasso.get().load(event.getService().getImage()).into(header);
 
             addonRef.addValueEventListener(new ValueEventListener() {
                 @Override

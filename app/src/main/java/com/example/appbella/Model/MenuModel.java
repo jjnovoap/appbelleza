@@ -6,7 +6,7 @@ public class MenuModel {
 
     private boolean success;
     private String message;
-    private List<Subcategory> result;
+    private List<ServiceSubcategory> result;
 
     public boolean isSuccess() {
         return success;
@@ -24,11 +24,11 @@ public class MenuModel {
         this.message = message;
     }
 
-    public List<Subcategory> getResult() {
+    public List<ServiceSubcategory> getResult() {
         return result;
     }
 
-    public void setResult(List<Subcategory> result) {
+    public void setResult(List<ServiceSubcategory> result) {
         this.result = result;
     }
 }

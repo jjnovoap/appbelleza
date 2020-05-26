@@ -12,12 +12,11 @@ import com.example.appbella.R;
 import java.lang.IllegalStateException;
 import java.lang.Override;
 
-public class ProductOrServiceAdapter$MyViewHolder_ViewBinding implements Unbinder {
-  private ProductOrServiceAdapter.MyViewHolder target;
+public class ServiceAdapter$MyViewHolder_ViewBinding implements Unbinder {
+  private ServiceAdapter.MyViewHolder target;
 
   @UiThread
-  public ProductOrServiceAdapter$MyViewHolder_ViewBinding(
-      ProductOrServiceAdapter.MyViewHolder target, View source) {
+  public ServiceAdapter$MyViewHolder_ViewBinding(ServiceAdapter.MyViewHolder target, View source) {
     this.target = target;
 
     target.img_food = Utils.findRequiredViewAsType(source, R.id.img_food, "field 'img_food'", ImageView.class);
@@ -35,7 +34,7 @@ public class ProductOrServiceAdapter$MyViewHolder_ViewBinding implements Unbinde
   @Override
   @CallSuper
   public void unbind() {
-    ProductOrServiceAdapter.MyViewHolder target = this.target;
+    ServiceAdapter.MyViewHolder target = this.target;
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 

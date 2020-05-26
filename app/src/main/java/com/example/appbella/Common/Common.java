@@ -15,8 +15,10 @@ import androidx.core.app.NotificationCompat;
 import com.example.appbella.Model.Addon;
 import com.example.appbella.Model.Favorite;
 import com.example.appbella.Model.LocationHelper;
-import com.example.appbella.Model.ProductOrService;
-import com.example.appbella.Model.Category;
+import com.example.appbella.Model.Product;
+import com.example.appbella.Model.ProductCategory;
+import com.example.appbella.Model.Service;
+import com.example.appbella.Model.ServiceCategory;
 import com.example.appbella.Model.User;
 import com.example.appbella.R;
 import com.example.appbella.Retrofit.IFCMService;
@@ -40,12 +42,14 @@ public class Common {
 
     public static User currentUser;
     public static Addon currentAddon;
-    public static Category currentCategory;
+    public static ServiceCategory currentServiceCategory;
     public static Set<Addon> addonList = new HashSet<>();
     public static Favorite currentFavorite;
-    public static ProductOrService currentFood;
     public static String user;
     public static LocationHelper currentlocation;
+    public static Product currentProduct;
+    public static Service currentService;
+    public static ProductCategory currentProductCategory;
 
     public static IFCMService getFCMService() {
         return RetrofitClient.getInstance("https://fcm.googleapis.com/").create(IFCMService.class);

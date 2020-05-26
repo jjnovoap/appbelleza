@@ -13,11 +13,11 @@ import com.example.appbella.R;
 import java.lang.IllegalStateException;
 import java.lang.Override;
 
-public class CategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
-  private CategoryAdapter.MyViewHolder target;
+public class CategoryServiceAdapter$MyViewHolder_ViewBinding implements Unbinder {
+  private CategoryServiceAdapter.MyViewHolder target;
 
   @UiThread
-  public CategoryAdapter$MyViewHolder_ViewBinding(CategoryAdapter.MyViewHolder target,
+  public CategoryServiceAdapter$MyViewHolder_ViewBinding(CategoryServiceAdapter.MyViewHolder target,
       View source) {
     this.target = target;
 
@@ -29,7 +29,7 @@ public class CategoryAdapter$MyViewHolder_ViewBinding implements Unbinder {
   @Override
   @CallSuper
   public void unbind() {
-    CategoryAdapter.MyViewHolder target = this.target;
+    CategoryServiceAdapter.MyViewHolder target = this.target;
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 

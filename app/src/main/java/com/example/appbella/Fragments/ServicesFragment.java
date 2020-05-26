@@ -10,14 +10,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.appbella.Adapter.CategoryAdapter;
+import com.example.appbella.Adapter.CategoryServiceAdapter;
 import com.example.appbella.Adapter.SubcategoryServiceAdapter;
 import com.example.appbella.Common.Common;
-import com.example.appbella.Interface.ICategoryLoadListener;
-import com.example.appbella.Interface.ISubcategoryLoadListener;
-import com.example.appbella.Model.EventBust.SubcategoryEvent;
-import com.example.appbella.Model.Subcategory;
-import com.example.appbella.Model.Category;
+import com.example.appbella.Interface.IServiceCategoryLoadListener;
+import com.example.appbella.Interface.IServiceSubcategoryLoadListener;
+import com.example.appbella.Model.EventBust.ServiceSubcategoryEvent;
+import com.example.appbella.Model.ServiceSubcategory;
+import com.example.appbella.Model.ServiceCategory;
 import com.example.appbella.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class ServicesFragment extends Fragment implements ICategoryLoadListener, ISubcategoryLoadListener/*, IServicesOrProductLoadListener */ {
+public class ServicesFragment extends Fragment implements IServiceCategoryLoadListener, IServiceSubcategoryLoadListener/*, IServicesOrProductLoadListener */ {
 
     public ServicesFragment() {
         // Required empty public constructor
@@ -48,8 +48,8 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
     RecyclerView recycler_category;
     @BindView(R.id.recycler_subcategory)
     RecyclerView recycler_subcategory;
-    private ICategoryLoadListener iCategoryLoadListener;
-    private ISubcategoryLoadListener ISubcategoryLoadListener;
+    private IServiceCategoryLoadListener iServiceCategoryLoadListener;
+    private IServiceSubcategoryLoadListener IServiceSubcategoryLoadListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,8 +58,8 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
         View view = inflater.inflate(R.layout.fragment_services, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        ISubcategoryLoadListener = this;
-        iCategoryLoadListener = this;
+        IServiceSubcategoryLoadListener = this;
+        iServiceCategoryLoadListener = this;
 
         subcategoryRef = FirebaseDatabase.getInstance().getReference("Services Categories");
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("General Services Categories");
@@ -68,18 +68,18 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                List<Category> categories = new ArrayList<>();
+                List<ServiceCategory> categories = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Category category = ds.getValue(Category.class);
-                    categories.add(category);
-                    Common.currentCategory = ds.getValue(Category.class);
+                    ServiceCategory serviceCategory = ds.getValue(ServiceCategory.class);
+                    categories.add(serviceCategory);
+                    Common.currentServiceCategory = ds.getValue(ServiceCategory.class);
                 }
-                iCategoryLoadListener.onCategoriesLoadSuccess(categories);
+                iServiceCategoryLoadListener.onCategoriesLoadSuccess(categories);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                iCategoryLoadListener.onCategoriesLoadFailed(databaseError.getMessage());
+                iServiceCategoryLoadListener.onCategoriesLoadFailed(databaseError.getMessage());
             }
         });
 
@@ -103,36 +103,35 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
 
     // Listen EventBus
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void loadSubacategoryByCategory(SubcategoryEvent event) {
+    public void loadSubacategoryByCategory(ServiceSubcategoryEvent event) {
 
         if (event.isSuccess()) {
-
             subcategoryRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    List<Subcategory> subcategoryList = new ArrayList<>();
+                    List<ServiceSubcategory> serviceSubcategoryList = new ArrayList<>();
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        String id = String.valueOf(event.getProductOrServices().getId());
+                        String id = String.valueOf(event.getServices().getId());
                         String key = ds.child("id").getValue(String.class);
                         if (id.equals(key)){
-                            Subcategory subcategory = ds.getValue(Subcategory.class);
-                            subcategoryList.add(subcategory);
+                            ServiceSubcategory serviceSubcategory = ds.getValue(ServiceSubcategory.class);
+                            serviceSubcategoryList.add(serviceSubcategory);
                         }
                     }
-                    ISubcategoryLoadListener.onSubcategoryLoadSuccess(subcategoryList);
+                    IServiceSubcategoryLoadListener.onServiceSubcategoryLoadSuccess(serviceSubcategoryList);
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    ISubcategoryLoadListener.onSubcategoryLoadFailed(databaseError.getMessage());
+                    IServiceSubcategoryLoadListener.onServiceSubcategoryLoadFailed(databaseError.getMessage());
                 }
             });
         }
     }
 
     @Override
-    public void onSubcategoryLoadSuccess(List<Subcategory> subcategoryList) {
-        SubcategoryServiceAdapter adapter = new SubcategoryServiceAdapter(getContext(), subcategoryList);
+    public void onServiceSubcategoryLoadSuccess(List<ServiceSubcategory> serviceSubcategoryList) {
+        SubcategoryServiceAdapter adapter = new SubcategoryServiceAdapter(getContext(), serviceSubcategoryList);
         recycler_subcategory.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recycler_subcategory.setHasFixedSize(true);
@@ -140,13 +139,13 @@ public class ServicesFragment extends Fragment implements ICategoryLoadListener,
     }
 
     @Override
-    public void onSubcategoryLoadFailed(String message) {
+    public void onServiceSubcategoryLoadFailed(String message) {
         Toast.makeText(getContext(), ""+message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onCategoriesLoadSuccess(List<Category> categoryList) {
-        CategoryAdapter mAdapter = new CategoryAdapter(getContext(), categoryList);
+    public void onCategoriesLoadSuccess(List<ServiceCategory> serviceCategoryList) {
+        CategoryServiceAdapter mAdapter = new CategoryServiceAdapter(getContext(), serviceCategoryList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recycler_category.setAdapter(mAdapter);
         recycler_category.setHasFixedSize(true);

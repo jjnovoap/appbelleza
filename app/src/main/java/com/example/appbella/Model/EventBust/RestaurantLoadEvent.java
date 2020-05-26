@@ -1,6 +1,6 @@
 package com.example.appbella.Model.EventBust;
 
-import com.example.appbella.Model.Category;
+import com.example.appbella.Model.ServiceCategory;
 
 import java.util.List;
 
@@ -8,16 +8,16 @@ public class RestaurantLoadEvent {
 
     private boolean success;
     private String message;
-    private List<Category> mCategoryList;
+    private List<ServiceCategory> mServiceCategoryList;
 
     public RestaurantLoadEvent(boolean success, String message) {
         this.success = success;
         this.message = message;
     }
 
-    public RestaurantLoadEvent(boolean success, List<Category> categoryList) {
+    public RestaurantLoadEvent(boolean success, List<ServiceCategory> serviceCategoryList) {
         this.success = success;
-        mCategoryList = categoryList;
+        mServiceCategoryList = serviceCategoryList;
     }
 
     public boolean isSuccess() {
@@ -36,11 +36,11 @@ public class RestaurantLoadEvent {
         this.message = message;
     }
 
-    public List<Category> getRestaurantList() {
-        return mCategoryList;
+    public List<ServiceCategory> getRestaurantList() {
+        return mServiceCategoryList;
     }
 
-    public void setRestaurantList(List<Category> categoryList) {
-        mCategoryList = categoryList;
+    public void setRestaurantList(List<ServiceCategory> serviceCategoryList) {
+        mServiceCategoryList = serviceCategoryList;
     }
 }

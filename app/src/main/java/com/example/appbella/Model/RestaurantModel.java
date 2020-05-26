@@ -6,7 +6,7 @@ public class RestaurantModel {
 
     private boolean success;
     private String message;
-    private List<Category> result;
+    private List<ServiceCategory> result;
 
     public boolean isSuccess() {
         return success;
@@ -24,11 +24,11 @@ public class RestaurantModel {
         this.message = message;
     }
 
-    public List<Category> getResult() {
+    public List<ServiceCategory> getResult() {
         return result;
     }
 
-    public void setResult(List<Category> result) {
+    public void setResult(List<ServiceCategory> result) {
         this.result = result;
     }
 }

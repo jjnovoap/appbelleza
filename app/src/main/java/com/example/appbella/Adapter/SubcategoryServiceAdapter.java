@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Common.Common;
 import com.example.appbella.Interface.IOnRecyclerViewClickListener;
-import com.example.appbella.Model.Subcategory;
-import com.example.appbella.Model.EventBust.FoodListEvent;
-import com.example.appbella.ProductAndServiceList;
+import com.example.appbella.Model.ServiceSubcategory;
+import com.example.appbella.Model.EventBust.ServiceListEvent;
+import com.example.appbella.ServicesList;
 import com.example.appbella.R;
 import com.squareup.picasso.Picasso;
 
@@ -30,11 +30,11 @@ import butterknife.Unbinder;
 public class SubcategoryServiceAdapter extends RecyclerView.Adapter<SubcategoryServiceAdapter.MyViewHolder> {
 
     private Context mContext;
-    private List<Subcategory> mSubcategoryList;
+    private List<ServiceSubcategory> mServiceSubcategoryList;
 
-    public SubcategoryServiceAdapter(Context context, List<Subcategory> subcategoryList) {
+    public SubcategoryServiceAdapter(Context context, List<ServiceSubcategory> serviceSubcategoryList) {
         mContext = context;
-        mSubcategoryList = subcategoryList;
+        mServiceSubcategoryList = serviceSubcategoryList;
     }
 
     @NonNull
@@ -47,19 +47,19 @@ public class SubcategoryServiceAdapter extends RecyclerView.Adapter<SubcategoryS
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Picasso.get().load(mSubcategoryList.get(position).getImage()).into(holder.img_subcategory);
-        holder.txt_subcategory.setText(mSubcategoryList.get(position).getName());
+        Picasso.get().load(mServiceSubcategoryList.get(position).getImage()).into(holder.img_subcategory);
+        holder.txt_subcategory.setText(mServiceSubcategoryList.get(position).getName());
 
         holder.setIOnRecyclerViewClickListener((view, i) -> {
             // Send sticky post event to FoodListActivity
-            EventBus.getDefault().postSticky(new FoodListEvent(true, mSubcategoryList.get(position)));
-            mContext.startActivity(new Intent(mContext, ProductAndServiceList.class));
+            EventBus.getDefault().postSticky(new ServiceListEvent(true, mServiceSubcategoryList.get(position)));
+            mContext.startActivity(new Intent(mContext, ServicesList.class));
         });
     }
 
     @Override
     public int getItemCount() {
-        return mSubcategoryList.size();
+        return mServiceSubcategoryList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -93,15 +93,15 @@ public class SubcategoryServiceAdapter extends RecyclerView.Adapter<SubcategoryS
 
     @Override
     public int getItemViewType(int position) {
-        if (mSubcategoryList.size() == 1) {
+        if (mServiceSubcategoryList.size() == 1) {
             return Common.DEFAULT_COLUMN_COUNT;
         }
         else {
-            if (mSubcategoryList.size() % 2 == 0) {
+            if (mServiceSubcategoryList.size() % 2 == 0) {
                 return Common.DEFAULT_COLUMN_COUNT;
             }
             else {
-                return (position > 1 && position == mSubcategoryList.size()-1)
+                return (position > 1 && position == mServiceSubcategoryList.size()-1)
                         ? Common.FULL_WIDTH_COLUMN
                         : Common.DEFAULT_COLUMN_COUNT;
             }

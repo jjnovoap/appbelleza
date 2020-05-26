@@ -22,12 +22,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.appbella.Adapter.ProductOrServiceAdapter;
+import com.example.appbella.Adapter.ServiceAdapter;
 import com.example.appbella.Common.Common;
-import com.example.appbella.Interface.IServicesOrProductLoadListener;
-import com.example.appbella.Model.Subcategory;
-import com.example.appbella.Model.EventBust.FoodListEvent;
-import com.example.appbella.Model.ProductOrService;
+import com.example.appbella.Interface.IServicesLoadListener;
+import com.example.appbella.Model.ServiceSubcategory;
+import com.example.appbella.Model.EventBust.ServiceListEvent;
+import com.example.appbella.Model.Service;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,9 +45,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.CompositeDisposable;
 
-public class ProductAndServiceList extends AppCompatActivity implements IServicesOrProductLoadListener {
+public class ServicesList extends AppCompatActivity implements IServicesLoadListener {
 
-    private static final String TAG = ProductAndServiceList.class.getSimpleName();
+    private static final String TAG = ServicesList.class.getSimpleName();
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
@@ -59,11 +59,11 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
     TextView txt_subcategory;
     Button btn_view_cart;
 
-    IServicesOrProductLoadListener iServicesOrProductLoadListener;
+    IServicesLoadListener iServicesLoadListener;
 
-    private ProductOrServiceAdapter adapter;
-    private ProductOrServiceAdapter searchAdapter;
-    private Subcategory selectedSubcategory;
+    private ServiceAdapter adapter;
+    private ServiceAdapter searchAdapter;
+    private ServiceSubcategory selectedServiceSubcategory;
     DatabaseReference servicesRef;
 
     private LayoutAnimationController mLayoutAnimationController;
@@ -88,10 +88,10 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
         btn_view_cart = findViewById(R.id.btn_view_cart);
         servicesRef = FirebaseDatabase.getInstance().getReference("Services");
-        iServicesOrProductLoadListener = this;
+        iServicesLoadListener = this;
 
         btn_view_cart.setOnClickListener(v -> {
-            startActivity(new Intent(ProductAndServiceList.this, CartListActivity.class));
+            startActivity(new Intent(ServicesList.this, CartListActivity.class));
         });
 
         initView();
@@ -180,11 +180,10 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
         Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
 
-        mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
-
+        //mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recycler_food_list.setLayoutManager(layoutManager);
-        recycler_food_list.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
+        //recycler_food_list.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
     }
 
     /**
@@ -204,13 +203,13 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
 
     // Listen EventBus
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void loadFoodListByCategory(FoodListEvent event) {
+    public void loadServiceListByCategory(ServiceListEvent event) {
         Log.d(TAG, "loadFoodListByCategory: called!!");
         if (event.isSuccess()) {
 
-            selectedSubcategory = event.getSubcategory();
+            selectedServiceSubcategory = event.getServiceSubcategory();
 
-            txt_subcategory.setText(event.getSubcategory().getName());
+            txt_subcategory.setText(event.getServiceSubcategory().getName());
             toolbar.setTitle("");
             /*toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
             Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/gilroybold.ttf");
@@ -223,20 +222,21 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
             servicesRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    List<ProductOrService> serviceList = new ArrayList<>();
+                    List<Service> serviceList = new ArrayList<>();
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
                         String name = ds.child("categoryId").getValue(String.class);
-                        if (event.getSubcategory().getCategoryId().equals(name)){
-                            ProductOrService service = ds.getValue(ProductOrService.class);
+                        if (event.getServiceSubcategory().getCategoryId().equals(name)){
+                            Service service = ds.getValue(Service.class);
                             serviceList.add(service);
-                            Common.currentFood = service;
+                            Common.currentService = service;
                         }
-                    }iServicesOrProductLoadListener.onServicesOProductLoadSuccess(serviceList);
+                    }
+                    iServicesLoadListener.onServicesLoadSuccess(serviceList);
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    iServicesOrProductLoadListener.onServicesOProductLoadFailed(databaseError.getMessage());
+                    iServicesLoadListener.onServicesLoadFailed(databaseError.getMessage());
                 }
             });
 
@@ -244,14 +244,14 @@ public class ProductAndServiceList extends AppCompatActivity implements IService
     }
 
     @Override
-    public void onServicesOProductLoadSuccess(List<ProductOrService> servicesOrProductList) {
-        adapter = new ProductOrServiceAdapter(this, servicesOrProductList);
+    public void onServicesLoadSuccess(List<Service> servicesOrProductList) {
+        adapter = new ServiceAdapter(this, servicesOrProductList);
         recycler_food_list.setAdapter(adapter);
         recycler_food_list.setLayoutAnimation(mLayoutAnimationController);
     }
 
     @Override
-    public void onServicesOProductLoadFailed(String message) {
+    public void onServicesLoadFailed(String message) {
         Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
     }
 }

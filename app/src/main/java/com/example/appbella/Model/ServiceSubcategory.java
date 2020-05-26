@@ -1,6 +1,6 @@
 package com.example.appbella.Model;
 
-public class Subcategory {
+public class ServiceSubcategory {
 
     private String id;
     private String categoryId;

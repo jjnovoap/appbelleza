@@ -4,10 +4,10 @@ package com.example.appbella.Fragments;
 import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.UiThread;
-import androidx.viewpager.widget.ViewPager;
 import butterknife.Unbinder;
 import butterknife.internal.Utils;
 import com.example.appbella.R;
+import com.example.appbella.Utils.CustomViewPager;
 import java.lang.IllegalStateException;
 import java.lang.Override;
 
@@ -18,7 +18,7 @@ public class HomeFragment_ViewBinding implements Unbinder {
   public HomeFragment_ViewBinding(HomeFragment target, View source) {
     this.target = target;
 
-    target.view_pager = Utils.findRequiredViewAsType(source, R.id.view_pager, "field 'view_pager'", ViewPager.class);
+    target.view_pager = Utils.findRequiredViewAsType(source, R.id.view_pager, "field 'view_pager'", CustomViewPager.class);
   }
 
   @Override

@@ -1,18 +1,15 @@
 package com.example.appbella.Fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
-
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.appbella.Adapter.HomeFragmentsAdapter;
 import com.example.appbella.R;
+import com.example.appbella.Utils.CustomViewPager;
 import com.google.android.material.tabs.TabLayout;
 
 import butterknife.BindView;
@@ -23,7 +20,7 @@ public class HomeFragment extends Fragment  {
 
     private Unbinder unbinder;
     @BindView(R.id.view_pager)
-    ViewPager view_pager;
+    CustomViewPager view_pager;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -42,6 +39,7 @@ public class HomeFragment extends Fragment  {
         adapter.AddFragment(new ProductsFragment(),"Productos");
         //configuración adapter
         view_pager.setAdapter(adapter);
+        view_pager.setPagingEnabled(false);
         tabLayout.setupWithViewPager(view_pager);
         return view;
 

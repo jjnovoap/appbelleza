@@ -11,9 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.appbella.Interface.IOnRecyclerViewClickListener;
-import com.example.appbella.Model.Subcategory;
-import com.example.appbella.Model.EventBust.FoodListEvent;
-import com.example.appbella.ProductAndServiceList;
+import com.example.appbella.Model.EventBust.ProductsListEvent;
+import com.example.appbella.Model.Product;
+import com.example.appbella.Model.ProductSubcategory;
+import com.example.appbella.ProductsList;
+import com.example.appbella.ServicesList;
 import com.example.appbella.R;
 import com.squareup.picasso.Picasso;
 
@@ -28,11 +30,11 @@ import butterknife.Unbinder;
 public class SubcategoryProductAdapter extends RecyclerView.Adapter<SubcategoryProductAdapter.MyViewHolder> {
 
     private Context mContext;
-    private List<Subcategory> mSubcategoryList;
+    private List<ProductSubcategory> mProductSubcategoryList;
 
-    public SubcategoryProductAdapter(Context context, List<Subcategory> subcategoryList) {
+    public SubcategoryProductAdapter(Context context, List<ProductSubcategory> productSubcategoryList) {
         mContext = context;
-        mSubcategoryList = subcategoryList;
+        mProductSubcategoryList = productSubcategoryList;
     }
 
     @NonNull
@@ -45,19 +47,19 @@ public class SubcategoryProductAdapter extends RecyclerView.Adapter<SubcategoryP
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Picasso.get().load(mSubcategoryList.get(position).getImage()).into(holder.img_subcategory);
-        holder.txt_subcategory.setText(mSubcategoryList.get(position).getName());
+        Picasso.get().load(mProductSubcategoryList.get(position).getImage()).into(holder.img_subcategory);
+        holder.txt_subcategory.setText(mProductSubcategoryList.get(position).getName());
 
         holder.setIOnRecyclerViewClickListener((view, i) -> {
             // Send sticky post event to FoodListActivity
-            EventBus.getDefault().postSticky(new FoodListEvent(true, mSubcategoryList.get(position)));
-            mContext.startActivity(new Intent(mContext, ProductAndServiceList.class));
+            EventBus.getDefault().postSticky(new ProductsListEvent(true, mProductSubcategoryList.get(position)));
+            mContext.startActivity(new Intent(mContext, ProductsList.class));
         });
     }
 
     @Override
     public int getItemCount() {
-        return mSubcategoryList.size();
+        return mProductSubcategoryList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

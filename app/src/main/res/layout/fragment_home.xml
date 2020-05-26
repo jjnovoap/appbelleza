@@ -31,9 +31,10 @@
         android:src="@drawable/ic_chevron_right_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/tabs"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tabs" />
+        app:layout_constraintTop_toTopOf="@+id/tabs"
+        android:contentDescription="@string/image_description" />
 
-    <androidx.viewpager.widget.ViewPager
+    <com.example.appbella.Utils.CustomViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"

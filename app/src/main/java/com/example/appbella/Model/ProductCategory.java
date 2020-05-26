@@ -1,7 +1,6 @@
 package com.example.appbella.Model;
 
-public class Category {
-
+public class ProductCategory {
     // Remember, all name of variable need EXACTLY name orf JSON property return from API
     // That will help Gson parse it for you correct
     private int id;

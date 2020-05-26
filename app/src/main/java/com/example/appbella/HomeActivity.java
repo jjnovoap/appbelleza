@@ -373,7 +373,7 @@ public class HomeActivity extends AppCompatActivity
                 .setPositiveButton("OK", (dialog, which) -> {
                     FirebaseAuth.getInstance().signOut();
                     Common.currentUser = null;
-                    Common.currentCategory = null;
+                    Common.currentServiceCategory = null;
                     Intent intent = new Intent(HomeActivity.this, MainActivity.class);
                     // Clear all previous activity
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

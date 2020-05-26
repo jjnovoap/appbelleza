@@ -5,7 +5,7 @@ import java.util.List;
 public class Product_and_ServiceModel {
     private boolean success;
     private String message;
-    private List<ProductOrService> result;
+    private List<Service> result;
 
     public boolean isSuccess() {
         return success;
@@ -23,11 +23,11 @@ public class Product_and_ServiceModel {
         this.message = message;
     }
 
-    public List<ProductOrService> getResult() {
+    public List<Service> getResult() {
         return result;
     }
 
-    public void setResult(List<ProductOrService> result) {
+    public void setResult(List<Service> result) {
         this.result = result;
     }
 }

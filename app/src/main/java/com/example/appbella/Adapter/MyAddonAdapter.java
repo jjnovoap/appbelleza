@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +45,6 @@ public class MyAddonAdapter extends RecyclerView.Adapter<MyAddonAdapter.MyViewHo
         holder.ckb_addon.setText(new StringBuilder(mAddonList.get(position).getName()).append(" (").append(mContext.getString(R.string.money_sign))
                 .append(mAddonList.get(position).getExtraPrice())
                 .append(")"));
-
         holder.ckb_addon.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 Common.addonList.add(mAddonList.get(position));
@@ -69,7 +69,6 @@ public class MyAddonAdapter extends RecyclerView.Adapter<MyAddonAdapter.MyViewHo
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
             mUnbinder = ButterKnife.bind(this, itemView);
         }
     }

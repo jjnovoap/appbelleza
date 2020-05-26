@@ -12,16 +12,16 @@ import butterknife.internal.Utils;
 import java.lang.IllegalStateException;
 import java.lang.Override;
 
-public class ProductAndServiceList_ViewBinding implements Unbinder {
-  private ProductAndServiceList target;
+public class ProductsList_ViewBinding implements Unbinder {
+  private ProductsList target;
 
   @UiThread
-  public ProductAndServiceList_ViewBinding(ProductAndServiceList target) {
+  public ProductsList_ViewBinding(ProductsList target) {
     this(target, target.getWindow().getDecorView());
   }
 
   @UiThread
-  public ProductAndServiceList_ViewBinding(ProductAndServiceList target, View source) {
+  public ProductsList_ViewBinding(ProductsList target, View source) {
     this.target = target;
 
     target.recycler_food_list = Utils.findRequiredViewAsType(source, R.id.recycler_food_list, "field 'recycler_food_list'", RecyclerView.class);
@@ -32,7 +32,7 @@ public class ProductAndServiceList_ViewBinding implements Unbinder {
   @Override
   @CallSuper
   public void unbind() {
-    ProductAndServiceList target = this.target;
+    ProductsList target = this.target;
     if (target == null) throw new IllegalStateException("Bindings already cleared.");
     this.target = null;
 
