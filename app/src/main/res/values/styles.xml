@@ -28,6 +28,7 @@
 
     <style name="AppModalStyle"
         parent="Widget.Design.BottomSheet.Modal">
+        <item name="behavior_peekHeight">900dp</item>
         <item name="android:background">@drawable/outline_bottom_sheets</item>
     </style>
 

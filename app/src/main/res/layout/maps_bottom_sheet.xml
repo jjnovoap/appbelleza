@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/AppBottomSheetDialogTheme"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="@style/AppBottomSheetDialogTheme">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
@@ -24,7 +22,7 @@
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="0dp"
-                android:layout_height="216dp"
+                android:layout_height="350dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="60dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -45,11 +43,53 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView12"
                 app:layout_constraintTop_toBottomOf="@+id/map" />
 
+            <ImageView
+                android:id="@+id/marker_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="47dp"
+                android:adjustViewBounds="true"
+                android:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_map_marker" />
+
+            <ImageView
+                android:id="@+id/marker_shadow_image_view"
+                android:layout_width="35dp"
+                android:layout_height="83dp"
+                android:adjustViewBounds="true"
+                android:elevation="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/marker_image_view"
+                app:srcCompat="@drawable/marker_shadow" />
+
+            <ImageView
+                android:id="@+id/my_location_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:scaleType="center"
+                app:elevation="3dp"
+                app:fabSize="normal"
+                app:layout_constraintBottom_toBottomOf="@+id/map"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/map"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_my_location_black_24dp" />
+
             <TextView
                 android:id="@+id/textView14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="25dp"
                 android:text="Agregar dirección"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -74,7 +114,7 @@
             android:id="@+id/constraintLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -116,7 +156,7 @@
             android:id="@+id/btn_save_Location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/border_button"
             android:text="Agregar dirección"
@@ -155,4 +195,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

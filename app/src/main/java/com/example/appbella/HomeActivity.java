@@ -262,6 +262,7 @@ public class HomeActivity extends AppCompatActivity
                 }else
                 if(!BottomDialogFragmen.isAdded()) {
                     BottomDialogFragmen.show(getSupportFragmentManager(), BottomDialogFragmen.getTag());
+
                 }
             }
             @Override
