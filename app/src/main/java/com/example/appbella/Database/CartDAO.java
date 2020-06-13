@@ -16,9 +16,7 @@ import io.reactivex.Single;
 
 @Dao
 public interface CartDAO {
-    // We only load Cart by Restaurant Id
-    // Because each restaurant id will have order receipt different
-    // Because each restaurant have different link payment, so we can't make 1 cart for all
+
     @Query("SELECT * FROM Cart WHERE userPhone=:userPhone")
     Flowable<List<CartItem>> getAllCart(String userPhone);
 
@@ -34,7 +32,6 @@ public interface CartDAO {
     @Query("SELECT * FROM Cart WHERE  productId=:productId AND categoryId=:categoryId AND userPhone=:userPhone")
     Flowable<CartItem> getItemInCart(String productId, String categoryId,String userPhone);
 
-    // If conflict foodId, we will update information
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertOrReplaceAll(CartItem... cartItems);
 

@@ -33,7 +33,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.2.0'
     implementation 'com.google.firebase:firebase-database:19.3.0'
     implementation 'com.google.firebase:firebase-firestore:21.4.3'
-    implementation 'com.firebaseui:firebase-ui-database:4.3.1'
+    implementation 'com.firebaseui:firebase-ui-database:6.2.1'
     implementation 'com.google.firebase:firebase-auth:19.3.1'
     implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
     testImplementation 'junit:junit:4.13'
@@ -89,11 +89,14 @@ dependencies {
     // Location
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    implementation 'com.google.android.libraries.places:places:2.3.0'
 
     // Ken burns Effect
     implementation 'com.flaviofaria:kenburnsview:1.0.7'
 
     // Paper
     implementation 'io.paperdb:paperdb:2.6'
-
+    
+    //Horizontal calendar
+    implementation 'com.vivekkaushik.datepicker:datePickerTimeline:0.0.4'
 }

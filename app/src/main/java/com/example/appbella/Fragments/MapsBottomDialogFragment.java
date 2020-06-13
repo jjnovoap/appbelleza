@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -21,12 +20,12 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.appbella.Common.Common;
@@ -42,20 +41,19 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsBottomDialogFragment extends BottomSheetDialogFragment
-        implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMyLocationButtonClickListener{
+        implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMyLocationButtonClickListener {
 
     public static final String TAG = " ";
     @SuppressLint("StaticFieldLeak")
@@ -63,12 +61,15 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
     private GoogleMap googleMap;
     private Location location;
     private ImageView markerImage;
+    private EditText adress;
+    private double lat;
+    private double log;
     public static final int DEFAULT_INTENT_INT_VALUE = -1;
+    //int AUTOCOMPLETE_REQUEST_CODE = 1;
     private EditText edt_address_complements;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private boolean mLocationPermissionGranted;
     private static final int PERMISSION_ACCESS_LOCATION = 1;
-    private BottomSheetBehavior sheetBehavior;
 
     public static MapsBottomDialogFragment newInstance() {
         return new MapsBottomDialogFragment();
@@ -86,18 +87,13 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
                 parent.removeView(view);
         }
         try {
-            //setStyle(STYLE_NORMAL, R.style.AppTheme_NoActionBar);
+            //setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme);
             view = inflater.inflate(R.layout.maps_bottom_sheet, container, false);
-            /*ConstraintLayout bottomSheet = (ConstraintLayout)
-                    view.findViewById(R.id.bottom_sheet);
-            sheetBehavior = BottomSheetBehavior.from(bottomSheet);
-            BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
-            behavior.setPeekHeight(800);
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            MapsBottomDialogFragment bottomSheet = new MapsBottomDialogFragment();
-            bottomSheet.showNow(this.getChildFragmentManager(), "tag");*/
-            SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+            SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            if (mapFragment != null) {
+                mapFragment.getMapAsync(this);
+            }
             fusedLocationProviderClient = getFusedLocationProviderClient(getContext());
             Button btn_save_Location = view.findViewById(R.id.btn_save_Location);
             markerImage = view.findViewById(R.id.marker_image_view);
@@ -107,6 +103,19 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
             markerShadowImage.setVisibility(View.VISIBLE);
             btn_save_Location.setOnClickListener(this);
             myLocationFab.setOnClickListener(view -> moveToMyLocation());
+            adress = view.findViewById(R.id.edt_adress);
+            adress.setClickable(false);
+            adress.setFocusable(false);
+            if (!Places.isInitialized()) {
+                Places.initialize(getContext(), "AIzaSyCFHMkzZEUkRayMtcPrDSwZoBgHvAADvSc", Locale.US);
+            }
+            /*adress.setOnClickListener(v -> {
+                List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG, Place.Field.NAME);
+                final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList).build(getContext());
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+            });*/
             moveToMyLocation();
         } catch (InflateException e) {
             /* map is already there, just return view as it is */
@@ -115,6 +124,23 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
         return view;
     }
 
+    /*@SuppressLint("RestrictedApi")
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+
+    }*/
 
     @Override
     public void onStart() {
@@ -135,7 +161,7 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
 
                 @Override
                 public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING){
+                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
                         ((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_EXPANDED);
                     }
                 }
@@ -148,21 +174,7 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
 
         });
     }
-/*
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        BottomSheetDialog bottomSheetDialog=(BottomSheetDialog)super.onCreateDialog(savedInstanceState);
-        bottomSheetDialog.setOnShowListener(dialog -> {
-            BottomSheetDialog dialogc = (BottomSheetDialog) dialog;
-            NestedScrollView bottomSheet = (NestedScrollView)
-                    dialogc.findViewById(R.id.bottom_sheet);
-            BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
-            //BottomSheetBehavior.from(bottomSheet).setSkipCollapsed(true);
-            //BottomSheetBehavior.from(bottomSheet).setHideable(true);
-        });
-        return bottomSheetDialog;
-    }*/
+
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
@@ -201,7 +213,8 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
                     .setDuration(250)
                     .start();
             LatLng latLng = map.getCameraPosition().target;
-            TextView adress = view.findViewById(R.id.txt_adress);
+            lat = latLng.latitude;
+            log = latLng.longitude;
             adress.setText(getAddress(latLng.latitude, latLng.longitude));
         });
 
@@ -210,27 +223,6 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
             map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), mapRawResourceStyleRes));
         }
     }
-
-    /*private void goToMyLocation()
-    {
-
-        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            enableMyLocation();
-        } else
-        {
-            googleMap.setMyLocationEnabled(true);
-            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-            if (location != null)
-            {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),17));
-
-            }
-        }
-    }*/
 
     private String getAddress(double lat, double lng) {
 
@@ -305,8 +297,8 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
             return;
         }
         LocationHelper helper = new LocationHelper(
-                location.getLongitude(),
-                location.getLatitude(),
+                log,
+                lat,
                 complements
         );
         Common.currentlocation = helper;

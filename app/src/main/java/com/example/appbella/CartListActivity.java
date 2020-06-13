@@ -2,31 +2,24 @@ package com.example.appbella;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Adapter.MyCartAdapter;
-import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Model.EventBust.CalculatePriceEvent;
 import com.example.appbella.Model.EventBust.SendTotalCashEvent;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -52,15 +45,17 @@ public class CartListActivity extends AppCompatActivity {
     TextView txt_final_price;
     @BindView(R.id.btn_order)
     Button btn_order;
+    @BindView(R.id.txt_empty_cart)
+    TextView txt_empty_cart;
     @BindView(R.id.numero_items)
     TextView numero_items;
+    private MyCartAdapter adapter;
+    private FirebaseAuth auth;
     static boolean isInit = true;
 
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private CartDataSource mCartDataSource;
-
-    private LayoutAnimationController mLayoutAnimationController;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -85,18 +80,22 @@ public class CartListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cart_list);
         Log.d(TAG, "onCreate: started!!");
 
+        auth = FirebaseAuth.getInstance();
+
         init();
         initView();
+        calculateCartTotalPrice();
         getAllItemInCart();
-
+        emptycart();
     }
 
     private void getAllItemInCart() {
         Log.d(TAG, "getAllItemInCart: called!!");
-        mCompositeDisposable.add(mCartDataSource.getAllCart(Common.currentUser.getUserPhone())
+        mCompositeDisposable.add(mCartDataSource.getAllCart(auth.getCurrentUser().getPhoneNumber())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cartItems -> {
+                    adapter = new MyCartAdapter(CartListActivity.this, cartItems);
                     cartItems.size();
                     if (cartItems.isEmpty()) {
                         btn_order.setText(getString(R.string.empty_cart));
@@ -107,24 +106,40 @@ public class CartListActivity extends AppCompatActivity {
                         btn_order.setText(getString(R.string.place_order));
                         btn_order.setEnabled(true);
                         btn_order.setBackgroundResource(R.drawable.border_button);
-
-                        MyCartAdapter adapter = new MyCartAdapter(CartListActivity.this, cartItems);
                         recycler_cart.setAdapter(adapter);
-                        recycler_cart.setLayoutAnimation(mLayoutAnimationController);
-                        
-                        calculateCartTotalPrice();
                     }
-
-
-
                 }, throwable -> {
                     Toast.makeText(this, "[GET CART]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 }));
     }
 
+    private void emptycart() {
+        txt_empty_cart.setOnClickListener(v -> mCartDataSource.cleanCart(auth.getCurrentUser().getPhoneNumber())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        Toast.makeText(CartListActivity.this, "Canasta vaciada exitosamente", Toast.LENGTH_SHORT).show();
+                        calculateCartTotalPrice();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(CartListActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
     private void calculateCartTotalPrice() {
         Log.d(TAG, "calculateCartTotalPrice: called!!");
-        mCartDataSource.sumQuantity(Common.currentUser.getUserPhone()).subscribeOn(Schedulers.io())
+        mCartDataSource.sumQuantity(auth.getCurrentUser().getPhoneNumber())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Long>() {
                     @Override
@@ -158,7 +173,7 @@ public class CartListActivity extends AppCompatActivity {
                     }
                 });
 
-        mCartDataSource.sumPrice(Common.currentUser.getUserPhone())
+        mCartDataSource.sumPrice(auth.getCurrentUser().getPhoneNumber())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Long>() {
@@ -197,8 +212,6 @@ public class CartListActivity extends AppCompatActivity {
         Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
 
-        mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
-
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -206,7 +219,6 @@ public class CartListActivity extends AppCompatActivity {
         recycler_cart.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recycler_cart.setLayoutManager(layoutManager);
-        //recycler_cart.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
 
         btn_order.setOnClickListener(v -> {
             EventBus.getDefault().postSticky(new SendTotalCashEvent(txt_final_price.getText().toString()));

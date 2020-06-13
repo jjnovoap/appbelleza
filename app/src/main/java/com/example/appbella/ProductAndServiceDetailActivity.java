@@ -111,6 +111,7 @@ public class ProductAndServiceDetailActivity extends AppCompatActivity implement
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(() -> {
                         Toast.makeText(this, "Added to Cart", Toast.LENGTH_SHORT).show();
+                        finish();
                     }, throwable -> {
                         Toast.makeText(this, "[ADD CART]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }));

@@ -9,7 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Database.CartDataSource;
@@ -18,6 +17,7 @@ import com.example.appbella.Database.CartItem;
 import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Interface.IOnImageViewAdapterClickListener;
 import com.example.appbella.Model.EventBust.CalculatePriceEvent;
+
 import com.example.appbella.R;
 import com.squareup.picasso.Picasso;
 
@@ -123,7 +123,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHold
 
                             @Override
                             public void onSuccess(Integer integer) {
-                                notifyItemRemoved(position1);
+                                notifyItemRemoved(position);
                                 EventBus.getDefault().postSticky(new CalculatePriceEvent());
                             }
 

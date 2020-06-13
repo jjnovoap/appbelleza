@@ -3,6 +3,7 @@ package com.example.appbella.Adapter;
 
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.UiThread;
 import butterknife.Unbinder;
@@ -19,6 +20,8 @@ public class MyAddonAdapter$MyViewHolder_ViewBinding implements Unbinder {
     this.target = target;
 
     target.ckb_addon = Utils.findRequiredViewAsType(source, R.id.ckb_addon, "field 'ckb_addon'", CheckBox.class);
+    target.txt_price = Utils.findRequiredViewAsType(source, R.id.txt_price, "field 'txt_price'", TextView.class);
+    target.txt_title = Utils.findRequiredViewAsType(source, R.id.txt_title, "field 'txt_title'", TextView.class);
   }
 
   @Override
@@ -29,5 +32,7 @@ public class MyAddonAdapter$MyViewHolder_ViewBinding implements Unbinder {
     this.target = null;
 
     target.ckb_addon = null;
+    target.txt_price = null;
+    target.txt_title = null;
   }
 }

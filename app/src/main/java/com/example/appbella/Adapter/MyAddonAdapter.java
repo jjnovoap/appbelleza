@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,15 +43,21 @@ public class MyAddonAdapter extends RecyclerView.Adapter<MyAddonAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.ckb_addon.setText(new StringBuilder(mAddonList.get(position).getName()).append(" (").append(mContext.getString(R.string.money_sign))
-                .append(mAddonList.get(position).getExtraPrice())
-                .append(")"));
+        holder.txt_title.setText(mAddonList.get(position).getName());
+        holder.ckb_addon.setButtonDrawable(null);
+        holder.txt_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
+                .append(" ")
+                .append(mAddonList.get(position).getExtraPrice()));
         holder.ckb_addon.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 Common.addonList.add(mAddonList.get(position));
+                holder.txt_price.setTextColor(mContext.getResources().getColor(R.color.white));
+                holder.txt_title.setTextColor(mContext.getResources().getColor(R.color.white));
                 EventBus.getDefault().post(new AddOnEventChange(true, mAddonList.get(position)));
             } else {
                 Common.addonList.remove(mAddonList.get(position));
+                holder.txt_price.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
+                holder.txt_title.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
                 EventBus.getDefault().post(new AddOnEventChange(false, mAddonList.get(position)));
             }
         });
@@ -65,6 +72,10 @@ public class MyAddonAdapter extends RecyclerView.Adapter<MyAddonAdapter.MyViewHo
 
         @BindView(R.id.ckb_addon)
         CheckBox ckb_addon;
+        @BindView(R.id.txt_price)
+        TextView txt_price;
+        @BindView(R.id.txt_title)
+        TextView txt_title;
         Unbinder mUnbinder;
 
         public MyViewHolder(@NonNull View itemView) {

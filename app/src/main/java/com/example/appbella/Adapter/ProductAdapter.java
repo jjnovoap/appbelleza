@@ -15,12 +15,14 @@ import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appbella.CartListActivity;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
 import com.example.appbella.Database.CartItem;
 import com.example.appbella.Database.LocalCartDataSource;
 import com.example.appbella.Interface.IFoodDetailOrCartClickListener;
+import com.example.appbella.Model.EventBust.CalculatePriceEvent;
 import com.example.appbella.Model.EventBust.ProductDetailEvent;
 import com.example.appbella.Model.Favorite;
 import com.example.appbella.Model.Product;
@@ -77,26 +79,41 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     public void onBindViewHolder(@NonNull ProductAdapter.MyViewHolder holder, int position) {
         Picasso.get().load(mProductList.get(position).getImage())
                 .placeholder(R.drawable.app_icon).into(holder.img_food);
-
         FirebaseAuth auth = FirebaseAuth.getInstance();
         holder.txt_product_and_service_name.setText(mProductList.get(position).getName());
         holder.txt_product_and_service_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
-                .append(" ").append(String.valueOf(mProductList.get(position).getPrice())));
+                .append(" ").append(mProductList.get(position).getPrice()));
 
         if (mProductList.get(position).getStatus().equals("1")) {
             holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
         } else {
             holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
         }
-
-        if (Long.parseLong(String.valueOf(holder.txt_quantity.getText())) == 1) {
+        holder.img_delete_food.setVisibility(View.GONE);
+        if (holder.txt_quantity.getText().equals("1")) {
             holder.img_decrease.setVisibility(View.GONE);
             holder.img_delete_food.setVisibility(View.VISIBLE);
         }else{
             holder.img_decrease.setVisibility(View.VISIBLE);
-            holder.img_delete_food.setVisibility(View.GONE);
+
         }
 
+        holder.img_increase.setOnClickListener(v -> {
+            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
+            q += 1;
+            holder.txt_quantity.setText(q+"");
+            notifyDataSetChanged();
+        });
+
+        holder.img_decrease.setOnClickListener(v -> {
+            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
+            if (q > 0) {
+                q -= 1;
+                holder.txt_quantity.setText(q+"");
+                notifyDataSetChanged();
+            }
+
+        });
 
         // Event
         holder.img_fav.setOnClickListener(v -> {
@@ -138,31 +155,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
         });
 
-        holder.img_increase.setOnClickListener(v -> {
-            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
-            q += 1;
-            holder.txt_quantity.setText(q + "");
-            notifyDataSetChanged();
-        });
-
-        holder.img_decrease.setOnClickListener(v -> {
-            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
-            if (q > 0) {
-                q -= 1;
-                holder.txt_quantity.setText(q + "");
-                notifyDataSetChanged();
-            }
-
-        });
-
-
-        holder.setIFoodDetailOrCartClickListener((view, i, isDetail, isDelete) -> {
-            CartItem cartItem = null;
+        holder.setIFoodDetailOrCartClickListener((view, i, isDetail, isDelete, isAdd) -> {
+            CartItem cartItem;
             if (isDetail) {
-
                 mContext.startActivity(new Intent(mContext, ProductAndServiceDetailActivity.class));
                 EventBus.getDefault().postSticky(new ProductDetailEvent(true, mProductList.get(i)));
-
             } else {
                 long j = Long.parseLong(holder.txt_quantity.getText().toString());
                 // Cart create
@@ -179,12 +176,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
                 cartItem.setProductExtraPrice((long) 0);
                 cartItem.setFbid(Common.currentUser.getFbid());
 
+                CartItem finalCartItem = cartItem;
                 mCompositeDisposable.add(mCartDataSource.insertOrReplaceAll(cartItem)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
                             //hay que verificar aqui si el item esta en el carrito de compras
                             if (isDelete){
+                                mCompositeDisposable.delete(mCartDataSource.deleteCart(finalCartItem)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe());
                                 Toast.makeText(mContext, "Elemento eliminado del carro de compras", Toast.LENGTH_SHORT).show();
                             }else{
                                 Toast.makeText(mContext, "Añadido al carro de compras", Toast.LENGTH_SHORT).show();
@@ -192,17 +194,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
                         }, throwable -> {
                             Toast.makeText(mContext, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }));
-
-            }
-
-            if (isDelete) {
-                mCompositeDisposable.delete(mCartDataSource.deleteCart(cartItem)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe());
             }
         });
-
     }
 
     @Override
@@ -250,19 +243,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             favorite = FirebaseDatabase.getInstance().getReference().child("Favorites");
             const_detail.setOnClickListener(this);
             img_add_cart.setOnClickListener(this);
+            img_increase.setOnClickListener(this);
+            img_decrease.setOnClickListener(this);
             img_delete_food.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.img_detail) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true, false);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true, false, false);
             } else if (v.getId() == R.id.img_cart) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false, true);
+            }else if (v.getId() == R.id.img_decrease) {
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true, false);
+            } else if (v.getId() == R.id.img_increase) {
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false, true);
             } else if (v == img_delete_food) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true, false);
             }
-
         }
     }
 }

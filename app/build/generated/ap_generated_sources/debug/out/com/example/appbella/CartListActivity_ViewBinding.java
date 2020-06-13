@@ -29,6 +29,7 @@ public class CartListActivity_ViewBinding implements Unbinder {
     target.recycler_cart = Utils.findRequiredViewAsType(source, R.id.recycler_cart, "field 'recycler_cart'", RecyclerView.class);
     target.txt_final_price = Utils.findRequiredViewAsType(source, R.id.txt_final_price, "field 'txt_final_price'", TextView.class);
     target.btn_order = Utils.findRequiredViewAsType(source, R.id.btn_order, "field 'btn_order'", Button.class);
+    target.txt_empty_cart = Utils.findRequiredViewAsType(source, R.id.txt_empty_cart, "field 'txt_empty_cart'", TextView.class);
     target.numero_items = Utils.findRequiredViewAsType(source, R.id.numero_items, "field 'numero_items'", TextView.class);
   }
 
@@ -43,6 +44,7 @@ public class CartListActivity_ViewBinding implements Unbinder {
     target.recycler_cart = null;
     target.txt_final_price = null;
     target.btn_order = null;
+    target.txt_empty_cart = null;
     target.numero_items = null;
   }
 }

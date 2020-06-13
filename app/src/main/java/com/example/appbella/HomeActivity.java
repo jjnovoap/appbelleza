@@ -39,7 +39,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nex3z.notificationbadge.NotificationBadge;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -89,7 +88,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        countCartByRestaurant();
+        countCartItem();
     }
 
     @Override
@@ -114,7 +113,7 @@ public class HomeActivity extends AppCompatActivity
 
 
         init();
-        countCartByRestaurant();
+        countCartItem();
         initView();
 
 
@@ -185,7 +184,6 @@ public class HomeActivity extends AppCompatActivity
         isTransactionSafe = false;
     }
 
-
     private boolean loadFragment(Fragment fragment) {
         if (isTransactionSafe){
             if (fragment != null){
@@ -225,7 +223,7 @@ public class HomeActivity extends AppCompatActivity
         setAddress();
     }
 
-    private void countCartByRestaurant() {
+    private void countCartItem() {
         Log.d(TAG, "countCartByRestaurant: called!!");
         FirebaseAuth auth = FirebaseAuth.getInstance();
         mCartDataSource.countItemInCart(auth.getCurrentUser().getPhoneNumber())

@@ -5,12 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".CartListActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        app:elevation="0dp"
         android:background="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            app:elevation="0dp"
             android:gravity="center">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,6 +82,16 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2" />
+
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
@@ -100,9 +113,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_price"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@color/white"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -118,7 +132,7 @@
             android:fontFamily="@font/gilroybold"
             android:text="Total"
             android:textColor="@color/colorPrimary"
-            android:textSize="30sp"
+            android:textSize="32sp"
             app:layout_constraintBottom_toTopOf="@+id/btn_order"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -131,12 +145,12 @@
             android:fontFamily="@font/gilroybold"
             android:gravity="end"
             android:text="0"
-            android:textColor="@color/colorPrice"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="@+id/textView5"
+            android:textColor="@color/colorPrimary"
+            android:textSize="36sp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_order"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintTop_toTopOf="@+id/textView5" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <Button
@@ -145,13 +159,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/border_button"
-            android:text="ORDER"
             android:fontFamily="@font/gilroybold"
+            android:text="Terminar Orden"
             android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_final_price" />
+
+        <TextView
+            android:id="@+id/txt_empty_cart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/gilroybold"
+            android:text="Vaciar Canasta"
+            android:gravity="center"
+            android:textColor="@color/colorPrimary"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_order"
+            app:layout_constraintVertical_bias="0.0" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

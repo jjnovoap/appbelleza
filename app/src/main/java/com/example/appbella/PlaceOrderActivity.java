@@ -2,17 +2,11 @@ package com.example.appbella;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,17 +26,13 @@ import com.example.appbella.Model.Order;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.vivekkaushik.datepicker.DatePickerTimeline;
+import com.vivekkaushik.datepicker.OnDateSelectedListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,26 +43,22 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class PlaceOrderActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class PlaceOrderActivity extends AppCompatActivity{
 
     private static final String TAG = PlaceOrderActivity.class.getSimpleName();
 
     private static final int REQUEST_BRAINTREE_CODE = 7777;
 
-    @BindView(R.id.edt_date)
-    EditText edt_date;
+    @BindView(R.id.txt_date)
+    TextView txt_date;
     @BindView(R.id.txt_total_cash)
     TextView txt_total_cash;
-    @BindView(R.id.txt_user_phone)
-    TextView txt_user_phone;
-    @BindView(R.id.txt_user_address)
-    TextView txt_user_address;
-    @BindView(R.id.txt_new_address)
-    TextView txt_new_address;
-    @BindView(R.id.btn_add_new_address)
-    Button btn_add_new_address;
-    @BindView(R.id.chb_default_address)
-    CheckBox chb_default_address;
+    @BindView(R.id.txt_tittle)
+    TextView txt_tittle;
+    @BindView(R.id.txt_etiqueta)
+    TextView txt_etiqueta;
+    @BindView(R.id.txt_address)
+    TextView txt_address;
     @BindView(R.id.rdi_cod)
     RadioButton rdi_cod;
     @BindView(R.id.rdi_online_payment)
@@ -81,6 +67,8 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
     Button btn_proceed;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.numero_items)
+    TextView numero_items;
 
     private DatabaseReference setorder;
 
@@ -88,6 +76,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
     private CartDataSource mCartDataSource;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private AlertDialog mDialog;
+    private FirebaseAuth auth;
 
     private boolean isSelectedDate = false;
     private boolean isAddNewAddress = false;
@@ -125,88 +114,31 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
         Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
 
-        txt_user_phone.setText(Common.currentUser.getUserPhone());
-        txt_user_address.setText(Common.currentUser.getAddress());
+        txt_address.setText(Common.currentUser.getAddress());
         setorder = FirebaseDatabase.getInstance().getReference().child("Order");
 
-        toolbar.setTitle(getString(R.string.place_order));
+        txt_tittle.setText(getString(R.string.place_order));
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
-        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/gilroybold.ttf");
-        ((TextView) toolbar.getChildAt(0)).setTypeface(typeFace);
-        ((TextView) toolbar.getChildAt(0)).setTextSize(25);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        btn_add_new_address.setOnClickListener(v -> {
-            isAddNewAddress = true;
-            chb_default_address.setChecked(false);
+        calendar();
 
-            View layout_add_new_address = LayoutInflater.from(PlaceOrderActivity.this)
-                    .inflate(R.layout.layout_add_new_address, null);
-
-            EditText edt_new_address = layout_add_new_address.findViewById(R.id.edt_add_new_address);
-            edt_new_address.setText(txt_new_address.getText().toString());
-
-            androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(PlaceOrderActivity.this)
-                    .setTitle("Add New Address")
-                    .setView(layout_add_new_address)
-                    .setNegativeButton("CANCEL", (dialog, which) -> {
-                        dialog.dismiss();
-                    })
-                    .setPositiveButton("ADD", (dialog, which) -> {
-                        txt_new_address.setText(edt_new_address.getText().toString());
-                    });
-
-            androidx.appcompat.app.AlertDialog addNewAdressDialog = builder.create();
-            addNewAdressDialog.show();
-        });
-
-        edt_date.setOnClickListener(v -> {
-            Calendar now = Calendar.getInstance();
-
-            DatePickerDialog dpd = DatePickerDialog.newInstance(PlaceOrderActivity.this,
-                    now.get(Calendar.YEAR),
-                    now.get(Calendar.MONTH),
-                    now.get(Calendar.DAY_OF_MONTH));
-
-            dpd.show(getSupportFragmentManager(), "Datepickerdialog");
-        });
 
         btn_proceed.setOnClickListener(v -> {
             if (!isSelectedDate) {
                 Toast.makeText(this, "Please select Date", Toast.LENGTH_SHORT).show();
+                String dateString = txt_date.getText().toString();
                 return;
             }
-            else {
-                String dateString = edt_date.getText().toString();
-                DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-                try {
-                    Date orderDate = df.parse(dateString);
-
-                    // Get current date
-                    Calendar calendar = Calendar.getInstance();
-
-                    Date currentDate = df.parse(df.format(calendar.getTime()));
-
-                    if (!DateUtils.isToday(orderDate.getTime())) {
-                        if (orderDate.before(currentDate)) {
-                            Toast.makeText(this, "Please choose current date or future day", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (!isAddNewAddress) {
+           /*if (!isAddNewAddress) {
                 if (!chb_default_address.isChecked()) {
                     Toast.makeText(this, "Please choose default Adress or set new address", Toast.LENGTH_SHORT).show();
                     return;
                 }
-            }
+            }*/
             if (rdi_cod.isChecked()) {
                 getOrderNumber(false);
             }
@@ -216,10 +148,34 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
         });
     }
 
+    private void calendar() {
+        DatePickerTimeline datePickerTimeline = findViewById(R.id.datePickerTimeline);
+// Set a Start date (Default, 1 Jan 1970)
+        Calendar now = Calendar.getInstance();
+
+        datePickerTimeline.setInitialDate(now.get(Calendar.YEAR), now.get(Calendar.MONTH),now.get(Calendar.DAY_OF_MONTH));
+        datePickerTimeline.setDateTextColor(getResources().getColor(R.color.colorPrimary));
+        datePickerTimeline.setDayTextColor(getResources().getColor(R.color.colorPrimary));
+        datePickerTimeline.setMonthTextColor(getResources().getColor(R.color.colorPrimary));
+// Set a date Selected Listener
+        datePickerTimeline.setOnDateSelectedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(int year, int month, int day, int dayOfWeek) {
+                // Do Something
+                txt_date.setText(new StringBuilder().append(year).append("-").append(month+1).append("-").append(day));
+            }
+
+            @Override
+            public void onDisabledDateSelected(int year, int month, int day, int dayOfWeek, boolean isDisabled) {
+                // Do Something
+            }
+        });
+    }
+
     private void getOrderNumber(boolean isOnlinePayment) {
         Log.d(TAG, "getOrderNumber: called!!");
         if (!isOnlinePayment) {
-            String address = chb_default_address.isChecked() ? txt_user_address.getText().toString() : txt_new_address.getText().toString();
+            String address = txt_address.getText().toString();
 
             mCompositeDisposable.add(mCartDataSource.getAllCart(Common.currentUser.getUserPhone())
                     .subscribeOn(Schedulers.io())
@@ -239,7 +195,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                 Common.currentUser.getName(),
                                 address,
                                 "NONE",
-                                edt_date.getText().toString(),
+                                txt_date.getText().toString(),
                                 true,
                                 Double.valueOf(txt_total_cash.getText().toString()),
                                 cartItems.size());
@@ -455,7 +411,6 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                         mDialog.show();
                     }
 
-                    String address = chb_default_address.isChecked() ? txt_user_address.getText().toString() : txt_new_address.getText().toString();
 
                     /*mCompositeDisposable.add(mIBraintreeAPI.submitPayment(amount, nonce.getNonce())
                     .subscribeOn(Schedulers.io())
@@ -560,19 +515,33 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
         //mIBraintreeAPI = RetrofitBraintreeClient.getInstance(Common.currentRestaurant.getPaymentUrl()).create(IBraintreeAPI.class);
         mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
         mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());
-    }
+        auth = FirebaseAuth.getInstance();
+        mCartDataSource.sumQuantity(auth.getCurrentUser().getPhoneNumber())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Long>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        Log.d(TAG, "onDateSet: called!!");
-        // Implement late
-        isSelectedDate = true;
-        edt_date.setText(new StringBuilder("")
-                .append(monthOfYear+1)
-                .append("/")
-                .append(dayOfMonth)
-                .append("/")
-                .append(year));
+                    }
+
+                    @Override
+                    public void onSuccess(Long aLong) {
+                        numero_items.setText(new StringBuilder(String.valueOf(aLong))
+                                .append(" Ítems"));
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e.getMessage().contains("Query returned empty")){
+                            numero_items.setText(new StringBuilder("0")
+                                    .append(" Ítems"));
+
+                        }
+                        else
+                            Toast.makeText(PlaceOrderActivity.this, "[SUM CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     // Event Bus
@@ -591,6 +560,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void setTotalCash(SendTotalCashEvent event) {
-        txt_total_cash.setText(String.valueOf(event.getCash()));
+        txt_total_cash.setText(new StringBuilder("$ ")
+                .append(event.getCash()));
     }
 }

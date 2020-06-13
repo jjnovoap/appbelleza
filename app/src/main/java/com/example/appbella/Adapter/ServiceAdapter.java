@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appbella.CartListActivity;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Database.CartDataSource;
 import com.example.appbella.Database.CartDatabase;
@@ -154,10 +155,9 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.MyViewHo
         });
 
 
-        holder.setIFoodDetailOrCartClickListener((view, i, isDetail, isDelete) -> {
+        holder.setIFoodDetailOrCartClickListener((view, i, isDetail, isDelete, isAdd) -> {
             CartItem cartItem = null;
             if (isDetail) {
-
                 mContext.startActivity(new Intent(mContext, ProductAndServiceDetailActivity.class));
                 EventBus.getDefault().postSticky(new ServiceDetailEvent(true, mServiceList.get(i)));
 
@@ -224,7 +224,6 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.MyViewHo
         TextView img_detail;
         @BindView(R.id.img_cart)
         ImageView img_add_cart;
-
         @BindView(R.id.img_delete_food)
         ImageView img_delete_food;
         @BindView(R.id.img_decrease)
@@ -248,17 +247,20 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.MyViewHo
             favorite = FirebaseDatabase.getInstance().getReference().child("Favorites");
             img_detail.setOnClickListener(this);
             img_add_cart.setOnClickListener(this);
+            img_increase.setOnClickListener(this);
             img_delete_food.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.img_detail) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true, false);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true, false, false);
             } else if (v.getId() == R.id.img_cart) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false, true);
+            }else if (v.getId() == R.id.img_increase) {
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false, true);
             } else if (v == img_delete_food) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true);
+                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true, false);
             }
 
         }
