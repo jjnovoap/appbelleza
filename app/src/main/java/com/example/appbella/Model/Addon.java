@@ -5,6 +5,7 @@ public class Addon {
     private String name;
     private String description;
     private Long extraPrice;
+    private boolean isSelected;
 
     public int getId() {
         return id;
@@ -37,4 +38,13 @@ public class Addon {
     public void setExtraPrice(Long extraPrice) {
         this.extraPrice = extraPrice;
     }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
 }

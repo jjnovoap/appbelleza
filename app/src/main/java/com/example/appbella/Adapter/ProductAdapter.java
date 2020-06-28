@@ -1,40 +1,39 @@
 package com.example.appbella.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.appbella.CartListActivity;
 import com.example.appbella.Common.Common;
-import com.example.appbella.Database.CartDataSource;
-import com.example.appbella.Database.CartDatabase;
-import com.example.appbella.Database.CartItem;
-import com.example.appbella.Database.LocalCartDataSource;
-import com.example.appbella.Interface.IFoodDetailOrCartClickListener;
+import com.example.appbella.Model.AddToCart;
 import com.example.appbella.Model.EventBust.CalculatePriceEvent;
-import com.example.appbella.Model.EventBust.ProductDetailEvent;
 import com.example.appbella.Model.Favorite;
 import com.example.appbella.Model.Product;
-import com.example.appbella.ProductAndServiceDetailActivity;
 import com.example.appbella.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,26 +41,24 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> implements Filterable {
 
+    private static final String TAG = "";
     private Context mContext;
     private List<Product> mProductList;
-    private CompositeDisposable mCompositeDisposable;
-    private CartDataSource mCartDataSource;
-    private DatabaseReference favorite, product;
-    public void onStop() {
-        mCompositeDisposable.clear();
-    }
+    private List<Product> mProductListFull;
+    private long mQuantity;
+    private DatabaseReference favorite;
+    private DatabaseReference product;
+    private DatabaseReference addtoCart;
+
 
     public ProductAdapter(Context context, List<Product> productList) {
         mContext = context;
         mProductList = productList;
-        mCompositeDisposable = new CompositeDisposable();
-        mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(context).cartDAO());
+        mProductListFull=new ArrayList<>();
+        mProductListFull.addAll(productList);
     }
 
     @NonNull
@@ -69,7 +66,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     public ProductAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.layout_product, parent, false);
-        favorite = FirebaseDatabase.getInstance().getReference("Favorite");
+        favorite = FirebaseDatabase.getInstance().getReference("Favorites");
+        addtoCart = FirebaseDatabase.getInstance().getReference("Cart");
         product = FirebaseDatabase.getInstance().getReference("Products");
         return new ProductAdapter.MyViewHolder(view);
     }
@@ -77,75 +75,163 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull ProductAdapter.MyViewHolder holder, int position) {
-        Picasso.get().load(mProductList.get(position).getImage())
-                .placeholder(R.drawable.app_icon).into(holder.img_food);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        holder.txt_product_and_service_name.setText(mProductList.get(position).getName());
-        holder.txt_product_and_service_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
-                .append(" ").append(mProductList.get(position).getPrice()));
 
-        if (mProductList.get(position).getStatus().equals("1")) {
+        final Product productDataItem = mProductList.get(position);
+
+        holder.setIsRecyclable(false);
+
+        Picasso.get().load(productDataItem.getImage()).placeholder(R.drawable.app_icon).into(holder.img_product);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        holder.txt_product_and_service_name.setText(productDataItem.getName());
+        holder.txt_product_and_service_price.setText(new StringBuilder(mContext.getString(R.string.money_sign)).append(" ").append(productDataItem.getPrice()));
+
+        DatabaseReference inAddtoCart = FirebaseDatabase.getInstance().getReference("Cart").child(auth.getCurrentUser().getUid()).child(productDataItem.getName());
+
+        /*DatabaseReference getCart = FirebaseDatabase.getInstance().getReference("Cart").child(auth.getCurrentUser().getUid());
+
+        getCart.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //int count = 0;
+                //badge.setText("0");
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String name = ds.child("name").getValue(String.class);
+                    //Log.d(TAG, "onCreate: started!!"+name);
+
+                        mQuantity = (long) ds.child("productQuantity").getValue();
+                        if (mQuantity == 0) {
+                            holder.card_add.setVisibility(View.VISIBLE);
+                        } else {
+                            holder.txt_quantity.setText(String.valueOf(mQuantity));
+                            holder.card_add.setVisibility(View.GONE);
+                        }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage());
+            }
+        });*/
+
+        inAddtoCart.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    String name = dataSnapshot.child("name").getValue(String.class);
+                    if (productDataItem.getName().equals(name)) {
+                        mQuantity = (long) dataSnapshot.child("productQuantity").getValue();
+                        if (mQuantity == 0) {
+                            holder.card_add.setVisibility(View.VISIBLE);
+                        } else {
+                            holder.txt_quantity.setText(String.valueOf(mQuantity));
+                            holder.card_add.setVisibility(View.GONE);
+                        }
+
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        if (productDataItem.getStatus().equals("1")) {
             holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
         } else {
             holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
         }
-        holder.img_delete_food.setVisibility(View.GONE);
-        if (holder.txt_quantity.getText().equals("1")) {
-            holder.img_decrease.setVisibility(View.GONE);
-            holder.img_delete_food.setVisibility(View.VISIBLE);
-        }else{
-            holder.img_decrease.setVisibility(View.VISIBLE);
-
-        }
 
         holder.img_increase.setOnClickListener(v -> {
-            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
+            long q = Long.parseLong(holder.txt_quantity.getText().toString());
             q += 1;
-            holder.txt_quantity.setText(q+"");
-            notifyDataSetChanged();
+            holder.txt_quantity.setText(String.valueOf(q));
+            Map<String, Object> update = new HashMap<>();
+            update.put("productQuantity", q);
+            addtoCart.child(auth.getCurrentUser().getUid()).child(productDataItem.getName()).updateChildren(update);
         });
 
         holder.img_decrease.setOnClickListener(v -> {
-            int q = Integer.parseInt(holder.txt_quantity.getText().toString());
+            long q = Long.parseLong(holder.txt_quantity.getText().toString());
             if (q > 0) {
                 q -= 1;
-                holder.txt_quantity.setText(q+"");
-                notifyDataSetChanged();
+                holder.txt_quantity.setText(String.valueOf(q));
+                Map<String, Object> update = new HashMap<>();
+                update.put("productQuantity", q);
+                addtoCart.child(auth.getCurrentUser().getUid()).child(productDataItem.getName()).updateChildren(update);
             }
+            if (q == 0){
+                addtoCart.child(auth.getCurrentUser().getUid()).child(productDataItem.getName()).removeValue().addOnCompleteListener(task -> {
+                    // añadir sonido como en rappi
+                    EventBus.getDefault().postSticky(new CalculatePriceEvent(0));
+                    holder.txt_quantity.setText("1");
+                }).addOnFailureListener(e ->
+                        Toast.makeText(mContext, "Error al eliminar producto", Toast.LENGTH_SHORT).show());
+            }
+        });
 
+        holder.img_add_cart.setOnClickListener(v -> {
+            long ads = 0;
+            AddToCart add = new AddToCart(
+                    productDataItem.getId(),
+                    productDataItem.getCategoryId(),
+                    productDataItem.getKey(),
+                    productDataItem.getName(),
+                    productDataItem.getImage(),
+                    productDataItem.getPrice(),
+                    Long.valueOf(holder.txt_quantity.getText().toString()),
+                    ads,
+                    false,
+                    ads,
+                    "1");
+
+            addtoCart.child(auth.getCurrentUser().getUid()).child(productDataItem.getName()).setValue(add)
+                    .addOnCompleteListener(task -> {
+                        /*if (task.isSuccessful()) {
+                            añadir sonido como en rappi
+                            Toast.makeText(mContext, "Producto añadido", Toast.LENGTH_SHORT).show();
+                        }*/
+                    }).addOnFailureListener(e -> {
+                Toast.makeText(mContext, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
         });
 
         // Event
         holder.img_fav.setOnClickListener(v -> {
-            if (mProductList.get(position).getStatus().equals("1")) {
-                favorite.child(auth.getCurrentUser().getUid()).child(mProductList.get(position).getName()).removeValue().addOnCompleteListener(task -> {
+            if (productDataItem.getStatus().equals("1")) {
+                favorite.child(auth.getCurrentUser().getUid()).child(productDataItem.getName()).removeValue().addOnCompleteListener(task -> {
                     holder.img_fav.setImageResource(R.drawable.ic_favorite_border_button_color_24dp);
                     holder.img_fav.setTag(false);
                     Map<String, Object> status = new HashMap<>();
                     status.put("status", "0");
-                    product.child(mProductList.get(position).getKey()).updateChildren(status);
+                    product.child(productDataItem.getKey()).updateChildren(status);
                 }).addOnFailureListener(e ->
                         Toast.makeText(mContext, "Error al eliminar de favoritos", Toast.LENGTH_SHORT).show());
             } else {
                 Favorite favoriteServices = new Favorite(auth.getCurrentUser().getUid(),
                         "",
-                        mProductList.get(position).getName(),
-                        mProductList.get(position).getImage(),
+                        productDataItem.getName(),
+                        productDataItem.getImage(),
                         "0",
-                        Integer.parseInt(mProductList.get(position).getId()),
+                        Integer.parseInt(productDataItem.getId()),
                         1,
-                        mProductList.get(position).getPrice());
+                        productDataItem.getPrice());
 
-                favorite.child(auth.getCurrentUser().getUid()).child(mProductList.get(position).getName()).setValue(favoriteServices)
+                favorite.child(auth.getCurrentUser().getUid()).child(productDataItem.getName()).setValue(favoriteServices)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 holder.img_fav.setImageResource(R.drawable.ic_favorite_button_color_24dp);
                                 holder.img_fav.setTag(true);
                                 Map<String, Object> status = new HashMap<>();
                                 status.put("status", "1");
-                                product.child(mProductList.get(position).getKey()).updateChildren(status);
+                                product.child(productDataItem.getKey()).updateChildren(status);
                                 Common.currentFavorite = favoriteServices;
                                 Toast.makeText(mContext, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
+                                /*mContext.startActivity(new Intent(mContext, Favorite.class));
+                                EventBus.getDefault().postSticky(new ProductDetailEvent(true, mProductList.get(position)));*/
+
                             }
                         }).addOnFailureListener(e -> {
                     Toast.makeText(mContext, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -154,48 +240,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
 
         });
-
-        holder.setIFoodDetailOrCartClickListener((view, i, isDetail, isDelete, isAdd) -> {
-            CartItem cartItem;
-            if (isDetail) {
-                mContext.startActivity(new Intent(mContext, ProductAndServiceDetailActivity.class));
-                EventBus.getDefault().postSticky(new ProductDetailEvent(true, mProductList.get(i)));
-            } else {
-                long j = Long.parseLong(holder.txt_quantity.getText().toString());
-                // Cart create
-                cartItem = new CartItem();
-                cartItem.setProductId(mProductList.get(i).getName());
-                cartItem.setCategoryId(mProductList.get(i).getCategoryId());
-                cartItem.setProductName(mProductList.get(i).getName());
-                cartItem.setProductPrice(mProductList.get(i).getPrice());
-                cartItem.setProductImage(mProductList.get(i).getImage());
-                cartItem.setProductQuantity(Math.toIntExact(j));
-                cartItem.setUserPhone(Common.currentUser.getUserPhone());
-                cartItem.setProductAddon("NORMAL");
-                cartItem.setProductSize("NORMAL");
-                cartItem.setProductExtraPrice((long) 0);
-                cartItem.setFbid(Common.currentUser.getFbid());
-
-                CartItem finalCartItem = cartItem;
-                mCompositeDisposable.add(mCartDataSource.insertOrReplaceAll(cartItem)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {
-                            //hay que verificar aqui si el item esta en el carrito de compras
-                            if (isDelete){
-                                mCompositeDisposable.delete(mCartDataSource.deleteCart(finalCartItem)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe());
-                                Toast.makeText(mContext, "Elemento eliminado del carro de compras", Toast.LENGTH_SHORT).show();
-                            }else{
-                                Toast.makeText(mContext, "Añadido al carro de compras", Toast.LENGTH_SHORT).show();
-                            }
-                        }, throwable -> {
-                            Toast.makeText(mContext, "" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                        }));
-            }
-        });
     }
 
     @Override
@@ -203,10 +247,46 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         return mProductList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    @Override
+    public Filter getFilter() {
+        return productDataFilter;
+    }
 
-        @BindView(R.id.img_food)
-        ImageView img_food;
+    private Filter productDataFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Product> filteredList = new ArrayList<>();
+
+            if(constraint == null || constraint.length() == 0){
+                filteredList.addAll(mProductListFull);
+            }else {
+
+                String filter=constraint.toString().toLowerCase().trim();
+
+                for(Product dataItem:mProductListFull){
+                    if(dataItem.getName().toLowerCase().contains(filter)){
+                        filteredList.add(dataItem);
+                    }
+                }
+            }
+            FilterResults results=new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mProductList.clear();
+            mProductList.addAll((Collection<? extends Product>) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
+    public class MyViewHolder extends RecyclerView.ViewHolder{
+
+        @BindView(R.id.img_product)
+        ImageView img_product;
         @BindView(R.id.img_fav)
         ImageView img_fav;
         @BindView(R.id.txt_quantity)
@@ -215,52 +295,21 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         TextView txt_product_and_service_name;
         @BindView(R.id.txt_product_and_service_price)
         TextView txt_product_and_service_price;
-        @BindView(R.id.const_detail)
-        ConstraintLayout const_detail;
         @BindView(R.id.img_cart)
         ImageView img_add_cart;
-
-        @BindView(R.id.img_delete_food)
-        ImageView img_delete_food;
+        @BindView(R.id.card_add)
+        CardView card_add;
         @BindView(R.id.img_decrease)
         ImageView img_decrease;
         @BindView(R.id.img_increase)
         ImageView img_increase;
-
-        IFoodDetailOrCartClickListener mIFoodDetailOrCartClickListener;
-
-        public void setIFoodDetailOrCartClickListener(IFoodDetailOrCartClickListener IFoodDetailOrCartClickListener) {
-            mIFoodDetailOrCartClickListener = IFoodDetailOrCartClickListener;
-        }
-
 
         Unbinder mUnbinder;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             mUnbinder = ButterKnife.bind(this, itemView);
-
-            favorite = FirebaseDatabase.getInstance().getReference().child("Favorites");
-            const_detail.setOnClickListener(this);
-            img_add_cart.setOnClickListener(this);
-            img_increase.setOnClickListener(this);
-            img_decrease.setOnClickListener(this);
-            img_delete_food.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.img_detail) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), true, false, false);
-            } else if (v.getId() == R.id.img_cart) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false, true);
-            }else if (v.getId() == R.id.img_decrease) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true, false);
-            } else if (v.getId() == R.id.img_increase) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, false, true);
-            } else if (v == img_delete_food) {
-                mIFoodDetailOrCartClickListener.onFoodItemClickListener(v, getAdapterPosition(), false, true, false);
-            }
-        }
     }
 }

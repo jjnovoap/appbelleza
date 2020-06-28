@@ -4,12 +4,9 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,9 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Adapter.ProductAdapter;
@@ -28,7 +23,6 @@ import com.example.appbella.Common.Common;
 import com.example.appbella.Interface.IProductLoadListener;
 import com.example.appbella.Model.EventBust.ProductsListEvent;
 import com.example.appbella.Model.Product;
-import com.example.appbella.Model.ProductSubcategory;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,58 +38,38 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class ProductsList extends AppCompatActivity implements IProductLoadListener{
 
-    private static final String TAG = ProductsList.class.getSimpleName();
-
-    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-
-    @BindView(R.id.recycler_food_list)
-    RecyclerView recycler_food_list;
+    @BindView(R.id.recycler_proserv_list)
+    RecyclerView recycler_proserv_list;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.txt_subcategory)
     TextView txt_subcategory;
     Button btn_view_cart;
 
-    IProductLoadListener iProductLoadListener;
+    private IProductLoadListener iProductLoadListener;
 
     private ProductAdapter adapter;
-    private ProductAdapter searchAdapter;
-    private ProductSubcategory selectedProductSubcategory;
-    DatabaseReference servicesRef;
-
-    private LayoutAnimationController mLayoutAnimationController;
-
-    @Override
-    protected void onDestroy() {
-        mCompositeDisposable.clear();
-        if (adapter != null) {
-            adapter.onStop();
-        }
-        if (searchAdapter != null) {
-            searchAdapter.onStop();
-        }
-        super.onDestroy();
-    }
+    private DatabaseReference productRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_and_service_list);
-        Log.d(TAG, "onCreate: started!!");
+        ButterKnife.bind(this);
+        iProductLoadListener = this;
 
         btn_view_cart = findViewById(R.id.btn_view_cart);
-        servicesRef = FirebaseDatabase.getInstance().getReference("Products");
-        iProductLoadListener = this;
+
+        productRef = FirebaseDatabase.getInstance().getReference("Products");
 
         btn_view_cart.setOnClickListener(v -> {
             startActivity(new Intent(ProductsList.this, CartListActivity.class));
         });
 
-        initView();
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -107,18 +81,19 @@ public class ProductsList extends AppCompatActivity implements IProductLoadListe
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menuItem.getActionView();
+        //searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         // Event
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                startSearchFood(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -126,43 +101,20 @@ public class ProductsList extends AppCompatActivity implements IProductLoadListe
         menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                // Restore to original adapter when use close Search
+                recycler_proserv_list.setAdapter(adapter);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 // Restore to original adapter when use close Search
-                recycler_food_list.setAdapter(adapter);
+                recycler_proserv_list.setAdapter(adapter);
                 return true;
             }
         });
 
         return true;
-    }
-
-    private void startSearchFood(String query) {
-        Log.d(TAG, "startSearchFood: called!!");
-        /*mCompositeDisposable.add(mIMyRestaurantAPI.searchFood(Common.API_KEY, query, selectedSubcategory.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(foodModel -> {
-
-                    if (foodModel.isSuccess()) {
-                        searchAdapter = new MyFoodAdapter(FoodListActivity.this, foodModel.getResult());
-                        recycler_food_list.setAdapter(searchAdapter);
-                        recycler_food_list.setLayoutAnimation(mLayoutAnimationController);
-                    } else {
-                        if (foodModel.getMessage().contains("Empty")) {
-                            recycler_food_list.setAdapter(null);
-                            Toast.makeText(this, "Not found", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    mDialog.dismiss();
-
-                }, throwable -> {
-                    Toast.makeText(FoodListActivity.this, "[SEARCH FOOD]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }));*/
     }
 
     @Override
@@ -177,25 +129,7 @@ public class ProductsList extends AppCompatActivity implements IProductLoadListe
         return super.onOptionsItemSelected(item);
     }
 
-    private void initView() {
-        Log.d(TAG, "initView: called!!");
-        ButterKnife.bind(this);
 
-        //mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
-        GridLayoutManager layoutManager =
-                new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
-        recycler_food_list.setLayoutManager(layoutManager);
-        //recycler_food_list.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
-    }
-
-    /**
-     * REGISTER EVENT BUS
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
 
     @Override
     protected void onStop() {
@@ -208,8 +142,6 @@ public class ProductsList extends AppCompatActivity implements IProductLoadListe
     public void loadProductListByCategory(ProductsListEvent event) {
         if (event.isSuccess()) {
 
-            selectedProductSubcategory = event.getProductSubcategory();
-
             txt_subcategory.setText(event.getProductSubcategory().getName());
             toolbar.setTitle("");
             /*toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
@@ -217,10 +149,11 @@ public class ProductsList extends AppCompatActivity implements IProductLoadListe
             ((TextView) toolbar.getChildAt(0)).setTypeface(typeFace);
             ((TextView) toolbar.getChildAt(0)).setTextSize(16);*/
             setSupportActionBar(toolbar);
+            toolbar.setNavigationIcon(R.drawable.ic_baseline_chevron_left_24);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            servicesRef.addValueEventListener(new ValueEventListener() {
+            productRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<Product> productList = new ArrayList<>();
@@ -240,15 +173,15 @@ public class ProductsList extends AppCompatActivity implements IProductLoadListe
                     iProductLoadListener.onProductLoadFailed(databaseError.getMessage());
                 }
             });
-
         }
     }
 
     @Override
     public void onProductLoadSuccess(List<Product> ProductList) {
         adapter = new ProductAdapter(this, ProductList);
-        recycler_food_list.setAdapter(adapter);
-        recycler_food_list.setLayoutAnimation(mLayoutAnimationController);
+        recycler_proserv_list.setAdapter(adapter);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+        recycler_proserv_list.setLayoutManager(layoutManager);
     }
 
     @Override

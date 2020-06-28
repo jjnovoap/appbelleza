@@ -3,36 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Fragments.HomeFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="0dp"
         android:layout_height="36dp"
-        android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageView"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tabBackground="@drawable/tab_layout_selector"
         app:tabIndicatorHeight="0dp"
+        app:tabGravity="center"
+        app:tabInlineLabel="false"
         app:tabMode="scrollable"
-        app:tabPaddingEnd="20dp"
         app:tabRippleColor="@null"
         app:tabSelectedTextColor="@color/colorPrimaryDark"
         app:tabTextAppearance="@style/TabTextAppearance" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_chevron_right_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tabs"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tabs"
-        android:contentDescription="@string/image_description" />
 
     <com.example.appbella.Utils.CustomViewPager
         android:id="@+id/view_pager"

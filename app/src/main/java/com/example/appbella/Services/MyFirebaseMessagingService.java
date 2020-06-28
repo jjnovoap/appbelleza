@@ -1,10 +1,6 @@
 package com.example.appbella.Services;
 
-import android.widget.Toast;
-
 import com.example.appbella.Common.Common;
-import com.example.appbella.Retrofit.IMyRestaurantAPI;
-import com.example.appbella.Retrofit.RetrofitClient;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -12,22 +8,18 @@ import java.util.Map;
 import java.util.Random;
 
 import io.paperdb.Paper;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
 
-    private IMyRestaurantAPI mIMyRestaurantAPI;
     private CompositeDisposable mCompositeDisposable;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mIMyRestaurantAPI = RetrofitClient.getInstance(Common.API_RESTAURANT_ENDPOINT)
-                .create(IMyRestaurantAPI.class);
+
         mCompositeDisposable = new CompositeDisposable();
 
         Paper.init(this);
@@ -49,7 +41,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String fbid = Paper.book().read(Common.REMEMBER_FBID);
         String apiKey = Paper.book().read(Common.API_KEY_TAG);
-        mCompositeDisposable.add(mIMyRestaurantAPI.updateTokenToServer(apiKey, fbid, newToken)
+        /*mCompositeDisposable.add(mIMyRestaurantAPI.updateTokenToServer(apiKey, fbid, newToken)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tokenModel -> {
@@ -58,7 +50,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         }, throwable -> {
             Toast.makeText(this, "[REFRESH TOKEN]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
-        }));
+        }));*/
     }
 
     @Override

@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,14 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Adapter.ServiceAdapter;
 import com.example.appbella.Common.Common;
 import com.example.appbella.Interface.IServicesLoadListener;
-import com.example.appbella.Model.ServiceSubcategory;
 import com.example.appbella.Model.EventBust.ServiceListEvent;
 import com.example.appbella.Model.Service;
 import com.google.firebase.database.DataSnapshot;
@@ -43,58 +39,39 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class ServicesList extends AppCompatActivity implements IServicesLoadListener {
 
-    private static final String TAG = ServicesList.class.getSimpleName();
-
-    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-
-    @BindView(R.id.recycler_food_list)
-    RecyclerView recycler_food_list;
+    @BindView(R.id.recycler_proserv_list)
+    RecyclerView recycler_proserv_list;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.txt_subcategory)
     TextView txt_subcategory;
     Button btn_view_cart;
 
-    IServicesLoadListener iServicesLoadListener;
+    private IServicesLoadListener iServicesLoadListener;
 
     private ServiceAdapter adapter;
-    private ServiceAdapter searchAdapter;
-    private ServiceSubcategory selectedServiceSubcategory;
-    DatabaseReference servicesRef;
+    private DatabaseReference servicesRef;
 
-    private LayoutAnimationController mLayoutAnimationController;
-
-    @Override
-    protected void onDestroy() {
-        mCompositeDisposable.clear();
-        if (adapter != null) {
-            adapter.onStop();
-        }
-        if (searchAdapter != null) {
-            searchAdapter.onStop();
-        }
-        super.onDestroy();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_and_service_list);
-        Log.d(TAG, "onCreate: started!!");
+        ButterKnife.bind(this);
+        iServicesLoadListener = this;
 
         btn_view_cart = findViewById(R.id.btn_view_cart);
+
         servicesRef = FirebaseDatabase.getInstance().getReference("Services");
-        iServicesLoadListener = this;
 
         btn_view_cart.setOnClickListener(v -> {
             startActivity(new Intent(ServicesList.this, CartListActivity.class));
         });
 
-        initView();
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -112,12 +89,12 @@ public class ServicesList extends AppCompatActivity implements IServicesLoadList
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                startSearchFood(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -125,43 +102,20 @@ public class ServicesList extends AppCompatActivity implements IServicesLoadList
         menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                // Restore to original adapter when use close Search
+                recycler_proserv_list.setAdapter(adapter);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 // Restore to original adapter when use close Search
-                recycler_food_list.setAdapter(adapter);
+                recycler_proserv_list.setAdapter(adapter);
                 return true;
             }
         });
 
         return true;
-    }
-
-    private void startSearchFood(String query) {
-        Log.d(TAG, "startSearchFood: called!!");
-        /*mCompositeDisposable.add(mIMyRestaurantAPI.searchFood(Common.API_KEY, query, selectedSubcategory.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(foodModel -> {
-
-                    if (foodModel.isSuccess()) {
-                        searchAdapter = new MyFoodAdapter(FoodListActivity.this, foodModel.getResult());
-                        recycler_food_list.setAdapter(searchAdapter);
-                        recycler_food_list.setLayoutAnimation(mLayoutAnimationController);
-                    } else {
-                        if (foodModel.getMessage().contains("Empty")) {
-                            recycler_food_list.setAdapter(null);
-                            Toast.makeText(this, "Not found", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    mDialog.dismiss();
-
-                }, throwable -> {
-                    Toast.makeText(FoodListActivity.this, "[SEARCH FOOD]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }));*/
     }
 
     @Override
@@ -176,24 +130,6 @@ public class ServicesList extends AppCompatActivity implements IServicesLoadList
         return super.onOptionsItemSelected(item);
     }
 
-    private void initView() {
-        Log.d(TAG, "initView: called!!");
-        ButterKnife.bind(this);
-
-        //mLayoutAnimationController = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_item_from_left);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recycler_food_list.setLayoutManager(layoutManager);
-        //recycler_food_list.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
-    }
-
-    /**
-     * REGISTER EVENT BUS
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
 
     @Override
     protected void onStop() {
@@ -204,13 +140,11 @@ public class ServicesList extends AppCompatActivity implements IServicesLoadList
     // Listen EventBus
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void loadServiceListByCategory(ServiceListEvent event) {
-        Log.d(TAG, "loadFoodListByCategory: called!!");
         if (event.isSuccess()) {
-
-            selectedServiceSubcategory = event.getServiceSubcategory();
 
             txt_subcategory.setText(event.getServiceSubcategory().getName());
             toolbar.setTitle("");
+            toolbar.setNavigationIcon(R.drawable.ic_baseline_chevron_left_24);
             /*toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
             Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/gilroybold.ttf");
             ((TextView) toolbar.getChildAt(0)).setTypeface(typeFace);
@@ -246,8 +180,9 @@ public class ServicesList extends AppCompatActivity implements IServicesLoadList
     @Override
     public void onServicesLoadSuccess(List<Service> servicesOrProductList) {
         adapter = new ServiceAdapter(this, servicesOrProductList);
-        recycler_food_list.setAdapter(adapter);
-        recycler_food_list.setLayoutAnimation(mLayoutAnimationController);
+        recycler_proserv_list.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recycler_proserv_list.setLayoutManager(layoutManager);
     }
 
     @Override

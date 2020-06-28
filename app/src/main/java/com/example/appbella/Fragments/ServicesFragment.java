@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,10 +39,10 @@ import butterknife.Unbinder;
 
 public class ServicesFragment extends Fragment implements IServiceCategoryLoadListener, IServiceSubcategoryLoadListener/*, IServicesOrProductLoadListener */ {
 
+
     public ServicesFragment() {
         // Required empty public constructor
     }
-
     private DatabaseReference subcategoryRef;
     Unbinder unbinder;
     @BindView(R.id.recycler_category)
@@ -51,6 +52,15 @@ public class ServicesFragment extends Fragment implements IServiceCategoryLoadLi
     private IServiceCategoryLoadListener iServiceCategoryLoadListener;
     private IServiceSubcategoryLoadListener IServiceSubcategoryLoadListener;
 
+    /**
+     * REGISTER EVENT BUS
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,16 +68,15 @@ public class ServicesFragment extends Fragment implements IServiceCategoryLoadLi
         View view = inflater.inflate(R.layout.fragment_services, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        IServiceSubcategoryLoadListener = this;
         iServiceCategoryLoadListener = this;
+        IServiceSubcategoryLoadListener = this;
 
-        subcategoryRef = FirebaseDatabase.getInstance().getReference("Services Categories");
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("General Services Categories");
+        subcategoryRef = FirebaseDatabase.getInstance().getReference("Services Categories");
 
         categoryRef.getRef().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 List<ServiceCategory> categories = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     ServiceCategory serviceCategory = ds.getValue(ServiceCategory.class);
@@ -86,34 +95,18 @@ public class ServicesFragment extends Fragment implements IServiceCategoryLoadLi
         return view;
     }
 
-    /**
-     * REGISTER EVENT BUS
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
-    }
-
     // Listen EventBus
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void loadSubacategoryByCategory(ServiceSubcategoryEvent event) {
-
-        if (event.isSuccess()) {
+        if (event.isSuccess()){
             subcategoryRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<ServiceSubcategory> serviceSubcategoryList = new ArrayList<>();
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        String id = String.valueOf(event.getServices().getId());
+                        String i = String.valueOf(event.getServices().getId());
                         String key = ds.child("id").getValue(String.class);
-                        if (id.equals(key)){
+                        if (i.equals(key)){
                             ServiceSubcategory serviceSubcategory = ds.getValue(ServiceSubcategory.class);
                             serviceSubcategoryList.add(serviceSubcategory);
                         }
@@ -127,6 +120,7 @@ public class ServicesFragment extends Fragment implements IServiceCategoryLoadLi
                 }
             });
         }
+
     }
 
     @Override

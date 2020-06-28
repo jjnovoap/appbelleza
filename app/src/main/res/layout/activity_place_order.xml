@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".PlaceOrderActivity">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
@@ -24,8 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            app:elevation="0dp"
-            android:gravity="center">
+            android:gravity="center"
+            app:elevation="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -97,17 +96,16 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
-        app:layout_constraintVertical_bias="0.024">
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:orientation="vertical">
@@ -115,207 +113,348 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="764dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
 
-                    <EditText
-                        android:id="@+id/editText"
-                        android:layout_width="0dp"
+                <EditText
+                    android:id="@+id/editText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="10dp"
+                    android:hint="Ingresa el código"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_validate"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+
+                <Button
+                    android:id="@+id/btn_validate"
+                    style="@android:style/Widget.Button.Inset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/border_button"
+                    android:fontFamily="@font/gilroybold"
+                    android:text="Validar"
+                    android:textColor="@android:color/white"
+                    app:layout_constraintBottom_toBottomOf="@+id/editText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/editText" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/gilroymedium"
+                    android:gravity="start"
+                    android:hint="* A los productos que ya tiene promoción NO se les aplicará el cupón de descuento."
+                    android:paddingEnd="15dp"
+                    android:textColor="#BFDADD"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editText" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/gilroymedium"
+                    android:gravity="end"
+                    android:hint="Costo Domicilio: "
+                    android:paddingEnd="15dp"
+                    android:textColor="@color/colorPrimary"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+                <TextView
+                    android:id="@+id/txt_delivery_cost"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="@font/gilroymedium"
+                    android:text="$ 3500"
+                    android:textColor="#BFDADD"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.423"
+                    app:layout_constraintStart_toEndOf="@+id/textView5"
+                    app:layout_constraintTop_toTopOf="@+id/textView5"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:fontFamily="@font/gilroymedium"
+                    android:gravity="end"
+                    android:hint="Total a pagar: "
+                    android:paddingEnd="15dp"
+                    android:textColorHint="@color/colorPrimary"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_proceed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/txt_total_cash"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="@font/gilroymedium"
+                    android:text="0"
+                    android:textColor="#BFDADD"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="@+id/textView4" />
+
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="@font/gilroybold"
+                    android:text="Fecha"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    app:layout_constraintEnd_toStartOf="@+id/txt_date"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txt_date"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroymedium"
+                    android:gravity="end"
+                    android:hint="Seleccione Fecha"
+                    android:paddingEnd="15dp"
+                    android:textColor="#BFDADD"
+                    android:textColorHint="#BFDADD"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView8"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="85dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8">
+
+                    <com.vivekkaushik.datepicker.DatePickerTimeline
+                        android:id="@+id/datePickerTimeline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/gilroybold"
+                    android:text="Hora"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/gilroybold"
+                    android:text="Dirección"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_margin="6dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    app:cardCornerRadius="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView1">
+
+                    <CheckBox
+                        android:id="@+id/chb_add_address"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:hint="Ingresa el código"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_validate"
+                        android:background="@drawable/alignment_selector"
+                        android:button="@android:color/transparent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <Button
-                        android:id="@+id/btn_validate"
-                        style="@android:style/Widget.Button.Inset"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/border_button"
-                        android:fontFamily="@font/gilroybold"
-                        android:text="Validar"
-                        android:textColor="@android:color/white"
-                        app:layout_constraintBottom_toBottomOf="@+id/editText"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/editText" />
-
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/gilroymedium"
-                        android:gravity="start"
-                        android:hint="* A los productos que ya tiene promoción NO se les aplicará el cupón de descuento."
-                        android:paddingEnd="15dp"
-                        android:textColor="#BFDADD"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/editText" />
-
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/gilroymedium"
-                        android:gravity="end"
-                        android:hint="Costo Domicilio: "
-                        android:paddingEnd="15dp"
-                        android:textColor="@color/colorPrimary"
-                        android:textColorHint="@color/colorPrimary"
-                        android:textSize="18sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView6" />
-
-                    <TextView
-                        android:id="@+id/txt_delivery_cost"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:fontFamily="@font/gilroymedium"
-                        android:text="$ 3500"
-                        android:textColor="#BFDADD"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView5"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.423"
-                        app:layout_constraintStart_toEndOf="@+id/textView5"
-                        app:layout_constraintTop_toTopOf="@+id/textView5"
-                        app:layout_constraintVertical_bias="0.0" />
-
-                    <TextView
-                        android:id="@+id/textView4"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="@font/gilroymedium"
-                        android:gravity="end"
-                        android:hint="Total a pagar: "
-                        android:paddingEnd="15dp"
-                        android:textColorHint="@color/colorPrimary"
-                        android:textSize="18sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView5" />
-
-                    <TextView
-                        android:id="@+id/txt_total_cash"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:fontFamily="@font/gilroymedium"
-                        android:text="0"
-                        android:textColor="#BFDADD"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView4"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView4"
-                        app:layout_constraintTop_toTopOf="@+id/textView4" />
-
-
-                    <TextView
-                        android:id="@+id/textView8"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="15dp"
-                        android:fontFamily="@font/gilroybold"
-                        android:text="Fecha"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="25sp"
-                        app:layout_constraintEnd_toStartOf="@+id/txt_date"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txt_total_cash" />
-
-                    <TextView
-                        android:id="@+id/txt_date"
-                        android:layout_width="200dp"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/gilroymedium"
-                        android:gravity="end"
-                        android:hint="Seleccione Fecha"
-                        android:paddingEnd="15dp"
-                        android:textColor="#BFDADD"
-                        android:textColorHint="#BFDADD"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView8"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/textView8" />
-
                     <LinearLayout
-                        android:id="@+id/linearLayout2"
                         android:layout_width="match_parent"
-                        android:layout_height="85dp"
-                        android:layout_marginTop="10dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView8">
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp">
 
-                        <com.vivekkaushik.datepicker.DatePickerTimeline
-                            android:id="@+id/datePickerTimeline"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/txt_etiqueta"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/gilroylight"
+                            android:gravity="start"
+                            android:text="Agregar dirección"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="1.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/txt_address"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/gilroylight"
+                            android:gravity="start"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="1.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                     </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/gilroybold"
-                        android:text="Hora"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="25sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/gilroybold"
+                    android:text="Pago"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="25sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cardView4" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="70dp"
-                        android:layout_marginTop="10dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-                    <TextView
-                        android:id="@+id/textView1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/gilroybold"
-                        android:text="Dirección"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="25sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_proceed"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2"
+                    app:layout_constraintVertical_bias="0.0">
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView4"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_margin="6dp"
-                        android:layout_marginTop="10dp"
                         android:orientation="vertical"
-                        app:cardCornerRadius="16dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView1">
+                        app:cardCornerRadius="16dp">
+
+                        <RadioButton
+                            android:id="@+id/rdi_cod"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/alignment_selector"
+                            android:button="@android:color/transparent"
+                            android:checked="true"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp">
+
+                            <TextView
+                                android:id="@+id/txt_cash"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/gilroylight"
+                                android:gravity="start"
+                                android:text="Efectivo"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="1.0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_margin="6dp"
+                        android:orientation="vertical"
+                        app:cardCornerRadius="16dp">
 
                         <CheckBox
-                            android:id="@+id/chb_add_address"
+                            android:id="@+id/rdi_online_payment"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/alignment_selector"
@@ -334,30 +473,13 @@
                             android:paddingEnd="12dp">
 
                             <TextView
-                                android:id="@+id/txt_etiqueta"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:layout_weight="1"
                                 android:fontFamily="@font/gilroylight"
                                 android:gravity="start"
-                                android:text="Agregar dirección"
-                                android:textColor="@color/colorPrimary"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="1.0"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <TextView
-                                android:id="@+id/txt_address"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/gilroylight"
-                                android:gravity="start"
+                                android:text="Datafono"
                                 android:textColor="@color/colorPrimary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
@@ -367,128 +489,10 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                         </LinearLayout>
+
                     </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/gilroybold"
-                        android:text="Pago"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="25sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView4" />
-
-                    <RadioGroup
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="30dp"
-                        android:background="@color/white"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toTopOf="@+id/btn_proceed"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView2">
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_margin="6dp"
-                            android:orientation="vertical"
-                            app:cardCornerRadius="16dp">
-
-                            <RadioButton
-                                android:id="@+id/rdi_cod"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/alignment_selector"
-                                android:button="@android:color/transparent"
-                                android:checked="true"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.0"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal"
-                                android:paddingStart="12dp"
-                                android:paddingEnd="12dp">
-
-                                <TextView
-                                    android:id="@+id/txt_cash"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/gilroylight"
-                                    android:gravity="start"
-                                    android:text="Efectivo"
-                                    android:textColor="@color/white"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="1.0"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                            </LinearLayout>
-                        </androidx.cardview.widget.CardView>
-
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_margin="6dp"
-                            android:orientation="vertical"
-                            app:cardCornerRadius="16dp">
-
-                            <RadioButton
-                                android:id="@+id/rdi_online_payment"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/alignment_selector"
-                                android:button="@android:color/transparent"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.0"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal"
-                                android:paddingStart="12dp"
-                                android:paddingEnd="12dp">
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/gilroylight"
-                                    android:gravity="start"
-                                    android:text="Datafono"
-                                    android:textColor="@color/colorPrimary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="1.0"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                            </LinearLayout>
-
-                        </androidx.cardview.widget.CardView>
-
-                    </RadioGroup>
+                </RadioGroup>
 
                 <Button
                     android:id="@+id/btn_proceed"
@@ -505,10 +509,9 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
-
 
 
     </ScrollView>

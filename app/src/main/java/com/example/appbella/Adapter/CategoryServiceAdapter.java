@@ -1,6 +1,6 @@
 package com.example.appbella.Adapter;
 
-import android.content.Context;;
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,17 +48,6 @@ public class CategoryServiceAdapter extends RecyclerView.Adapter<CategoryService
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.txt_category.setText(mServiceCategoryList.get(position).getName());
 
-        //EventBus.getDefault().postSticky(new SubcategoryEvent(true, mCategoryList.get(position)));
-
-
-        // Remember implement it if you don't want to get  crash
-        /*holder.setIOnRecyclerViewClickListener((view, pos) -> {
-            row_index=pos;
-            notifyDataSetChanged();
-            EventBus.getDefault().postSticky(new SubcategoryEvent(true, mCategoryList.get(row_index)));
-            //mContext.startActivity(new Intent(mContext, SubcategoryActivity.class));
-        });*/
-
         holder.card.setOnClickListener(view -> {
             row_index = position;
             EventBus.getDefault().postSticky(new ServiceSubcategoryEvent(true, mServiceCategoryList.get(position)));
@@ -81,30 +70,19 @@ public class CategoryServiceAdapter extends RecyclerView.Adapter<CategoryService
         return mServiceCategoryList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MyViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.txt_category)
         TextView txt_category;
         @BindView(R.id.img_view)
         ImageView img_view;
-
         @BindView(R.id.card)
         CardView card;
-
-        //IOnRecyclerViewClickListener mIOnRecyclerViewClickListener;
 
         Unbinder mUnbinder;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
             mUnbinder = ButterKnife.bind(this, itemView);
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            //mIOnRecyclerViewClickListener.onClick(v, getAdapterPosition());
         }
     }
 

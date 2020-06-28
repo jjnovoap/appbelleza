@@ -8,8 +8,7 @@
     android:layout_height="match_parent"
     android:backgroundTint="@color/divider"
     android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ProductsList">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
@@ -85,7 +84,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_food_list"
+                android:id="@+id/recycler_proserv_list"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"

@@ -1,11 +1,11 @@
 package com.example.appbella.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,6 +29,10 @@ public class MyAddonAdapter extends RecyclerView.Adapter<MyAddonAdapter.MyViewHo
     private Context mContext;
     private List<Addon> mAddonList;
 
+    @SuppressLint("StaticFieldLeak")
+    private static CheckBox lastChecked = null;
+    private static int lastCheckedPos = 0;
+
     public MyAddonAdapter(Context context, List<Addon> addonList) {
         mContext = context;
         mAddonList = addonList;
@@ -43,11 +47,40 @@ public class MyAddonAdapter extends RecyclerView.Adapter<MyAddonAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.txt_title.setText(mAddonList.get(position).getName());
+        holder.ckb_addon.setSelected(mAddonList.get(position).isSelected());
         holder.ckb_addon.setButtonDrawable(null);
+        holder.ckb_addon.setTag(position);
+        holder.txt_title.setText(mAddonList.get(position).getName());
         holder.txt_price.setText(new StringBuilder(mContext.getString(R.string.money_sign))
                 .append(" ")
                 .append(mAddonList.get(position).getExtraPrice()));
+
+        //for default check in first item
+        if (position == 0 && mAddonList.get(0).isSelected() && holder.ckb_addon.isChecked()) {
+            lastChecked = holder.ckb_addon;
+            lastCheckedPos = 0;
+        }
+
+        holder.ckb_addon.setOnClickListener(v -> {
+            CheckBox cb = (CheckBox) v;
+            int clickedPos = (Integer) cb.getTag();
+
+            if (cb.isChecked()) {
+                if (lastChecked != null) {
+                    lastChecked.setChecked(false);
+                    mAddonList.get(lastCheckedPos).setSelected(false);
+                }
+
+                lastChecked = cb;
+                lastCheckedPos = clickedPos;
+            } else
+                lastChecked = null;
+
+            mAddonList.get(clickedPos).setSelected(cb.isSelected());
+        });
+
+
+
         holder.ckb_addon.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 Common.addonList.add(mAddonList.get(position));
@@ -68,7 +101,16 @@ public class MyAddonAdapter extends RecyclerView.Adapter<MyAddonAdapter.MyViewHo
         return mAddonList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.ckb_addon)
         CheckBox ckb_addon;

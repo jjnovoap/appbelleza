@@ -88,131 +88,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_History_Shoppings">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/divider" />
-
-        <LinearLayout
-            android:id="@+id/layout_title"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:paddingStart="14dp"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:ignore="RtlSymmetry" />
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center_vertical|end"
-                android:layout_marginEnd="10dp"
-                android:scaleType="fitXY"
-                android:contentDescription="@string/image_description"/>
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/division" />
-
-        <LinearLayout
-            android:id="@+id/layout_wallet"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:contentDescription="@string/image_description"
-                android:scaleType="fitXY" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="Creditos"
-                android:fontFamily="@font/gilroylight"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                tools:ignore="RtlSymmetry" />
-
-            <TextView
-                android:id="@+id/txt_balance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
-                android:layout_weight="1"
-                android:gravity="center|end"
-                android:text="0"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                tools:ignore="RtlSymmetry" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/division" />
-
-        <LinearLayout
-            android:id="@+id/card_my_reports"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:contentDescription="@string/image_description"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_ticket" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="Cupones"
-                android:fontFamily="@font/gilroylight"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                tools:ignore="RtlSymmetry" />
-        </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/divider" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/card0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card">
 
         <View
             android:layout_width="match_parent"
@@ -277,6 +152,125 @@
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/divider" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/card0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card">
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/divider" />
+
+        <LinearLayout
+            android:id="@+id/layout_title"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:text="Compras"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:fontFamily="@font/gilroybold"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="@string/image_description"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_expansion_header_indicator_grey_24dp" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/division" />
+
+        <LinearLayout
+            android:id="@+id/card_my_reports"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="@string/image_description"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_ticket" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="Cupones"
+                android:fontFamily="@font/gilroylight"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                tools:ignore="RtlSymmetry" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/division" />
+
+        <LinearLayout
+            android:id="@+id/layout_wallet"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="@string/image_description"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="Historial de compras"
+                android:fontFamily="@font/gilroylight"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                tools:ignore="RtlSymmetry" />
+
         </LinearLayout>
 
         <View
@@ -353,7 +347,7 @@
                 android:scaleType="fitXY" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:fontFamily="@font/gilroylight"
@@ -385,7 +379,7 @@
                 android:scaleType="fitXY" />
 
             <TextView
-                android:layout_width="165dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="Ayuda"
@@ -393,7 +387,6 @@
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 tools:ignore="RtlSymmetry" />
-
         </LinearLayout>
 
         <View

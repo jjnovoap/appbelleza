@@ -8,34 +8,36 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appbella.Adapter.MyCartAdapter;
-import com.example.appbella.Database.CartDataSource;
-import com.example.appbella.Database.CartDatabase;
-import com.example.appbella.Database.LocalCartDataSource;
+import com.example.appbella.Interface.IAddProductToCartLoadListener;
+import com.example.appbella.Model.AddToCart;
 import com.example.appbella.Model.EventBust.CalculatePriceEvent;
 import com.example.appbella.Model.EventBust.SendTotalCashEvent;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
-public class CartListActivity extends AppCompatActivity {
-
-    private static final String TAG = CartListActivity.class.getSimpleName();
+public class CartListActivity extends AppCompatActivity implements IAddProductToCartLoadListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -49,13 +51,11 @@ public class CartListActivity extends AppCompatActivity {
     TextView txt_empty_cart;
     @BindView(R.id.numero_items)
     TextView numero_items;
-    private MyCartAdapter adapter;
-    private FirebaseAuth auth;
-    static boolean isInit = true;
+    private IAddProductToCartLoadListener iAddProductToCartLoadListener;
+    private DatabaseReference addtoCart;
 
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-    private CartDataSource mCartDataSource;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -78,140 +78,72 @@ public class CartListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart_list);
-        Log.d(TAG, "onCreate: started!!");
 
-        auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        addtoCart = FirebaseDatabase.getInstance().getReference("Cart").child(auth.getCurrentUser().getUid());
+        DatabaseReference getCart = FirebaseDatabase.getInstance().getReference("Cart").child(auth.getCurrentUser().getUid());
+        iAddProductToCartLoadListener = this;
 
-        init();
         initView();
-        calculateCartTotalPrice();
         getAllItemInCart();
         emptycart();
+        itemsCounter(getCart);
+    }
+
+    private void itemsCounter(DatabaseReference getCart) {
+
+        getCart.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    int count = 0;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        long quantity = (long) ds.child("productQuantity").getValue();
+                        count = (int) (count + quantity);
+                        numero_items.setText(new StringBuilder(String.valueOf(count))
+                                .append(" Ítems"));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(CartListActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void getAllItemInCart() {
-        Log.d(TAG, "getAllItemInCart: called!!");
-        mCompositeDisposable.add(mCartDataSource.getAllCart(auth.getCurrentUser().getPhoneNumber())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cartItems -> {
-                    adapter = new MyCartAdapter(CartListActivity.this, cartItems);
-                    cartItems.size();
-                    if (cartItems.isEmpty()) {
-                        btn_order.setText(getString(R.string.empty_cart));
-                        btn_order.setEnabled(false);
-                        btn_order.setBackgroundResource(R.drawable.border_buttom_unselected);
-                    }
-                    else {
-                        btn_order.setText(getString(R.string.place_order));
-                        btn_order.setEnabled(true);
-                        btn_order.setBackgroundResource(R.drawable.border_button);
-                        recycler_cart.setAdapter(adapter);
-                    }
-                }, throwable -> {
-                    Toast.makeText(this, "[GET CART]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }));
+        addtoCart.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<AddToCart> productAddList = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    AddToCart add = ds.getValue(AddToCart.class);
+                    productAddList.add(add);
+                }
+                iAddProductToCartLoadListener.onAddProductToCartLoadSuccess(productAddList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                iAddProductToCartLoadListener.onAddProductToCartLoadFailed(databaseError.getMessage());
+            }
+        });
+
     }
 
     private void emptycart() {
-        txt_empty_cart.setOnClickListener(v -> mCartDataSource.cleanCart(auth.getCurrentUser().getPhoneNumber())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Integer integer) {
-                        Toast.makeText(CartListActivity.this, "Canasta vaciada exitosamente", Toast.LENGTH_SHORT).show();
-                        calculateCartTotalPrice();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(CartListActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }));
-    }
-
-    private void calculateCartTotalPrice() {
-        Log.d(TAG, "calculateCartTotalPrice: called!!");
-        mCartDataSource.sumQuantity(auth.getCurrentUser().getPhoneNumber())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Long>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Long aLong) {
-                        numero_items.setText(new StringBuilder(String.valueOf(aLong))
-                                    .append(" Ítems"));
-                        isInit = true;
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        if (e.getMessage().contains("Query returned empty")){
-                            numero_items.setText(new StringBuilder("0")
-                                    .append(" Ítems"));
-                            if(isInit) {
-                                isInit = false;
-                                overridePendingTransition(0, 0);
-                                startActivity(getIntent());
-                                overridePendingTransition(0, 0);
-                                finish();
-
-                            }
-
-                        }
-                        else
-                            Toast.makeText(CartListActivity.this, "[SUM CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        mCartDataSource.sumPrice(auth.getCurrentUser().getPhoneNumber())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Long>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Long aLong) {
-                        if (aLong == 0) {
-                            btn_order.setText(getString(R.string.empty_cart));
-                            btn_order.setEnabled(false);
-                            btn_order.setBackgroundResource(R.drawable.border_buttom_unselected);
-                        }
-                        else {
-                            btn_order.setText(getString(R.string.place_order));
-                            btn_order.setEnabled(true);
-                            btn_order.setBackgroundResource(R.drawable.border_button);
-                        }
-
-                        txt_final_price.setText(String.valueOf(aLong));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (e.getMessage().contains("Query returned empty"))
-                            txt_final_price.setText("0");
-                        else
-                            Toast.makeText(CartListActivity.this, "[SUM CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        txt_empty_cart.setOnClickListener(v -> {
+            addtoCart.removeValue();
+            EventBus.getDefault().postSticky(new CalculatePriceEvent(0));
+        });
     }
 
     private void initView() {
-        Log.d(TAG, "initView: called!!");
         ButterKnife.bind(this);
 
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_chevron_left_24);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -220,15 +152,20 @@ public class CartListActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recycler_cart.setLayoutManager(layoutManager);
 
+        if (txt_final_price.getText().toString().equals("0")){
+            btn_order.setText(getString(R.string.empty_cart));
+            btn_order.setEnabled(false);
+            btn_order.setBackgroundResource(R.drawable.border_buttom_unselected);
+        }else{
+            btn_order.setText(getString(R.string.place_order));
+            btn_order.setEnabled(true);
+            btn_order.setBackgroundResource(R.drawable.border_button);
+        }
+
         btn_order.setOnClickListener(v -> {
             EventBus.getDefault().postSticky(new SendTotalCashEvent(txt_final_price.getText().toString()));
             startActivity(new Intent(CartListActivity.this, PlaceOrderActivity.class));
         });
-    }
-
-    private void init() {
-        Log.d(TAG, "init: called!!");
-        mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());
     }
 
     // Event Bus
@@ -247,8 +184,27 @@ public class CartListActivity extends AppCompatActivity {
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void calculatePrice(CalculatePriceEvent event) {
-        if (event != null) {
-            calculateCartTotalPrice();
+        txt_final_price.setText(String.valueOf(event.getTotalPrice()));
+        if (event.getTotalPrice() == 0 && txt_final_price.getText().toString().equals("0")){
+            btn_order.setText(getString(R.string.empty_cart));
+            btn_order.setEnabled(false);
+            btn_order.setBackgroundResource(R.drawable.border_buttom_unselected);
+        }else{
+            btn_order.setText(getString(R.string.place_order));
+            btn_order.setEnabled(true);
+            btn_order.setBackgroundResource(R.drawable.border_button);
         }
+
+    }
+
+    @Override
+    public void onAddProductToCartLoadSuccess(List<AddToCart> addToCartList) {
+        MyCartAdapter adapter = new MyCartAdapter(this, addToCartList);
+        recycler_cart.setAdapter(adapter);
+    }
+
+    @Override
+    public void onAddProductToCartLoadFailed(String message) {
+        Toast.makeText(this, ""+message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -16,12 +16,10 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
 import com.example.appbella.Adapter.MyOrderAdapter;
-import com.example.appbella.Common.Common;
+
 import com.example.appbella.Interface.ILoadMore;
 import com.example.appbella.Interface.IOrderLoadListener;
 import com.example.appbella.Model.Order;
-import com.example.appbella.Retrofit.IMyRestaurantAPI;
-import com.example.appbella.Retrofit.RetrofitClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,7 +44,6 @@ public class ViewOrderActivity extends AppCompatActivity implements ILoadMore, I
     @BindView(R.id.recycler_view_order)
     RecyclerView recycler_view_order;
 
-    private IMyRestaurantAPI mIMyRestaurantAPI;
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     IOrderLoadListener iOrderLoadListener;
     private AlertDialog mDialog;
@@ -69,6 +66,12 @@ public class ViewOrderActivity extends AppCompatActivity implements ILoadMore, I
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_order);
         Log.d(TAG, "onCreate: started!!");
+
+        toolbar.setTitle(getString(R.string.your_order));
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_chevron_left_blue_24);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
         initView();
@@ -181,16 +184,11 @@ public class ViewOrderActivity extends AppCompatActivity implements ILoadMore, I
         recycler_view_order.setLayoutManager(layoutManager);
         recycler_view_order.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
 
-        toolbar.setTitle(getString(R.string.your_order));
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void init() {
         Log.d(TAG, "init: called!!");
         mDialog = new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
-        mIMyRestaurantAPI = RetrofitClient.getInstance(Common.API_RESTAURANT_ENDPOINT).create(IMyRestaurantAPI.class);
     }
 
     @Override

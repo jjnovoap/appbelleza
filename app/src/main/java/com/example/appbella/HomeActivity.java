@@ -22,12 +22,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import com.example.appbella.Common.Common;
-import com.example.appbella.Database.CartDataSource;
-import com.example.appbella.Database.CartDatabase;
-import com.example.appbella.Database.LocalCartDataSource;
+
 import com.example.appbella.Fragments.FavoriteFragment;
 import com.example.appbella.Fragments.HomeFragment;
 import com.example.appbella.Fragments.MapsBottomDialogFragment;
+
 import com.example.appbella.Model.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -39,16 +38,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nex3z.notificationbadge.NotificationBadge;
+
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -75,7 +73,8 @@ public class HomeActivity extends AppCompatActivity
     ImageView btn_cart;
     @BindView(R.id.badge)
     NotificationBadge badge;
-    private CartDataSource mCartDataSource;
+
+    private FirebaseAuth auth;
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
@@ -85,18 +84,13 @@ public class HomeActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        countCartItem();
-    }
-
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(HomeActivity.this);
-        Log.d(TAG, "onCreate: started!!");
+
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -105,30 +99,21 @@ public class HomeActivity extends AppCompatActivity
         LinearLayout layout_profile = headerView.findViewById(R.id.layout_profile);
         LinearLayout layout_logout = headerView.findViewById(R.id.layout_logout);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         Common.user = auth.getCurrentUser().getUid();
         locationRef = FirebaseDatabase.getInstance().getReference().child("Current Location").child(auth.getCurrentUser().getUid());
         userRef = FirebaseFirestore.getInstance();
         categoryRef = FirebaseDatabase.getInstance().getReference("General Categories");
 
-
-        init();
-        countCartItem();
         initView();
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        img_user.setOnClickListener(new View.OnClickListener() {
-
-            @SuppressLint("WrongConstant")
-            @Override
-            public void onClick(View v) {
-                DrawerLayout drawer = findViewById(R.id.drawer_layout);
-                drawer.openDrawer(Gravity.START);
-            }
+        img_user.setOnClickListener(v -> {
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+            drawer.openDrawer(Gravity.START);
         });
 
         txt_user_name = headerView.findViewById(R.id.txt_user_name);
@@ -172,6 +157,38 @@ public class HomeActivity extends AppCompatActivity
 
         BottomDialogFragmen = MapsBottomDialogFragment.newInstance();
         setUserInformation();
+        setQuantity();
+
+        //EventBus.getDefault().register(this);
+    }
+
+    private void setQuantity() {
+
+        DatabaseReference getCart = FirebaseDatabase.getInstance().getReference("Cart").child(auth.getCurrentUser().getUid());
+
+        getCart.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    int count = 0;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        long quantity = (long) ds.child("productQuantity").getValue();
+                        if (quantity == 0) {
+                            badge.setVisibility(View.GONE);
+                        } else {
+                            count = (int) (count + quantity);
+                            badge.setText(String.valueOf(count));
+                            badge.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage());
+            }
+        });
 
     }
 
@@ -223,30 +240,18 @@ public class HomeActivity extends AppCompatActivity
         setAddress();
     }
 
-    private void countCartItem() {
-        Log.d(TAG, "countCartByRestaurant: called!!");
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        mCartDataSource.countItemInCart(auth.getCurrentUser().getPhoneNumber())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(Integer integer) {
-                        badge.setText(String.valueOf(integer));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(HomeActivity.this, "[COUNT CART}"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+   /* @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
+    // Listen EventBus
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void loadNumbeOfItemsInCart(ItemsInCart event) {
+        //necesita corrección
+        badge.setText(String.valueOf(event.getItemsCount()));
+    }*/
 
     private void setAddress() {
         locationRef.addValueEventListener(new ValueEventListener() {
@@ -307,11 +312,6 @@ public class HomeActivity extends AppCompatActivity
         else {
             return string;
         }
-    }
-
-    private void init() {
-        Log.d(TAG, "init: called!!");
-        mCartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());
     }
 
     @Override

@@ -25,7 +25,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.appbella.Common.Common;
@@ -64,6 +63,7 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
     private EditText adress;
     private double lat;
     private double log;
+    private LatLng latLng;
     public static final int DEFAULT_INTENT_INT_VALUE = -1;
     //int AUTOCOMPLETE_REQUEST_CODE = 1;
     private EditText edt_address_complements;
@@ -212,9 +212,7 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
                     .setInterpolator(new OvershootInterpolator())
                     .setDuration(250)
                     .start();
-            LatLng latLng = map.getCameraPosition().target;
-            lat = latLng.latitude;
-            log = latLng.longitude;
+            latLng = map.getCameraPosition().target;
             adress.setText(getAddress(latLng.latitude, latLng.longitude));
         });
 
@@ -328,18 +326,21 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
         }
     }
 
+
     @SuppressLint("MissingPermission")
     public void getDeviceLocation() {
         checkPermissions();
         if (mLocationPermissionGranted) {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location1 -> {
-                location = location1;
+                this.location = location1;
                 moveCameraCurrentLocationOrDefault();
             });
         } else {
             moveCameraCurrentLocationOrDefault();
         }
     }
+
+
 
     private void moveCameraCurrentLocationOrDefault() {
         // Set the map's camera position to the current location of the device.
@@ -349,7 +350,7 @@ public class MapsBottomDialogFragment extends BottomSheetDialogFragment
             cameraPosition = new CameraPosition(new LatLng(location.getLatitude(), location.getLongitude()), 18, 0, 0);
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500, null);
         } else {
-            cameraPosition = new CameraPosition(new LatLng(location.getLatitude(),location.getLongitude()), 18, 0, 0);
+            cameraPosition = new CameraPosition(new LatLng(location.getLatitude(), location.getLongitude()),18,0,0);
         }
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500, null);
     }

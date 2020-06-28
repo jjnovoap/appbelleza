@@ -1,5 +1,7 @@
 package com.example.appbella.Model;
 
+import android.os.Bundle;
+
 public class Product {
 
     private String id;
@@ -91,5 +93,8 @@ public class Product {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public void setArguments(Bundle bundle) {
     }
 }
